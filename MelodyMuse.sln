@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MelodyMuse.Server", "MelodyMuse.Server\MelodyMuse.Server.csproj", "{9F70D7FB-3F7E-4BB5-B26C-17A924E6AF31}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "melodymuse.client", "melodymuse.client\melodymuse.client.esproj", "{0A7657CD-A9FF-42F0-A685-526E9D65BC59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F70D7FB-3F7E-4BB5-B26C-17A924E6AF31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F70D7FB-3F7E-4BB5-B26C-17A924E6AF31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F70D7FB-3F7E-4BB5-B26C-17A924E6AF31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F70D7FB-3F7E-4BB5-B26C-17A924E6AF31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A7657CD-A9FF-42F0-A685-526E9D65BC59}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C8A8F193-591D-4382-A765-5C58444BF8C1}
+	EndGlobalSection
+EndGlobal

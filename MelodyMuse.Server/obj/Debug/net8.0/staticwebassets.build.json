@@ -1,0 +1,23 @@
+{
+  "Version": 1,
+  "Hash": "x2VexRxh2AcVBAOwYuKGVbNEP5KjeRzZhQ6/dMWQMlo=",
+  "Source": "MelodyMuse.Server",
+  "BasePath": "_content/MelodyMuse.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "E:\\MelodyMuse\\melodymuse.client\\melodymuse.client.esproj",
+      "Version": 2,
+      "Source": "melodymuse.client",
+      "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
