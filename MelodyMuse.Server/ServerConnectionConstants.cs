@@ -7,10 +7,7 @@
         public const string userId = "User Id=SYS";
         public const string password = "Password=tongjiorcl2024";
         public const string DBAPrivilege = "DBA Privilege=SYSDBA";
-        public const string connectionString = datasource + userId + password + DBAPrivilege;
+        public const string connectionString = userId + password + datasource;
     }
-    
-
-
 }
 

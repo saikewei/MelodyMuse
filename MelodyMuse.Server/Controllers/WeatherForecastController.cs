@@ -1,3 +1,4 @@
+using MelodyMuse.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MelodyMuse.Server.Controllers
@@ -37,26 +38,21 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
-                //数据库查询语句
-                string sql = "select * from c##main_schema.artist";
-
-                //调用函数查询得到结果表
-                List<Dictionary<string, object>> table = DatabaseOperation.Select(sql);
-                string result = "";
-
-                //循环读取每一行
-                foreach (var item in table)
+                using (var context = new ModelContext())
                 {
-                    //循环读取每一列
-                    foreach (string key in item.Keys)
-                    {
-                        result += key + ":" + item[key] + " ";
-                    }
-                    result += "\n";
-                }
+                    // 获取所有艺术家信息
+                    var artists = context.Artists.ToList();
 
-                // 返回请求
-                return Ok(result);
+                    // 构建结果字符串
+                    string result = "";
+                    foreach (var artist in artists)
+                    {
+                        result += $"Artist Name: {artist.ArtistName} Artist Birthday: {artist.ArtistBirthday}\n";
+                    }
+
+                    // 返回请求成功，并包含艺术家信息
+                    return Ok(result);
+                }
             }
             catch (Exception ex)
             {
