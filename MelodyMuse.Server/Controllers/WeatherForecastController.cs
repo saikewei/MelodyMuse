@@ -37,8 +37,26 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
-               
-                return Ok(test.Test());
+                //数据库查询语句
+                string sql = "select * from c##main_schema.artist";
+
+                //调用函数查询得到结果表
+                List<Dictionary<string, object>> table = DatabaseOperation.Select(sql);
+                string result = "";
+
+                //循环读取每一行
+                foreach (var item in table)
+                {
+                    //循环读取每一列
+                    foreach (string key in item.Keys)
+                    {
+                        result += key + ":" + item[key] + " ";
+                    }
+                    result += "\n";
+                }
+
+                // 返回请求
+                return Ok(result);
             }
             catch (Exception ex)
             {
