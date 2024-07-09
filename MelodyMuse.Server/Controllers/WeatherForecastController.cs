@@ -29,5 +29,21 @@ namespace MelodyMuse.Server.Controllers
             })
             .ToArray();
         }
+
+
+        [HttpGet("test")]
+        //用于测试，和test.TEST()对应
+        public IActionResult GetNewData()
+        {
+            try
+            {
+               
+                return Ok(test.Test());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
