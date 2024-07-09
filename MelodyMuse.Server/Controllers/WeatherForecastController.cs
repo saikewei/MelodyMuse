@@ -40,13 +40,17 @@ namespace MelodyMuse.Server.Controllers
             {
                 using (var context = new ModelContext())
                 {
+                    // 获取所有艺术家信息
                     var artists = context.Artists.ToList();
+
+                    // 构建结果字符串
                     string result = "";
                     foreach (var artist in artists)
                     {
                         result += $"Artist Name: {artist.ArtistName} Artist Birthday: {artist.ArtistBirthday}\n";
                     }
-                    // 返回请求
+
+                    // 返回请求成功，并包含艺术家信息
                     return Ok(result);
                 }
             }
