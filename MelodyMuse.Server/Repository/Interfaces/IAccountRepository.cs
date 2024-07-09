@@ -1,0 +1,11 @@
+﻿using System.Threading.Tasks;
+using MelodyMuse.Server.models;
+
+namespace MelodyMuse.Server.Repository.Interfaces
+{
+    public interface IAccountRepository
+    {
+        Task<bool> LoginAsync(LoginModel loginModel);
+        Task<bool> RegisterAsync(RegisterModel registerModel);  
+    }
+}

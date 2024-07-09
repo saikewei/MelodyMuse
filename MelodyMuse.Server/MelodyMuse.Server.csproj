@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>6.*-*</Version>
     </PackageReference>
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Folder Include="entities\" />
   </ItemGroup>
 
 </Project>

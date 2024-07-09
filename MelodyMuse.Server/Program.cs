@@ -1,11 +1,20 @@
+using MelodyMuse.Server.Repository.Interfaces;
+using MelodyMuse.Server.Repository;
+using MelodyMuse.Server.Services.Interfaces;
+using MelodyMuse.Server.Services;
+using MelodyMuse.Server;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register services
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountRepository>(provider =>
+    new AccountRepository(ServerConnectionConstants.connectionString));
 
 var app = builder.Build();
 
@@ -24,7 +33,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapFallbackToFile("/index.html");
 
 app.Run();
