@@ -22,11 +22,19 @@ namespace MelodyMuse.Server.Repository
         public async Task<bool> LoginAsync(LoginModel loginModel)
         {
             try
-            {using (var connection = new OracleConnection(_connectionString))
+            {
+                using (var connection = new OracleConnection(_connectionString))
                 {
+                    connection.Open();
                     var sql = "SELECT COUNT(1) FROM Users WHERE User_name = :Username AND Password = :Password";
-                    var result = await connection.ExecuteScalarAsync<int>(sql, new { loginModel.Username, loginModel.Password });
-                    return result > 0;
+                    using (var command = new OracleCommand(sql, connection))
+                    {
+                        command.Parameters.Add(new OracleParameter("Username", loginModel.Username));
+                        command.Parameters.Add(new OracleParameter("Password", loginModel.Password));
+
+                        var result = Convert.ToInt32(command.ExecuteScalar());
+                        return result > 0;
+                    }
                 }
             }
             catch (OracleException ex) when (ex.Number == 1005)
