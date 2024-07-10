@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 //开启相关服务
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
-    new AccountRepository(ServerConnectionConstants.connectionString));
+   new AccountRepository());
 
 var app = builder.Build();
 

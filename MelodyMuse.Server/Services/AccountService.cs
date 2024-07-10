@@ -36,7 +36,7 @@ namespace MelodyMuse.Server.Services
         //注册:调用下层接口提供的注册服务
         public async Task<bool> RegisterAsync(RegisterModel _registerModel)
         {
-            return await (_accountRepository.RegisterAsync(_registerModel));
+            return await _accountRepository.RegisterAsync(_registerModel);
         }
     }
 }

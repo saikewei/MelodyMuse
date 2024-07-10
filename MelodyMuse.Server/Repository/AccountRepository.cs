@@ -1,66 +1,31 @@
-﻿/*
-    AccountRepository的函数实现
- */
-
-
-using MelodyMuse.Server.models;
+﻿using MelodyMuse.Server.models;
+using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
-using Oracle.ManagedDataAccess.Client;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
-
-
 
 namespace MelodyMuse.Server.Repository
 {
-
-    //定义AccountRepository数据库服务实现类,继承IAccountRepository接口
     public class AccountRepository : IAccountRepository
     {
-        //内部维护连接数据库的string字段
-        private readonly string _connectionString;
+        private readonly ModelContext _context;
 
-        //构造函数，传入_connectionString,在program.cs中调用并传入_connectionString
-        public AccountRepository(string connectionString)
+        public AccountRepository()
         {
-            _connectionString = connectionString;
+            _context = new ModelContext();
         }
 
-
-        //具体的数据库交互实现:
         public async Task<bool> LoginAsync(LoginModel loginModel)
         {
             try
             {
-                using (var connection = new OracleConnection(_connectionString))
-                {
-                    connection.Open();
-                    var sql = "SELECT COUNT(1) FROM Users WHERE User_name = :Username AND Password = :Password";
-                    using (var command = new OracleCommand(sql, connection))
-                    {
-                        command.Parameters.Add(new OracleParameter("Username", loginModel.Username));
-                        command.Parameters.Add(new OracleParameter("Password", loginModel.Password));
-
-                        var result = Convert.ToInt32(command.ExecuteScalar());
-                        return result > 0;
-                    }
-                }
-            }
-            catch (OracleException ex) when (ex.Number == 1005)
-            {
-                // 处理 ORA-01005 错误，例如提供友好的错误信息给用户
-                Console.WriteLine("Oracle登录失败：密码错误");
-                return false;
-            }
-            catch (OracleException ex)
-            {
-                // 其他 Oracle 异常处理
-                Console.WriteLine("Oracle异常：" + ex.Message);
-                return false;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginModel.Username && u.Password == loginModel.Password);
+                return user != null;
             }
             catch (Exception ex)
             {
-                // 其他异常处理
                 Console.WriteLine("发生异常：" + ex.Message);
                 return false;
             }
@@ -68,29 +33,38 @@ namespace MelodyMuse.Server.Repository
 
         public async Task<bool> RegisterAsync(RegisterModel model)
         {
+            //注册功能暂不能使用，需要修改
             try
-            {using (var connection = new OracleConnection(_connectionString))
+            {
+                // 查询当前最大的 UserId
+                var maxUserId = await _context.Users.MaxAsync(u => u.UserId);
+
+                // 生成下一个 UserId，UserId的格式为001,002......系统自动向后排序生成
+                int nextUserIdNumber = maxUserId == null ? 1 : int.Parse(maxUserId.Substring(3)) + 1;
+                string nextUserId = $"USR{nextUserIdNumber:D3}";
+
+                // 创建新用户对象
+                var user = new User
                 {
-                    var sql = "INSERT INTO Users (User_name, Password, PhoneNumber) VALUES (:Username, :Password, :PhoneNumber)";
-                    var result = await connection.ExecuteAsync(sql, new { model.Username, model.Password, model.PhoneNumber });
-                    return result > 0;
-                }
-            }
-            catch (OracleException ex) when (ex.Number == 1005)
-            {
-                // 处理 ORA-01005 错误，例如提供友好的错误信息给用户
-                Console.WriteLine("Oracle登录失败：密码错误");
-                return false;
-            }
-            catch (OracleException ex)
-            {
-                // 其他 Oracle 异常处理
-                Console.WriteLine("Oracle异常：" + ex.Message);
-                return false;
+                    UserId = nextUserId,
+                    UserName = model.Username,
+                    Password = model.Password,
+                    UserEmail = model.UserEmail,
+                    UserPhone = model.UserPhone,
+                    UserSex = model.UserSex,
+                    UserAge = model.UserAge,
+                    UserBirthday = model.UserBirthday,
+                    UserStatus = model.UserStatus
+                };
+
+                // 添加用户到数据库
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                return true;
             }
             catch (Exception ex)
             {
-                // 其他异常处理
                 Console.WriteLine("发生异常：" + ex.Message);
                 return false;
             }
