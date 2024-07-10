@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MelodyMuse.Server.Repository
 {
@@ -33,15 +35,30 @@ namespace MelodyMuse.Server.Repository
 
         public async Task<bool> RegisterAsync(RegisterModel model)
         {
-            //注册功能暂不能使用，需要修改
             try
             {
-                // 查询当前最大的 UserId
-                var maxUserId = await _context.Users.MaxAsync(u => u.UserId);
+                string nextUserId;
+                // 获取当前时间的字符串表示
+                string currentTimeString = DateTime.UtcNow.ToString("o"); // 使用ISO 8601格式
 
-                // 生成下一个 UserId，UserId的格式为001,002......系统自动向后排序生成
-                int nextUserIdNumber = maxUserId == null ? 1 : int.Parse(maxUserId.Substring(3)) + 1;
-                string nextUserId = $"USR{nextUserIdNumber:D3}";
+                // 计算哈希值
+                using (SHA256 sha256 = SHA256.Create())
+                {
+                    byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentTimeString));
+
+                    // 将哈希值转换为16进制字符串
+                    StringBuilder hashStringBuilder = new StringBuilder();
+                    foreach (byte b in hashBytes)
+                    {
+                        hashStringBuilder.Append(b.ToString("x2"));
+                    }
+
+                    string hashString = hashStringBuilder.ToString();
+
+                    // 截取前10位作为用户ID
+                    nextUserId = hashString.Substring(0, 10);
+                }
+               
 
                 // 创建新用户对象
                 var user = new User

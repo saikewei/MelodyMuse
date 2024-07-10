@@ -36,10 +36,18 @@ namespace MelodyMuse.Server.Controllers
 
             if (result)
             {
-                return Ok("Login Successful");
+                var seccessResponse = new
+                {
+                    msg = "登录成功！"
+                };
+                return Ok(seccessResponse);
             }
 
-            return Unauthorized("Invaild Username or Password");
+            var failResponse = new
+            {
+                msg = "用户名或密码错误！"
+            };
+            return Unauthorized(failResponse);
         }
 
 
@@ -52,11 +60,18 @@ namespace MelodyMuse.Server.Controllers
 
             if (result)
             {
-                return Ok("Register Successful");
+                var seccessResponse = new
+                {
+                    msg = "注册成功！"
+                };
+                return Ok(seccessResponse);
             }
 
-            return StatusCode(500, "Registration Failed");
-
+            var failResponse = new
+            {
+                msg = "注册失败！"
+            };
+            return Unauthorized(failResponse);
         }
 
     }
