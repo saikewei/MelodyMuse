@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register services
+//开启相关服务
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
     new AccountRepository(ServerConnectionConstants.connectionString));
