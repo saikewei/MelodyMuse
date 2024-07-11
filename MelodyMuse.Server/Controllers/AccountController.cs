@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
+using MelodyMuse.Server.Configure;
 
 
 //命名空间:Controllers
@@ -34,9 +35,12 @@ namespace MelodyMuse.Server.Controllers
 
             if (result)
             {
+                //根据用户信息生成JWT
+                var token = JWTTokenGenerator.GenerateToken("159****9051", JWTConfigure.serect_key);
                 var seccessResponse = new
                 {
-                    msg = "登录成功！"
+                    msg = "登录成功！",
+                    Token = token
                 };
                 return Ok(seccessResponse);
             }
