@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MelodyMuse.Server.models;
+using MelodyMuse.Server.Services.Interfaces;
+
 
 namespace MelodyMuse.Server.Controllers
 {
@@ -6,16 +9,30 @@ namespace MelodyMuse.Server.Controllers
     [Route("api/player")]
     public class MusicPlayerController : Controller
     {
-        private readonly string _musicFilePath = @"./Resources/";
+        private readonly IMusicPlayerService _musicService;
+        private readonly string _songFilePath = @"./Resources/";
+
+        public MusicPlayerController(IMusicPlayerService musicService)
+        {
+            _musicService = musicService;
+        }
 
         // 通过歌曲ID获得歌曲的请求响应
         [HttpGet]
-        [Route("{musicId}")]
-        public IActionResult StreamMusic(string musicId)
+        [Route("{songId}")]
+        public IActionResult StreamMusic(string songId)
         {
             try
             {
-                var fileStream = System.IO.File.OpenRead(_musicFilePath + musicId + ".mp3");
+                var song = _musicService.GetSongBySongId(songId);
+
+                if (song == null)
+                {
+                    // 歌曲ID不存在时的处理逻辑
+                    return NotFound("歌曲ID不存在");
+                }
+
+                var fileStream = System.IO.File.OpenRead(_songFilePath + songId + ".mp3");
                 var contentType = "audio/mpeg";
 
                 return File(fileStream, contentType);

@@ -15,7 +15,14 @@ builder.Services.AddSwaggerGen();
 //开启相关服务
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
-   new AccountRepository());
+    new AccountRepository());
+
+// MusicPlayer services
+//开启相关服务
+builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
+builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
+    new MusicPlayerRepository());
+
 
 var app = builder.Build();
 
