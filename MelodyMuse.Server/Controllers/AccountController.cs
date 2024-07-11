@@ -11,8 +11,6 @@ namespace MelodyMuse.Server.Controllers
 {
     //启用接收数据自动绑定[FromBody]
     [ApiController]
-    //为当前控制器指定基础路由
-    [Route("api/account")]
 
     //新建Account控制器类,继承于基控制器类
     public class AccountController:ControllerBase
@@ -27,7 +25,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
 
-        //注册api/account/login路由
+        //注册login路由
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)//接收到的数据自动绑定到loginModel数据块上
         {
@@ -51,7 +49,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
 
-        //注册api/account/register路由
+        //注册register路由
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)//接收到的数据自动绑定到loginModel数据块上
         {
