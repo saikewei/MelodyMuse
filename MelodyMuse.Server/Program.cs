@@ -17,6 +17,13 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
    new AccountRepository());
 
+
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ISMSService, SMSService>();
+builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
+
+
+
 var app = builder.Build();
 
 app.UseDefaultFiles();

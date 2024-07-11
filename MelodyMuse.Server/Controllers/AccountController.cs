@@ -12,8 +12,9 @@ namespace MelodyMuse.Server.Controllers
     //启用接收数据自动绑定[FromBody]
     [ApiController]
 
+    [Route("api/account")]
     //新建Account控制器类,继承于基控制器类
-    public class AccountController:ControllerBase
+    public class AccountController : ControllerBase
     {
         //维护一个到下层服务的接口
         private readonly IAccountService _accountService;
@@ -71,6 +72,6 @@ namespace MelodyMuse.Server.Controllers
             };
             return Unauthorized(failResponse);
         }
-
     }
+
 }

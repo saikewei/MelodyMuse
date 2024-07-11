@@ -14,10 +14,10 @@ namespace MelodyMuse.Server.Services
 {
     //定义账户服务(AccountService)类，继承账户服务接口(IAccountService)
     //完成接口内部函数实现
-    public class AccountService:IAccountService
+    public class AccountService : IAccountService
     {
         //内部维护一个下层数据库访问服务(Repository)的接口
-        private readonly IAccountRepository  _accountRepository;
+        private readonly IAccountRepository _accountRepository;
 
         //传入服务接口
         public AccountService(IAccountRepository accountRepository)
@@ -38,5 +38,8 @@ namespace MelodyMuse.Server.Services
         {
             return await _accountRepository.RegisterAsync(_registerModel);
         }
+
+     
     }
+    
 }

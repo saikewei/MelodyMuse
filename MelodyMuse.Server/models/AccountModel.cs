@@ -25,4 +25,5 @@ namespace MelodyMuse.Server.models
         public string UserStatus { get; set; } = "1";
 
     }
+
 }

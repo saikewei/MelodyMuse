@@ -1,10 +1,6 @@
 ﻿/*
    账户服务(AccountService)提供的接口(IAccountService)
  */
-
-
-
-using System.Threading.Tasks;
 using MelodyMuse.Server.models;
 
 
@@ -16,5 +12,6 @@ namespace MelodyMuse.Server.Services.Interfaces
     {
         Task<bool> LoginAsync(LoginModel loginModel);
         Task<bool> RegisterAsync(RegisterModel registerModel);
+        
     }
 }
