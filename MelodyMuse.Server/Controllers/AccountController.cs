@@ -36,7 +36,7 @@ namespace MelodyMuse.Server.Controllers
             if (result)
             {
                 //根据用户信息生成JWT
-                var token = JWTTokenGenerator.GenerateToken("159****9051", JWTConfigure.serect_key);
+                var token = JWTTokenGenerator.GenerateToken(loginModel.Username,"159****9051", JWTConfigure.serect_key);
                 var seccessResponse = new
                 {
                     msg = "登录成功！",

@@ -4,6 +4,9 @@
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace MelodyMuse.Server.Controllers
 {
@@ -31,6 +34,7 @@ namespace MelodyMuse.Server.Controllers
 
             if (result)
             {
+                Console.WriteLine(User.FindFirst(ClaimTypes.MobilePhone)?.Value);
                 var successResponse = new
                 {
                     msg = "成功发送验证短信"
