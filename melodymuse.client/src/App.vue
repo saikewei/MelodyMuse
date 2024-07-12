@@ -1,46 +1,55 @@
-<script setup>
-import login from './components/login.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.png" width="125" height="125" />
-
-    <div class="wrapper">
-      <login msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div id="app">
+      <component :is="msg">
+    </component>
+    <div class="title">
+          <div class="btn" @click="msg='login'">登录</div>
+          <div class="btn" @click="msg='register'">注册</div>
+      </div>
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
+ 
+<script>
+//这里的from路径根据自己的布局更改路径
+import login from './components/login.vue'
+import register from './components/register.vue'
+export default {
+  name: 'App',
+  data(){
+      return{
+          msg:"login"
+      }
+  },
+  components: {
+    login,
+    register
+  }
+}
+</script>
+ 
+<style>
+.title{
+    text-align: center;
+    background-color:transparent;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.btn {   
+    background-color: transparent;
+    border-radius:10px;
+    display:inline-block;
+    cursor:pointer;
+    color:#bb8bbe;
+    font-family:Arial;
+    font-size:20px;
+    padding:16px 31px;
+    text-decoration:none;
+    margin: 10px 20px;  
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.btn:hover {
+    background-color:#f9f7f9;
+}
+.btn:active {
+    position:relative;
+    top:1px;
 }
 </style>

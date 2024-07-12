@@ -3,22 +3,22 @@
           <div class="login-wrapper">
               <div class="header">MelodyMuse</div>
               <div class="form-wrapper">
-                  <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item">
+                  <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item">               
                   <input type="password" name="password" placeholder="密码" class="input-item">
-                  <div class="btn2">Login</div>
+                  <input type="password" name="repassword" placeholder="再次确认密码" class="input-item">
+                  <div class="btn2">Register</div>
               </div>
           </div>
       </div>
 </template>
-
+  
 <script>
   export default {
-      name:"Login"
+      name:"Reg"
   }
 </script>
 
 <style scoped>
-
 html {
   height: 100%;
 }
@@ -50,12 +50,13 @@ body {
   text-align: center;
   line-height: 200px;
 }
+
 .input-item {
   display: block;
   width: 100%;
-  margin-bottom: 25px;
+  margin-bottom: 18px;
   border: 0;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid rgb(128, 125, 125);
   border-radius: 10px;
   font-size: 15px;
@@ -69,7 +70,7 @@ body {
   padding: 8px;
   margin: 0 auto;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 25px;
   background-color: #c99fcb;
   color: #fff;
   border-radius:10px;
@@ -86,7 +87,6 @@ body {
     position:relative;
     top:1px;
 }
-
 .msg {
   text-align: center;
   line-height: 88px;
