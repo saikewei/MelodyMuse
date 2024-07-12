@@ -19,7 +19,7 @@ namespace MelodyMuse.Server.Services
             string _phonenumber = _sendSMSModel.PhoneNumber;
             string _event = _sendSMSModel.Event;
             int _minutes = SMSConfigure.VerificationCodeValidity;
-            TimeSpan _expiry = TimeSpan.FromMinutes(10);
+            TimeSpan _expiry = TimeSpan.FromMinutes(_minutes);
 
             try
             {
