@@ -9,7 +9,7 @@ namespace MelodyMuse.Server
 {
     public class JWTTokenGenerator
     {
-        public static string GenerateToken(string Phonenumber , string secretKey)
+        public static string GenerateToken(string Username,string Phonenumber , string secretKey)
         {
             //创建新的JWTSecurityTokenHandler,用于创建和处理JWT
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -19,8 +19,10 @@ namespace MelodyMuse.Server
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] 
-                { 
+                {
+                    new Claim(ClaimTypes.Name, Username),
                     new Claim(ClaimTypes.MobilePhone,Phonenumber),
+                   
                 }),
                 //JWT过期时间
                 Expires = DateTime.UtcNow.AddHours(1),
