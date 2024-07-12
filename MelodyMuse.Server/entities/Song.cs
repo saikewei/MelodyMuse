@@ -11,7 +11,7 @@ public partial class Song
 
     public string? SongGenre { get; set; }
 
-    public int? Duration { get; set; }
+    public decimal? Duration { get; set; }
 
     public string? Lyrics { get; set; }
 
