@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.Services;
 
 
 //命名空间:Controllers
@@ -31,16 +32,16 @@ namespace MelodyMuse.Server.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)//接收到的数据自动绑定到loginModel数据块上
         {
             //调用下层服务接口提供的函数完成相应的逻辑操作
-            var result = await _accountService.LoginAsync(loginModel);
+            GenerateTokenModel UserInfo = await _accountService.LoginAsync(loginModel);
 
-            if (result)
+            if (UserInfo!=null)
             {
                 //根据用户信息生成JWT
-                var token = JWTTokenGenerator.GenerateToken(loginModel.Username,"159****9051", JWTConfigure.serect_key);
+                var JWT = JWTGenerator.GenerateToken(UserInfo,JWTConfigure.serect_key);
                 var seccessResponse = new
                 {
                     msg = "登录成功！",
-                    Token = token
+                    Token = JWT
                 };
                 return Ok(seccessResponse);
             }

@@ -10,7 +10,7 @@ namespace MelodyMuse.Server.Services.Interfaces
     //定义接口(一个不包含函数实现的函数列表)
     public interface IAccountService
     {
-        Task<bool> LoginAsync(LoginModel loginModel);
+        Task<GenerateTokenModel> LoginAsync(LoginModel loginModel);
         Task<bool> RegisterAsync(RegisterModel registerModel);
         
     }

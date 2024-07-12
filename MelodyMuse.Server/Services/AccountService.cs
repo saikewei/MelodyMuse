@@ -27,7 +27,7 @@ namespace MelodyMuse.Server.Services
 
 
         //登录:调用下层接口提供的登陆验证服务
-        public async Task<bool> LoginAsync(LoginModel _loginModel)
+        public async Task<GenerateTokenModel> LoginAsync(LoginModel _loginModel)
         {
             return await _accountRepository.LoginAsync(_loginModel);
         }

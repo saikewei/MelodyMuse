@@ -8,5 +8,6 @@
     public class JWTConfigure
     {
         public const string serect_key = "qwertyuiopasdfghjklzxcvbnm";
+        public const int JsonWebTokenTValidity = 3;
     }
 }
