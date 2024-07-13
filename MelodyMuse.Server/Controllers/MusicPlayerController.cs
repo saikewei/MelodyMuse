@@ -54,7 +54,7 @@ namespace MelodyMuse.Server.Controllers
             {
                 var songMetadata = await _musicService.GetSongBySongId(songId);
 
-                songMetadata.song_url = $"api/player/file/{songId}";
+                songMetadata.SongUrl = $"api/player/file/{songId}";
                 if (songMetadata == null)
                 {
                     // 歌曲ID不存在时的处理逻辑
