@@ -43,7 +43,7 @@ public partial class ModelContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseOracle(ServerConnectionConstants.connectionString);
+        => optionsBuilder.UseOracle("User Id=c##Main_Schema;Password=tongjiorcl2024;Data Source=101.126.23.58:1521/orcl");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -181,13 +181,12 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("SONG_ID");
-            entity.Property(e => e.ArtistId)
+            entity.Property(e => e.ComposerId)
                 .HasMaxLength(10)
                 .IsUnicode(false)
-                .HasColumnName("ARTIST_ID");
+                .HasColumnName("COMPOSER_ID");
             entity.Property(e => e.Duration)
-                .HasMaxLength(10)
-                .IsUnicode(false)
+                .HasColumnType("NUMBER(38)")
                 .HasColumnName("DURATION");
             entity.Property(e => e.Lyrics)
                 .IsUnicode(false)
@@ -204,8 +203,8 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("SONG_NAME");
 
-            entity.HasOne(d => d.Artist).WithMany(p => p.SongsNavigation)
-                .HasForeignKey(d => d.ArtistId)
+            entity.HasOne(d => d.Composer).WithMany(p => p.SongsNavigation)
+                .HasForeignKey(d => d.ComposerId)
                 .HasConstraintName("SYS_C007531");
 
             entity.HasMany(d => d.Albums).WithMany(p => p.Songs)
