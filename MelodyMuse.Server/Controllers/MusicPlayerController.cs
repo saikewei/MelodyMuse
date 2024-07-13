@@ -19,8 +19,8 @@ namespace MelodyMuse.Server.Controllers
 
         // 通过歌曲ID获得歌曲的请求响应
         [HttpGet]
-        [Route("file/{songId}")]
-        public async Task<IActionResult> StreamMusic(string songId)
+        [Route("file")]
+        public async Task<IActionResult> StreamMusic([FromQuery]string songId)
         {
             try
             {
@@ -50,20 +50,27 @@ namespace MelodyMuse.Server.Controllers
         [Route("{songId}")]
         public async Task<IActionResult> GetMusicInfo(string songId)
         {
-             var song = await _musicService.GetSongBySongId(songId);
-
-             if (song == null)
-             {
-                 // 歌曲ID不存在时的处理逻辑
-                 return NotFound("歌曲ID不存在");
-             }
-
-            var successResponse = new
+            try
             {
-                
-            };
-            
-            return Ok(successResponse);
+                var songMetadata = await _musicService.GetSongBySongId(songId);
+
+                songMetadata.song_url = $"api/player/file/{songId}";
+                if (songMetadata == null)
+                {
+                    // 歌曲ID不存在时的处理逻辑
+                    return NotFound("歌曲ID不存在");
+                }
+
+                return Ok(songMetadata);
+            }
+            catch(Exception ex)
+            {
+                var errorResponse = new
+                {
+                    msg = "歌曲查询错误：" + ex.Message
+                };
+                return NotFound(errorResponse);
+            }
         }
     }
 }

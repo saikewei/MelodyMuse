@@ -22,7 +22,7 @@ namespace MelodyMuse.Server.Services
         {
             var song = await _musicplayerrepository.GetSongBySongId(SongId);
             var singers = await _musicplayerrepository.GetSingersBySongId(SongId);
-            List<string> singerNames = singers.Select(o => o.ArtistName).ToList();    
+            List<string?> singerNames = singers.Select(o => o.ArtistName).ToList();    
 
             var responseModel = new SongMetaDataModel();
             responseModel.song_id = song.SongId;
@@ -31,6 +31,7 @@ namespace MelodyMuse.Server.Services
             responseModel.song_genre = song.SongGenre;
             responseModel.song_date = song.SongDate;
             responseModel.song_duration = song.Duration;
+            responseModel.composer_name = song.Composer != null ? song.Composer.ArtistName : null;
 
             return responseModel;
         }
