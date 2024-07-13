@@ -19,19 +19,11 @@ namespace MelodyMuse.Server.Controllers
 
         // 通过歌曲ID获得歌曲的请求响应
         [HttpGet]
-        [Route("{songId}")]
+        [Route("file/{songId}")]
         public async Task<IActionResult> StreamMusic(string songId)
         {
             try
             {
-                var song = await _musicService.GetSongBySongId(songId);
-
-                if (song == null)
-                {
-                    // 歌曲ID不存在时的处理逻辑
-                    return NotFound("歌曲ID不存在");
-                }
-
                 var fileStream = new FileStream(_songFilePath + songId + ".mp3", FileMode.Open, FileAccess.Read);
                 var response = new FileStreamResult(fileStream, "audio/mpeg")
                 {
@@ -52,6 +44,26 @@ namespace MelodyMuse.Server.Controllers
                 Console.WriteLine($"文件打开失败：{ex.Message}");
                 return NotFound(); // 返回 HTTP 404 响应
             }
+        }
+
+        [HttpGet]
+        [Route("{songId}")]
+        public async Task<IActionResult> GetMusicInfo(string songId)
+        {
+             var song = await _musicService.GetSongBySongId(songId);
+
+             if (song == null)
+             {
+                 // 歌曲ID不存在时的处理逻辑
+                 return NotFound("歌曲ID不存在");
+             }
+
+            var successResponse = new
+            {
+                
+            };
+            
+            return Ok(successResponse);
         }
     }
 }

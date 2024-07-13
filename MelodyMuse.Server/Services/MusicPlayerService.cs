@@ -1,4 +1,5 @@
-﻿using MelodyMuse.Server.Models;
+﻿using MelodyMuse.Server.models;
+using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
 
@@ -17,9 +18,21 @@ namespace MelodyMuse.Server.Services
         {
             _musicplayerrepository = musicplayerrepository; 
         }
-        public async Task<Song> GetSongBySongId(string SongId)
+        public async Task<SongMetaDataModel> GetSongBySongId(string SongId)
         {
-            return await _musicplayerrepository.GetSongBySongId(SongId);
+            var song = await _musicplayerrepository.GetSongBySongId(SongId);
+            var singers = await _musicplayerrepository.GetSingersBySongId(SongId);
+            List<string> singerNames = singers.Select(o => o.ArtistName).ToList();    
+
+            var responseModel = new SongMetaDataModel();
+            responseModel.song_id = song.SongId;
+            responseModel.song_name = song.SongName;
+            responseModel.singer_names = singerNames;
+            responseModel.song_genre = song.SongGenre;
+            responseModel.song_date = song.SongDate;
+            responseModel.song_duration = song.Duration;
+
+            return responseModel;
         }
     }
 }

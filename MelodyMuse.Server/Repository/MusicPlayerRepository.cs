@@ -20,5 +20,13 @@ namespace MelodyMuse.Server.Repository
             //在数据库中查找是否有该歌曲ID
             return await _context.Songs.FirstOrDefaultAsync(song => song.SongId == songId);
         }
+
+        public async Task<List<Artist>> GetSingersBySongId(string songId)
+        {
+            return await _context.Songs
+                .Where(s => s.SongId == songId) 
+                .SelectMany(s => s.Artists)
+                .ToListAsync();
+        }
     }
 }
