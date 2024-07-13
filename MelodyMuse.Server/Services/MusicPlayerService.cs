@@ -17,9 +17,9 @@ namespace MelodyMuse.Server.Services
         {
             _musicplayerrepository = musicplayerrepository; 
         }
-        public Song GetSongBySongId(string SongId)
+        public async Task<Song> GetSongBySongId(string SongId)
         {
-            return _musicplayerrepository.GetSongBySongId(SongId);
+            return await _musicplayerrepository.GetSongBySongId(SongId);
         }
     }
 }

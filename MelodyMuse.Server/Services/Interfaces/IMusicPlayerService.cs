@@ -7,6 +7,6 @@ namespace MelodyMuse.Server.Services.Interfaces
 {
     public interface IMusicPlayerService
     {
-        Song GetSongBySongId(string songId);
+        Task<Song> GetSongBySongId(string songId);
     }
 }

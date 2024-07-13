@@ -1,6 +1,7 @@
 ﻿using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace MelodyMuse.Server.Repository
 {
@@ -14,10 +15,10 @@ namespace MelodyMuse.Server.Repository
             _context = new ModelContext();
         }
 
-        public Song GetSongBySongId(string songId)
+        public async Task<Song> GetSongBySongId(string songId)
         {
             //在数据库中查找是否有该歌曲ID
-            return _context.Songs.FirstOrDefault(song => song.SongId == songId);
+            return await _context.Songs.FirstOrDefaultAsync(song => song.SongId == songId);
         }
     }
 }

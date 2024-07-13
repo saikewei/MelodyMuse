@@ -7,6 +7,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
 {
     public interface IMusicPlayerRepository
     {
-        Song GetSongBySongId(string songId);
+        Task<Song> GetSongBySongId(string songId);
     }
 }

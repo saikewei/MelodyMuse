@@ -20,11 +20,11 @@ namespace MelodyMuse.Server.Controllers
         // 通过歌曲ID获得歌曲的请求响应
         [HttpGet]
         [Route("{songId}")]
-        public IActionResult StreamMusic(string songId)
+        public async Task<IActionResult> StreamMusic(string songId)
         {
             try
             {
-                var song = _musicService.GetSongBySongId(songId);
+                var song = await _musicService.GetSongBySongId(songId);
 
                 if (song == null)
                 {
@@ -32,10 +32,16 @@ namespace MelodyMuse.Server.Controllers
                     return NotFound("歌曲ID不存在");
                 }
 
-                var fileStream = System.IO.File.OpenRead(_songFilePath + songId + ".mp3");
-                var contentType = "audio/mpeg";
+                var fileStream = new FileStream(_songFilePath + songId + ".mp3", FileMode.Open, FileAccess.Read);
+                var response = new FileStreamResult(fileStream, "audio/mpeg")
+                {
+                    FileDownloadName = songId + ".mp3"
+                };
 
-                return File(fileStream, contentType);
+                // 支持范围请求
+                response.EnableRangeProcessing = true;
+
+                return response;
             }
             catch (Exception ex) when (
                 ex is FileNotFoundException ||
