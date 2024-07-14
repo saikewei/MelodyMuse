@@ -17,9 +17,9 @@ public partial class Song
 
     public DateTime? SongDate { get; set; }
 
-    public string? ArtistId { get; set; }
+    public string? ComposerId { get; set; }
 
-    public virtual Artist? Artist { get; set; }
+    public virtual Artist? Composer { get; set; }
 
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
 
