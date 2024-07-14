@@ -6,6 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+
+//如果某项功能需要登陆授权，例如点击 我喜欢  关注  等等
+//则在改功能注册api前加上  [Authorize]
 //[Authorize]  需要授权的路由
 
 namespace MelodyMuse.Server.Services
@@ -42,14 +45,17 @@ namespace MelodyMuse.Server.Services
     }
 
 
-
+    //Token解析
     public static class TokenParser
     {
         public static ParsedTokenModel ParseToken(string token, string secretKey)
         {
+            //创建JWTSecurityTokenHandler用来解析Token
             var tokenHandler = new JwtSecurityTokenHandler();
+            //拿到密钥
             var key = Encoding.ASCII.GetBytes(secretKey);
 
+            //配置参数
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -60,11 +66,12 @@ namespace MelodyMuse.Server.Services
 
             try
             {
+                //验证Token合法性并解析出用户信息
                 var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
                 var username = principal.FindFirst(ClaimTypes.Name)?.Value;
                 var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var phoneNumber = principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
-
+                //返回解析出的内容
                 return new ParsedTokenModel
                 {
                     Username = username,

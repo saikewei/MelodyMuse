@@ -7,7 +7,7 @@
 
     public class JWTConfigure
     {
-        public const string serect_key = "qwertyuiopasdfghjklzxcvbnm";
-        public const int JsonWebTokenTValidity = 3;
+        public const string serect_key = "qwertyuiopasdfghjklzxcvbnm";    //JWT生成与解析的密钥
+        public const int JsonWebTokenTValidity = 3;             //Token有效期,单位:小时
     }
 }
