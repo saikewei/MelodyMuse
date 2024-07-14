@@ -15,7 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register services
-//¿ªÆôÏà¹Ø·þÎñ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
    new AccountRepository());
@@ -24,7 +24,7 @@ builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
 
 
-//ÆôÓÃJWT·þÎñ
+//ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>
 {
@@ -44,14 +44,18 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-
+// MusicPlayer services
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
+builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
+builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
+    new MusicPlayerRepository());
 
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-//ÆôÓÃJWT·þÎñ
+//ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
 app.UseAuthentication();
 app.UseAuthorization();
 
