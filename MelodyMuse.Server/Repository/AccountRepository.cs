@@ -23,7 +23,11 @@ namespace MelodyMuse.Server.Repository
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginModel.Username && u.Password == loginModel.Password);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == loginModel.PhoneNumber && u.Password == loginModel.Password);
+
+                if (user == null) {
+                    return null;
+                }
 
                 var UserInfo = new GenerateTokenModel
                 {

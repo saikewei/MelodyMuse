@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MelodyMuse.Server.Configure;
 using System.Text;
+using MelodyMuse.Server.OuterServices.Interfaces;
+using MelodyMuse.Server.OuterServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,9 @@ builder.Services.AddScoped<IAccountRepository>(provider =>
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
+builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
+builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
+    new MusicPlayerRepository());
 
 
 //����JWT����
@@ -47,8 +52,7 @@ builder.Services.AddAuthentication(x =>
 // MusicPlayer services
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
-builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
-    new MusicPlayerRepository());
+
 
 
 var app = builder.Build();

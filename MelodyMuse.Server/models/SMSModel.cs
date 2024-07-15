@@ -20,4 +20,13 @@ namespace MelodyMuse.Server.models
         public string? VerificationCode { get; set; } = null;
     }
 
+
+    //接受
+    public class SendToTencentModel
+    {
+        public string? PhoneNumber { get; set; } = null;
+        public string? Event { get; set; } = null;
+        public string? VerificationCode { get; set; } = null;
+        public int? VerificationCodeValidityTime { get; set; } = null;
+    }
 }

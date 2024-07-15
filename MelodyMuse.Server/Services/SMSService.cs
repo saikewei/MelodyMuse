@@ -1,6 +1,7 @@
 ﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.OuterServices.Interfaces;
 
 namespace MelodyMuse.Server.Services
 {
@@ -8,9 +9,12 @@ namespace MelodyMuse.Server.Services
     {
         //将缓存服务注入短信验证服务
         private readonly IVerificationCodeCacheService _verificationCodeCacheService;
-        public SMSService(IVerificationCodeCacheService verificationCodeCacheService)
+        private readonly ITencentSMSService _tencentSMSService;
+
+        public SMSService(IVerificationCodeCacheService verificationCodeCacheService, ITencentSMSService tencentSMSService)
         {
             _verificationCodeCacheService = verificationCodeCacheService;   
+            _tencentSMSService = tencentSMSService;
         }
 
 
@@ -26,7 +30,17 @@ namespace MelodyMuse.Server.Services
                 //生成验证码
                 string verificationCode = GenerateVerificationCode();
                 //发送短信
-                var result = true;
+
+                SendToTencentModel sendToTencentModel = new SendToTencentModel
+                {
+                    PhoneNumber = _sendSMSModel.PhoneNumber,
+                    Event = _sendSMSModel.Event,
+                    VerificationCodeValidityTime = SMSConfigure.VerificationCodeValidity,
+                    VerificationCode = verificationCode,
+                };
+
+                bool result = await _tencentSMSService.SendSMSAsync(sendToTencentModel);
+
                 //成功则添加进入缓存等待验证
                 if (result)
                 {
