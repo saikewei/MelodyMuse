@@ -4,10 +4,12 @@
     "\\public",
     "\\src",
     "\\src\\assets",
+    "\\src\\assets\\data",
     "\\src\\components",
     "\\src\\pages",
     "\\src\\router",
     "\\src\\store"
   ],
+  "SelectedNode": "\\src\\components\\TheFooter.vue",
   "PreviewInSolutionExplorer": false
 }
