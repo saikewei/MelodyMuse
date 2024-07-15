@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="OuterServices\ExternalApiServices\" />
+    <Folder Include="entities\" />
   </ItemGroup>
 
 </Project>

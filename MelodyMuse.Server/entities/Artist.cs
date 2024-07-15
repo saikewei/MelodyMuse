@@ -17,9 +17,13 @@ public partial class Artist
 
     public decimal? ArtistFansNum { get; set; }
 
+    public string? UserId { get; set; }
+
     public virtual ICollection<Album> Albums { get; set; } = new List<Album>();
 
     public virtual ICollection<Song> SongsNavigation { get; set; } = new List<Song>();
+
+    public virtual User? User { get; set; }
 
     public virtual ICollection<Song> Songs { get; set; } = new List<Song>();
 
