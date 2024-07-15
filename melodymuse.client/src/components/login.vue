@@ -1,23 +1,36 @@
 <template>
   <div class="container">
-    <div class="login-wrapper">
-      <div class="header">MelodyMuse</div>
-      <div class="form-wrapper">
-        <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="username">
-        <input type="password" name="password" placeholder="密码" class="input-item" v-model="password">
-        <div class="btn2" @click="login">Login</div>
+    <div class="main">
+      <div class="loginbox">
+        <div class="loginbox-in">
+          <div class="header">MelodyMuse</div>
+          <div class="form-wrapper">
+            <div class="input-wrapper">
+              <!--<span class="iconfont icon-account"></span>-->
+              <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="username">
+            </div>
+            <div class="input-wrapper">
+              <!--<span class="iconfont icon-key"></span>-->
+              <input type="password" name="password" placeholder="密码" class="input-item" v-model="password">
+            </div>
+            <div class="btn2" @click="login">Login</div> 
+          </div>
+          <p v-if="loginError" class="error-message">{{ loginError }}</p>
+        </div>
       </div>
-      <p v-if="loginError" class="error-message">{{ loginError }}</p>
+      <!-- 右侧盒子 -->
+      <div class="background">
+        <div class="title">欢迎来到MelodyMuse！请先登录到您的账户</div>
+      </div>
     </div>
   </div>
 </template>
 
 
-
 <script>
-
-  export default {
-    data() {
+import axios from 'axios';
+export default {
+  data() {
     return {
       username: '',
       password: '',
@@ -26,19 +39,16 @@
   },
   methods: {
     async login() {
-        // 验证手机号码是否为空
       if (this.username.trim() === '') {
         this.loginError = '手机号码不能为空。';
         return;
       }
 
-      // 验证密码是否为空
       if (this.password.trim() === '') {
         this.loginError = '密码不能为空。';
         return;
       }
 
-      // 验证手机号码长度和格式
       if (!/^\d{11}$/.test(this.username)) {
         this.loginError = '请输入11位有效的手机号码。';
         return;
@@ -69,50 +79,77 @@
       }
     }
   },
-
-      name:"Login"
-  }
-  
+  name: "Login"
+}
 </script>
+
 <style scoped>
 html, body {
   height: 100%;
+  margin: 0;
 }
 .container {
-  height: 980px;
+  height: 100vh;
   width: 100%;
   background-image: linear-gradient(to right, #e1c1e4, white);
+  display: flex;
+  left: 10%;
+  justify-content: left;
+  align-items: center;
 }
-.login-wrapper {
-  background-color: #fff;
-  width: 360px;
+.main {
+  display: flex;
+  justify-content:space-evenly; /* 使用 space-between 将元素分散排列，实现图片右对齐效果 */
+}
+.loginbox {
+  display: flex;
+  width: 1000px;
   height: 500px;
+  position: relative;
+  top:20%;
+  left:33.5%;
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+.loginbox-in {
+  width: 360px;
   border-radius: 15px;
   padding: 0 50px;
   position: absolute;
-  border: 1px solid #ccc;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left:25%;
+  top:10%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .header {
   font-size: 36px;
   color: #bb8bbe;
-  font-weight: bold;
+  font-weight:bolder;
   text-align: center;
-  line-height: 200px;
+  line-height: 80px;
+  margin-top: 20px;
+}
+.form-wrapper {
+  width: 100%;
+  padding-top: 30px;
+}
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
 }
 .input-item {
   display: block;
-  width: 100%;
-  margin-bottom: 25px;
+  width: calc(100% - 40px);
+  margin-left: 10px;
   padding: 12px;
   border: 1px solid rgb(128, 125, 125);
   border-radius: 10px;
   font-size: 15px;
   outline: none;
 }
-.input-item:placeholder {
+.input-item::placeholder {
   text-transform: uppercase;
 }
 .btn2 {
@@ -121,7 +158,7 @@ html, body {
   width: 100%;
   margin-top: 40px;
   background-color: #c99fcb;
-  color: #fff;
+  color: #ffffff;
   border-radius: 10px;
   cursor: pointer;
   font-size: 20px;
@@ -138,4 +175,46 @@ html, body {
   text-align: center;
   margin-top: 10px;
 }
+.background {
+  width: 500px;
+  justify-content:center;
+  align-items:flex-end;
+  background-image: url('./melodymuse.client/src/assets/m.png'); /* 确保存在该图片 */
+  background-size: cover;
+   
+}
+.title {
+    margin-top:440px;
+    font-weight:bold;
+    font-size:24px;
+    color:#4E655D;
+}
+.title:hover {
+  font-size: 21px;
+  transition: all 0.4s ease-in-out;
+  cursor: pointer;
+}
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 20px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 22px;
+  color: #4E655D;
+  margin-right: 10px;
+  margin-top: 3px;
+}
+input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0) inset !important; /* 背景透明 */
+  -webkit-text-fill-color: #445b53 !important; /* 文本颜色 */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill::first-line {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+
 </style>
