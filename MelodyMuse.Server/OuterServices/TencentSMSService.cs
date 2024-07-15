@@ -58,10 +58,24 @@ namespace MelodyMuse.Server.OuterServices
                 };
 
                 SendSmsResponse resp = client.SendSmsSync(req);
-                Console.WriteLine(AbstractModel.ToJsonString(resp));
+                //Console.WriteLine(AbstractModel.ToJsonString(resp));
 
 
-                return true;
+                // 判断短信是否发送成功
+                //可以一组好几个手机号
+                if (resp.SendStatusSet != null && resp.SendStatusSet.All(status => status.Code == "Ok"))
+                {
+                    return true;
+                }
+                else
+                {
+                    //所以Status不止一个
+                    foreach (var status in resp.SendStatusSet)
+                    {
+                        Console.WriteLine($"PhoneNumber: {status.PhoneNumber}, Code: {status.Code}, Message: {status.Message}");
+                    }
+                    return false;
+                }
             }
             catch (Exception e)
             {
