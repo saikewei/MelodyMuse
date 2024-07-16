@@ -1,3 +1,5 @@
+<!--这个文件没有被使用！这个文件是最初登录注册在一个页面的版本，现在拆成两个页面，这个文件保留作为参考！！-->
+
 <template>
   <div id="app">
       <component :is="msg">
@@ -11,8 +13,8 @@
  
 <script>
 //这里的from路径根据自己的布局更改路径
-import login from './components/login.vue'
-import register from './components/register.vue'
+import login from '../components/login.vue'
+import register from '../components/register.vue'
 export default {
   name: 'login_register',
   data(){
