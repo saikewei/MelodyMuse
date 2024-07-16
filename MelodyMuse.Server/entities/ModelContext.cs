@@ -210,6 +210,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("SONG_NAME");
+            entity.Property(e => e.Status)
+                .HasPrecision(2)
+                .HasColumnName("STATUS");
 
             entity.HasOne(d => d.Composer).WithMany(p => p.SongsNavigation)
                 .HasForeignKey(d => d.ComposerId)

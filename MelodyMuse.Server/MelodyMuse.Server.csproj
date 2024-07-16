@@ -31,8 +31,4 @@
     </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="entities\" />
-  </ItemGroup>
-
 </Project>

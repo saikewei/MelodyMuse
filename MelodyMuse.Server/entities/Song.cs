@@ -19,6 +19,8 @@ public partial class Song
 
     public string? ComposerId { get; set; }
 
+    public byte? Status { get; set; }
+
     public virtual Artist? Composer { get; set; }
 
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
