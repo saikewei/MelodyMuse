@@ -48,13 +48,13 @@ namespace MelodyMuse.Server.OuterServices
                     Sign = TencentSMSServiceConfigure.SignName,  // 短信签名
                     TemplateID = TencentSMSServiceConfigure.TemplateID,  // 短信模板ID
                     PhoneNumberSet = new string[] { "86"+sendToTencentModel.PhoneNumber },  // 接收短信的手机号
-                    /*
+                    
                     TemplateParamSet = new string[] { sendToTencentModel.VerificationCode,
                         sendToTencentModel.Event,
                         sendToTencentModel.VerificationCodeValidityTime.ToString() }  // 模板参数
-                    */
-                    TemplateParamSet = new string[] { sendToTencentModel.VerificationCode,
-                        sendToTencentModel.VerificationCodeValidityTime.ToString() }  // 模板参数
+                    
+                    /*TemplateParamSet = new string[] { sendToTencentModel.VerificationCode,
+                        sendToTencentModel.VerificationCodeValidityTime.ToString() }  // 模板参数*/
                 };
 
                 SendSmsResponse resp = client.SendSmsSync(req);

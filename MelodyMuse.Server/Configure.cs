@@ -10,7 +10,7 @@
         public const string SecretId = "AKIDT2sjb5cVL8zsrzInSKRiFpR1HSWeigWI";
         public const string SecretKey = "oX8bxEUjIqNzjQJJKUpeaUMUlzJalihp";
         public const string SDKAppID = "1400923817";
-        public const string TemplateID = "2215574";
+        public const string TemplateID = "2215573";   //2215574   
         public const string SignName = "tongjiStore网";
     }
 
