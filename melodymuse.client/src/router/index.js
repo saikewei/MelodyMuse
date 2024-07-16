@@ -3,6 +3,9 @@ import Home from '../pages/Home.vue';
 import MyMusic from '../pages/MyMusic.vue';
 import Singer from '../pages/Singer.vue';
 import SongList from '../pages/SongList.vue';
+import Login from '../pages/Login.vue'
+import Register from "../pages/Register.vue"
+import Sign from "../pages/Sign.vue"
 
 const routes = [
     {
@@ -24,6 +27,16 @@ const routes = [
         path: '/song-list',
         name: 'song-list',
         component: SongList
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: Login
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: Register
     },
 ];
 
