@@ -33,8 +33,6 @@ public partial class User
 
     public virtual ICollection<Songlist> Songlists { get; set; } = new List<Songlist>();
 
-    public virtual ICollection<UploadCreatorSong> UploadCreatorSongs { get; set; } = new List<UploadCreatorSong>();
-
     public virtual ICollection<Upload> Uploads { get; set; } = new List<Upload>();
 
     public virtual ICollection<UserCollectAlbum> UserCollectAlbums { get; set; } = new List<UserCollectAlbum>();
