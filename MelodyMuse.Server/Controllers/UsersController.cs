@@ -31,6 +31,7 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
+                //构建实例
                 UserModel user = await _usersService.GetUserById(userId);
 
                 if (user == null)
@@ -46,6 +47,7 @@ namespace MelodyMuse.Server.Controllers
                 {
                     msg = "查询失败" + ex.Message
                 };
+                //返回404
                 return NotFound(errorResponse);
             }
         }
