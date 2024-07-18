@@ -72,8 +72,8 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 更新用户状态
-        [HttpPut("{userId}/{newStatus}")]
-        public async Task<IActionResult> UpdateUserStatus(string userId, string newStatus)
+        [HttpPut("{userId}/updateStatus")]
+        public async Task<IActionResult> UpdateUserStatus(string userId, [FromQuery] string newStatus)
         {
             try
             {
