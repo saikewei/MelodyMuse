@@ -51,5 +51,38 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound(errorResponse);
             }
         }
+
+        // 更新用户状态
+        [HttpPut("{userId}/{newStatus}")]
+        public async Task<IActionResult> UpdateUserStatus(string userId, string newStatus)
+        {
+            try
+            {
+                var user = await _usersService.UpdateUserStatus(userId, newStatus);
+               
+                if (user == null)
+                {
+                    return NotFound(new { msg = "用户不存在" });
+                }
+                return Ok(new { 
+                    msg = "用户状态已更新",
+                    userId = user.UserId,
+                    userStatus = user.UserStatus
+                });
+                //else
+                //{
+                //   return Ok(new { msg = "用户状态已更新", user });
+                //}
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    msg = "更新用户状态失败: " + ex.Message
+                };
+                return StatusCode(500, errorResponse);
+            }
+        }
     }
 }
+

@@ -31,5 +31,11 @@ namespace MelodyMuse.Server.Services
             // 调用下层接口，从仓库层获取用户信息
             return await _usersRepository.GetUserById(userId);
         }
+
+        //更新用户数据
+        public async Task<User?> UpdateUserStatus(string userId, string newStatus)
+        {
+            return await _usersRepository.UpdateUserStatus(userId, newStatus);
+        }
     }
 }

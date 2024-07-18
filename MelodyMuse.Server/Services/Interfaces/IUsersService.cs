@@ -10,5 +10,6 @@ namespace MelodyMuse.Server.Services.Interfaces
     public interface IUsersService
     {
         Task<UserModel> GetUserById(string userId);
+        Task<User?> UpdateUserStatus(string userId, string newStatus);
     }
 }

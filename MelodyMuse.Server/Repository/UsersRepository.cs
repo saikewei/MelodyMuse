@@ -44,5 +44,27 @@ namespace MelodyMuse.Server.Repository
 
             return user;
         }
+
+        //更新用户数据
+        public async Task<User?> UpdateUserStatus(string userId, string newStatus)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return null; // 返回 null 表示用户不存在
+            }
+
+            // 如果 newStatus 不为空，并且与当前状态不同，则更新用户状态
+            if (!string.IsNullOrEmpty(newStatus) && newStatus != user.UserStatus)
+            {
+                user.UserStatus = newStatus;
+                await _context.SaveChangesAsync();
+            }
+
+            var newUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            return newUser; // 返回更新后的用户对象
+        }
     }
 }
