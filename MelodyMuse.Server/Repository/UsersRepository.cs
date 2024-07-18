@@ -66,5 +66,11 @@ namespace MelodyMuse.Server.Repository
 
             return newUser; // 返回更新后的用户对象
         }
+
+        //获取用户列表
+        public async Task<List<User>> GetAllUsers()
+        {
+            return await _context.Users.ToListAsync();
+        }
     }
 }

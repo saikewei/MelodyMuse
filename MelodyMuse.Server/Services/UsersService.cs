@@ -37,5 +37,12 @@ namespace MelodyMuse.Server.Services
         {
             return await _usersRepository.UpdateUserStatus(userId, newStatus);
         }
+
+        //获取用户列表
+        public async Task<List<string>> GetAllUserIds()
+        {
+            var users = await _usersRepository.GetAllUsers();
+            return users.Select(u => u.UserId).ToList();
+        }
     }
 }

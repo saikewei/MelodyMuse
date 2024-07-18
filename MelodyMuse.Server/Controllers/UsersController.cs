@@ -24,6 +24,25 @@ namespace MelodyMuse.Server.Controllers
             _usersService = usersService;
         }
 
+        //获取所有用户id列表
+        [HttpGet]
+        public async Task<ActionResult<List<string>>> GetAllUserIds()
+        {
+            try
+            {
+                var userIds = await _usersService.GetAllUserIds();
+                return Ok(userIds);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    msg = "查询所有用户ID失败: " + ex.Message
+                };
+                return StatusCode(500, errorResponse);
+            }
+        }
+
         // GET: api/users/{userId}
         // 通过用户ID获取其信息
         [HttpGet("{userId}")]
