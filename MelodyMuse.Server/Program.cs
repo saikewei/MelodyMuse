@@ -55,6 +55,16 @@ builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 
 
+
+//MusicSubmit services
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
+builder.Services.AddScoped<ICreateAlbumService, CreateAlbumService>();
+builder.Services.AddScoped<IUploadSongService, UploadSongService>();
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IAlbumService, AlbumService>();
+
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
