@@ -27,6 +27,8 @@ builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheS
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
+builder.Services.AddScoped<ISongEditRepository>(provider =>
+    new SongEditRepository());
 
 
 //����JWT����
@@ -53,7 +55,8 @@ builder.Services.AddAuthentication(x =>
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
-
+//SongEdit services
+builder.Services.AddScoped<ISongEditService, SongEditService>();
 
 var app = builder.Build();
 
