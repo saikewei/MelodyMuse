@@ -25,14 +25,24 @@ namespace MelodyMuse.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Song>> GetSongById(string id)
+        public async Task<ActionResult<SongUpdateModel>> GetSongById(string id)
         {
             var song = await _songEditService.GetSongByIdAsync(id);
             if (song == null)
+                return null;
+            var songDto = new SongUpdateModel
             {
-                return NotFound();
-            }
-            return Ok(song);
+                SongId = song.SongId,
+                SongName = song.SongName,
+                SongGenre = song.SongGenre,
+                SongDate = song.SongDate,
+                Lyrics = song.Lyrics,
+                ComposerName = song.Composer != null ? song.Composer.ArtistName : "Unknown",
+                SingerName = song.Artists.Select(a => a.ArtistName).ToList(),
+                Duration = song.Duration.HasValue ? song.Duration.Value : 0
+            };
+
+            return Ok(songDto);
         }
 
         [HttpPut("{id}")]

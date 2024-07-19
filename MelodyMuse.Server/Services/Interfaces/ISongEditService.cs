@@ -7,6 +7,6 @@ namespace MelodyMuse.Server.Services.Interfaces
     {
         Task<Song> GetSongByIdAsync(string id);
         Task UpdateSongAsync(string id, SongUpdateModel songDto);
-        Task<IList<Song>> GetAllSongsAsync();
+        Task<IList<SongUpdateModel>> GetAllSongsAsync();
     }
 }

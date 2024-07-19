@@ -28,13 +28,13 @@ namespace MelodyMuse.Server.Services
 
             existingSong.SongName = songDto.SongName ?? existingSong.SongName;
             existingSong.SongGenre = songDto.SongGenre ?? existingSong.SongGenre;
-            existingSong.Lyrics = songDto.Lyrics ?? existingSong.Lyrics;
             existingSong.SongDate = songDto.SongDate ?? existingSong.SongDate;
+            existingSong.Lyrics = songDto.Lyrics ?? existingSong.Lyrics;
 
             await _songEditRepository.UpdateSongAsync(existingSong);
         }
 
-        public async Task<IList<Song>> GetAllSongsAsync()
+        public async Task<IList<SongUpdateModel>> GetAllSongsAsync()
         {
             return await _songEditRepository.GetAllSongsAsync();
         }

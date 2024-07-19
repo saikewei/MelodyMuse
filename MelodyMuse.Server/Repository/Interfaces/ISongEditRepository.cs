@@ -1,4 +1,5 @@
-﻿using MelodyMuse.Server.Models;
+﻿using MelodyMuse.Server.models;
+using MelodyMuse.Server.Models;
 
 namespace MelodyMuse.Server.Repository.Interfaces
 {
@@ -6,6 +7,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
     {
         Task<Song> GetSongByIdAsync(string id);
         Task UpdateSongAsync(Song song);
-        Task<IList<Song>> GetAllSongsAsync();
+        Task<IList<SongUpdateModel>> GetAllSongsAsync();
     }
 }
