@@ -1,21 +1,21 @@
 ﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Services.Interfaces;
+using MelodyMuse.Server.Repository.Interfaces;
 
 
 namespace MelodyMuse.Server.Services
 {
     public class CreateAlbumService : ICreateAlbumService
     {
-        public class CreateAlbumService : ICreateAlbumService
-        {
+        
+        
             private readonly IAlbumRepository _albumRepository;
 
             public CreateAlbumService(IAlbumRepository albumRepository)
             {
                 _albumRepository = albumRepository;
             }
-
             public async Task<bool> CreateAlbumAsync(AlbumCreateModel albumCreateDto)
             {
                 try
@@ -63,6 +63,5 @@ namespace MelodyMuse.Server.Services
                 }
             }
         }
-    }
 }
 

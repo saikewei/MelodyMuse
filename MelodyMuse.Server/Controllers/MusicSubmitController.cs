@@ -101,7 +101,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         /// <summary>
-        /// 获取所有专辑的方法
+        /// 获取某位歌手所有专辑的方法
         /// </summary>
         /// <returns>返回所有专辑的信息</returns>
         [HttpGet("{ArtistId}")]

@@ -52,17 +52,27 @@ builder.Services.AddAuthentication(x =>
 // MusicPlayer services
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
+builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
+    new MusicPlayerRepository());
 
 
 
 
 //MusicSubmit services
-builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
+
 builder.Services.AddScoped<ICreateAlbumService, CreateAlbumService>();
 builder.Services.AddScoped<IUploadSongService, UploadSongService>();
-builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+
 builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>(provider =>
+    new ArtistRepository());
+
 builder.Services.AddScoped<IAlbumService, AlbumService>();
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>(provider =>
+    new AlbumRepository());
+
+builder.Services.AddScoped<ISongRepository, SongRepository>(provider =>
+    new SongRepository());
 
 
 var app = builder.Build();

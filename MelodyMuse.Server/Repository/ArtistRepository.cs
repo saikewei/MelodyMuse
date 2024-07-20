@@ -9,9 +9,9 @@ namespace MelodyMuse.Server.Repository
     {
         private readonly ModelContext _context;
 
-        public ArtistRepository(ModelContext context)
+        public ArtistRepository()
         {
-            _context = context;
+            _context = new ModelContext();
         }
 
         public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
@@ -19,6 +19,12 @@ namespace MelodyMuse.Server.Repository
             return await _context.Artists
                 .Where(a => a.ArtistName.Contains(name))
                 .ToListAsync();
+        }
+
+        public async Task<Artist> GetArtistByIdAsync(string artistId)
+        {
+            return await _context.Artists
+                .FirstOrDefaultAsync(a => a.ArtistId == artistId);
         }
     }
 }

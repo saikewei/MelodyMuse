@@ -34,7 +34,7 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Albums
                 .Where(a => a.ArtistId == artistId)
-                .Include(a => a.Artist)
+                .Include(a=>a.Artist)
                 .Include(a => a.Songs)
                 .ToListAsync();
         }
