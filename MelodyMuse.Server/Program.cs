@@ -51,6 +51,14 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
+
 // MusicPlayer services
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
@@ -72,6 +80,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 

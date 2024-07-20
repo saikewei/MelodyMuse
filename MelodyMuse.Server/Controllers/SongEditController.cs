@@ -2,6 +2,7 @@
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
+using Microsoft.AspNetCore.Cors;
 
 
 namespace MelodyMuse.Server.Controllers

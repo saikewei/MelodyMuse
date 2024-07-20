@@ -9,30 +9,18 @@
       </div>
       <el-row>
         <el-col :span="12" class="grid-cell">
-          <el-form-item label="歌曲名称" prop="input12931" class="required label-right-align">
-            <el-input v-model="formData.input12931" type="text" clearable></el-input>
+          <el-form-item label="歌曲名称" prop="songName" class="required label-right-align">
+            <el-input v-model="formData.songName" type="text" clearable></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12" class="grid-cell">
-          <el-form-item label="歌曲流派" prop="input23031" class="label-right-align">
-            <el-input v-model="formData.input23031" type="text" clearable></el-input>
+          <el-form-item label="歌曲流派" prop="songGenre" class="label-right-align">
+            <el-input v-model="formData.songGenre" type="text" clearable></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="24" class="grid-cell">
-          <el-row>
-            <el-col :span="12" class="grid-cell">
-              <el-form-item label="歌手" prop="input21642" class="required label-right-align">
-                <el-input v-model="formData.input21642" type="text" clearable></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" class="grid-cell">
-              <el-form-item label="作词人" prop="input71230" class="required label-right-align">
-                <el-input v-model="formData.input71230" type="text" clearable></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="发行日期" prop="date67505" class="label-right-align">
-            <el-date-picker v-model="formData.date67505" type="date" class="full-width-input"
+        <el-col :span="24" class="grid-cell">            
+          <el-form-item label="发行日期" prop="songDate" class="label-right-align">
+            <el-date-picker v-model="formData.songDate" type="date" class="full-width-input"
               format="YYYY-MM-DD" value-format="YYYY-MM-DD" clearable></el-date-picker>
           </el-form-item>
           <div class="static-content-item">
@@ -40,8 +28,8 @@
           </div>
         </el-col>
         <el-col :span="24" class="grid-cell">
-          <el-form-item label="歌词" prop="textarea21654" class="label-right-align">
-            <el-input type="textarea" v-model="formData.textarea21654" rows="3"></el-input>
+          <el-form-item label="歌词" prop="lyrics" class="label-right-align">
+            <el-input type="textarea" v-model="formData.lyrics" rows="3"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -50,7 +38,7 @@
       </div>      
     </el-form>
       <div class="dialog-footer">
-        <el-button type="primary" @click="dialogFormVisible = false">
+        <el-button type="primary" @click="submitForm">
           确认更改
         </el-button>
         <el-button @click="cancelHandler">取消</el-button>
@@ -62,67 +50,81 @@
       defineComponent,
       toRefs,
       reactive,
-      getCurrentInstance
+      getCurrentInstance,
     }
     from 'vue'
+    import axios from 'axios';
+    import { format } from 'date-fns';
 
     export default defineComponent({
-      components: {},
-      props: ["song_name"],
-      setup() {
-        const state = reactive({
-          formData: {
-            input12931: "",
-            input23031: "",
-            input21642: "",
-            input71230: "",
-            date67505: null,
-            textarea21654: "",
-          },
-          rules: {
-            input12931: [{
-              required: true,
-              message: '字段值不可为空',
-            }],
-            input21642: [{
-              required: true,
-              message: '字段值不可为空',
-            }],
-            input71230: [{
-              required: true,
-              message: '字段值不可为空',
-            }],
-          },
-        })
-        const instance = getCurrentInstance()
-        const submitForm = () => {
-          instance.proxy.$refs['vForm'].validate(valid => {
-            if (!valid) return
-            //TODO: 提交表单
-          })
-        }
-        const resetForm = () => {
-          instance.proxy.$refs['vForm'].resetFields()
-        }
-        return {
-          ...toRefs(state),
-          submitForm,
-          resetForm
-        }
+  props: ["song_id"],
+  emits: ["cancelEvent", "submitEvent"],
+  setup(props, { emit }) {
+    const state = reactive({
+      formData: {
+        songName: "",
+        songGenre: "",
+        songDate: null,
+        lyrics: "",
       },
-      emits:["cancelEvent"],
-      mounted() {
-        this.formData.input12931=this.song_name;
+      rules: {
+        songName: [{
+          required: true,
+          message: '字段值不可为空',
+        }],
       },
-      methods:{
-        cancelHandler(){
-          this.$emit("cancelEvent");
+    });
+
+    const instance = getCurrentInstance();
+
+    const submitForm = async () => {
+      instance.proxy.$refs['vForm'].validate(async valid => {
+        if (!valid) return;
+        // 提交表单
+        try {
+          const response = await axios.put(`https://localhost:7223/api/songedit/${props.song_id}`, state.formData);
+          console.log('歌曲信息更新成功', response.data); 
+          cancelHandler();
+        } catch (error) {
+          console.error('更新歌曲信息失败', error);
         }
-      },
-  
-    })
-    
-  </script>
+        emit("submitEvent");
+      });
+    };
+
+    const cancelHandler = () => {
+      emit("cancelEvent");
+    };
+
+    const getSongInfoById = async () => {
+      try {
+        const response = await axios.get(`https://localhost:7223/api/songedit/${props.song_id}`);
+        state.formData.songName = response.data.songName;
+        state.formData.songGenre = response.data.songGenre;
+        state.formData.songDate = format(new Date(response.data.songDate), 'yyyy-MM-dd');
+        state.formData.lyrics = response.data.lyrics;
+      } catch (error) {
+        console.error('获取歌曲数据失败', error);
+        cancelHandler();
+      }
+    };
+
+    return {
+      ...toRefs(state),
+      submitForm,
+      cancelHandler,
+      getSongInfoById
+    };
+  },
+  created() {
+    this.getSongInfoById();
+  },
+});
+</script>
+
+<style lang="scss">
+/* your styles here */
+</style>
   
   <style lang="scss">
     .el-input-number.full-width-input,
