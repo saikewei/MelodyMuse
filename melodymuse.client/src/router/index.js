@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Check from "../pages/Check.vue"
 import Home from '../pages/Home.vue';
 import MyMusic from '../pages/MyMusic.vue';
 import Singer from '../pages/Singer.vue';
@@ -38,10 +39,16 @@ const routes = [
         name: 'Register',
         component: Register
     },
+    {
+        path: '/check',
+        name: 'Check',
+        component: Check
+
+    }
 ];
 
 const router = createRouter({
-    history: createWebHistory(), // 使用默认的 base URL
+    history: createWebHistory(), // 使锟斤拷默锟较碉拷 base URL
     routes
 });
 
