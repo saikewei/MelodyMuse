@@ -6,12 +6,13 @@ import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
 import Sign from "../pages/Sign.vue"
+import UserManage from "../pages/UserManage.vue"//引入用于检测用户管理界面
 
 const routes = [
     {
         path: '/',
-        name: 'home',
-        component: Home
+        name: 'usermanage',//引入用于检测用户管理界面
+        component: UserManage//引入用于检测用户管理界面
     },
     {
         path: '/my-music',

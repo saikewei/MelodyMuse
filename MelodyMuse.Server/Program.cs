@@ -17,6 +17,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .WithOrigins("http://localhost:5173") // Vue应用的URL
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 // Register services
 //������ط���
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -60,9 +71,10 @@ builder.Services.AddAuthentication(x =>
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
-
-
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("AllowSpecificOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
