@@ -1,15 +1,30 @@
 <template>
     <div>
-        <h1>User IDs</h1>
-        <table border="1" style="width: 100%">
+        <h1>User Information</h1>
+        <table>
             <thead>
                 <tr>
                     <th>User ID</th>
+                    <th>User Name</th>
+                    <th>User Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="userId in userIds" :key="userId">
-                    <td>{{ userId }}</td>
+                <tr v-for="user in users" :key="user.userId">
+                    <td>{{ user.userId }}</td>
+                    <td>{{ user.userName }}</td>
+                    <td>{{ getStatusText(user.userStatus) }}</td>
+                    <td>
+                        <button @click="toggleBanUser(user)"
+                                :class="{'btn-ban': user.userStatus !== '0', 'btn-unban': user.userStatus === '0'}">
+                            {{ user.userStatus === '0' ? 'Unban User' : 'Ban User' }}
+                        </button>
+                        <button @click="toggleAdminUser(user)"
+                                :class="{'btn-promote': user.userStatus !== '2', 'btn-demote': user.userStatus === '2'}">
+                            {{ user.userStatus === '2' ? 'Demote Admin' : 'Promote to Admin' }}
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -20,23 +35,76 @@
     import { ref, onMounted } from 'vue';
     import axios from 'axios';
 
-    // 创建响应式变量以存储用户ID列表
-    const userIds = ref([]);
+    const users = ref([]);
 
-    // 定义获取用户ID的函数
     const fetchUserIds = async () => {
         try {
-            // 调用后端API
             const response = await axios.get('https://localhost:7223/api/users');
-            // 直接将数据赋值给 userIds
-            userIds.value = response.data;
+            return response.data;
         } catch (error) {
             console.error('Failed to fetch user IDs:', error);
+            return [];
         }
     };
 
-    // 在组件挂载时调用fetchUserIds函数
-    onMounted(fetchUserIds);
+    const fetchUserDetails = async (userId) => {
+        try {
+            const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to fetch details for user ID ${userId}:`, error);
+            return null;
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const userIds = await fetchUserIds();
+            const userPromises = userIds.map(userId => fetchUserDetails(userId));
+            const userDetails = await Promise.all(userPromises);
+            users.value = userDetails.filter(user => user !== null);
+        } catch (error) {
+            console.error('Failed to fetch users:', error);
+        }
+    };
+
+    const updateUserStatus = async (userId, newStatus) => {
+        try {
+            const response = await axios.put(`https://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
+            console.log(response.data.msg);
+            const user = users.value.find(u => u.userId === userId);
+            if (user) {
+                user.userStatus = newStatus;
+            }
+        } catch (error) {
+            console.error('Failed to update user status:', error);
+        }
+    };
+
+    const getStatusText = (status) => {
+        switch (status) {
+            case '0':
+                return 'Banned';
+            case '1':
+                return 'User';
+            case '2':
+                return 'Admin';
+            default:
+                return 'Unknown';
+        }
+    };
+
+    const toggleBanUser = (user) => {
+        const newStatus = user.userStatus === '0' ? '1' : '0';
+        updateUserStatus(user.userId, newStatus);
+    };
+
+    const toggleAdminUser = (user) => {
+        const newStatus = user.userStatus === '2' ? '1' : '2';
+        updateUserStatus(user.userId, newStatus);
+    };
+
+    onMounted(fetchUsers);
 </script>
 
 <style scoped>
@@ -56,4 +124,45 @@
         text-align: left;
         background-color: #f2f2f2;
     }
+
+    button {
+        margin: 5px;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .btn-ban {
+        background-color: #808080;
+        color: white;
+    }
+
+    .btn-unban {
+        background-color: red;
+        color: white;
+    }
+
+    .btn-promote {
+        background-color: #808080;
+        color: white;
+    }
+
+    .btn-demote {
+        background-color: blue;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
 </style>
+
+
+
+
+
+
+
+
