@@ -8,7 +8,6 @@ using MelodyMuse.Server.Configure;
 using System.Text;
 using MelodyMuse.Server.OuterServices.Interfaces;
 using MelodyMuse.Server.OuterServices;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -27,7 +26,13 @@ builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheS
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
+// Song-related services
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddScoped<ISongService, SongService>();
 
+// User-related services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //����JWT����
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
