@@ -18,11 +18,6 @@
         </div>
         <el-table :data="musicList" style="width: 100%">
           <el-table-column type="index" label="序号"></el-table-column>
-          <el-table-column prop="cover" label="封面" width="120">
-            <template slot-scope="scope">
-              <img :src="scope.row.cover" alt="封面" style="width: 100px; height: auto;" />
-            </template>
-          </el-table-column>
           <el-table-column prop="title" label="歌名"></el-table-column>
           <el-table-column prop="singer" label="歌手"></el-table-column>
           <el-table-column label="歌词" width="300">
@@ -70,18 +65,19 @@ export default {
     this.fetchMusicList();
   },
   methods: {
+    //获取音乐列表
     async fetchMusicList() {
       try {
         // Example endpoint, replace with your actual backend endpoint
         const response = await axios.get('/api/submit/uploadSong'); 
-        
         // Assuming your backend returns an array of music objects
         this.musicList = response.data; // Update musicList with fetched data
       } catch (error) {
         console.error('Error fetching music list:', error);
-        // Handle error appropriately, e.g., show error message to user
       }
     },
+
+    //搜索逻辑的实现
     async handleSearch() {
       try {
         const response = await axios.get('/api/music', {
@@ -90,32 +86,35 @@ export default {
             timeRange: this.selectedTimeRange
           }
         });
-        this.musicList = response.data; // Update musicList with search results
+        this.musicList = response.data; 
       } catch (error) {
         console.error('Error searching music:', error);
-        // Handle error appropriately
       }
     },
+
+    //审核通过
     async approveMusic(row) {
       try {
-        await axios.put(`/api/music/${row.musicId}/approve`); // Example PUT request to approve music
+        await axios.put(`/api/music/${row.musicId}/approve`); 
         row.status = '已通过';
         console.log('通过:', row);
       } catch (error) {
         console.error('Error approving music:', error);
-        // Handle error appropriately
       }
     },
+
+    //审核不通过
     async rejectMusic(row) {
       try {
-        await axios.put(`/api/music/${row.musicId}/reject`); // Example PUT request to reject music
+        await axios.put(`/api/music/${row.musicId}/reject`); 
         row.status = '已拒绝';
         console.log('拒绝:', row);
       } catch (error) {
         console.error('Error rejecting music:', error);
-        // Handle error appropriately
       }
     },
+
+
     getStatusTagType(status) {
       if (status === '已通过') return 'success';
       if (status === '已拒绝') return 'danger';
@@ -125,7 +124,6 @@ export default {
 };
 </script>
 
-  
   <style scoped>
   .clearfix::after {
     content: "";
