@@ -34,10 +34,7 @@
         <el-table-column label="审核意见" width="180">
            <el-input type="textarea" placeholder="请输入" ></el-input>
         </el-table-column>
-
         <el-table-column prop="SongDate" label="上传时间" width="180"></el-table-column>
-        <el-table-column prop="Status" label="状态">
-        </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -60,7 +57,7 @@ data() {
         SongDate: "2023-07-20T00:00:00",
         Status: "0",
       }
-        用于测试前端样式*/
+       */    
     ] // 待审核音乐列表
   };
 },
