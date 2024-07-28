@@ -26,13 +26,16 @@ builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheS
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
-// Song-related services
-builder.Services.AddScoped<ISongRepository, SongRepository>();
-builder.Services.AddScoped<ISongService, SongService>();
+  // 获取连接字符串
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        // 注册服务并提供连接字符串
+        builder.Services.AddScoped<ISongRepository>(provider => new SongRepository(connectionString));
+        builder.Services.AddScoped<IUserRepository>(provider => new UserRepository(connectionString));
 
-// User-related services
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+        // 其他服务注册
+        builder.Services.AddScoped<ISongService, SongService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+
 
 //����JWT����
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
