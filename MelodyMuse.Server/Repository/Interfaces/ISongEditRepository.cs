@@ -8,5 +8,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<Song> GetSongByIdAsync(string id);
         Task UpdateSongAsync(Song song);
         Task<IList<SongUpdateModel>> GetAllSongsAsync();
+        string GetPosterPath(string id);
     }
 }

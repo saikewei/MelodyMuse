@@ -43,5 +43,10 @@ namespace MelodyMuse.Server.Repository
                      })
                      .ToListAsync();
         }
+        public string GetPosterPath(string id)
+        {
+            var posterDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "posters");
+            return Path.Combine(posterDirectory, $"{id}.png");
+        }
     }
 }
