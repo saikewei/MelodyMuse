@@ -30,12 +30,12 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="艺术家IDs" prop="artistIds">
+          <el-form-item label="艺术家名称" prop="artistname">
             <el-select
-              v-model="songForm.artistIds"
+              v-model="artistname"
               multiple
               filterable
-              placeholder="输入艺术家ID"
+              placeholder="输入艺术家名称"
             >
               <el-option
                 v-for="artist in artists"
@@ -103,9 +103,9 @@
           lyrics: '',
           file: null,
           fileUrl: '',
-          artistIds: [],
         },
-        selectedAlbum: null,
+        artistname:'',
+        selectedAlbum: '',
         albums: [],
         artists: [],
         rules: {
@@ -114,7 +114,7 @@
           genre: [{ required: true, message: '请输入曲风', trigger: 'blur' }],
           lyrics: [{ required: true, message: '请输入歌词', trigger: 'blur' }],
           file: [{ required: true, message: '请上传歌曲文件', trigger: 'change' }],
-          artistIds: [{ required: true, message: '请输入艺术家ID', trigger: 'change' }],
+          artistname: [{ required: true, message: '请输入艺术家名称', trigger: 'change' }],
         },
       };
     },
@@ -126,18 +126,8 @@
       },
     },
     methods: {
-      fetchAlbums() {
-        axios.get('http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/1')
-          .then(response => {
-            this.albums = response.data;
-          })
-          .catch(error => {
-            ElMessage.error('专辑列表加载失败');
-            console.error(error);
-          });
-      },
       fetchArtists() {
-        axios.get('http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/1')
+        axios.get(`http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/${artistname}`)
           .then(response => {
             this.artists = response.data;
           })
@@ -146,6 +136,45 @@
             console.error(error);
           });
       },
+      fetchAlbumsByArtistId(artistId) {
+        axios.get(`http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/${artistId}`)
+          .then(response => {
+            this.albums = response.data;
+          })
+          .catch(error => {
+            ElMessage.error('专辑列表加载失败');
+            console.error(error);
+          });
+      },
+      onArtistSelect(selectedArtist) {
+        if(selectedArtist){
+          this.fetchAlbumsByArtistId(selectedArtist.id);
+        }
+      },
+      onAlbumSelect(selectedAlbum) {
+        this.selectedAlbum = selectedAlbum.id;
+      },
+      handleUploadSuccess(response, file, fileList) {
+        this.songForm.fileUrl = response.url;
+        this.songForm.file = file.raw;
+      },
+      handleUploadError(error, file, fileList) {
+        ElMessage.error('文件上传失败');
+      },
+      handleFileChange(file, fileList) {
+        this.songForm.file = file.raw;
+      },
+      handleFileRemove(file, fileList) {
+        this.songForm.file = null; // 当选择艺术家时，获取该艺术家的专辑列表
+        const selectedArtist = this.artists.find(artist => artist.name === this.artistname);
+        if (selectedArtist) {
+          this.fetchAlbumsByArtistId(selectedArtist.id);
+        }
+      },
+      resetForm() {
+        this.$refs.songForm.resetFields();
+      },
+
       handleFileUpload(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -164,7 +193,6 @@
             formData.append('genre', this.songForm.genre);
             formData.append('lyrics', this.songForm.lyrics);
             formData.append('file', this.songForm.file);
-            formData.append('artistIds', this.songForm.artistIds);
             formData.append('albumId', this.selectedAlbum);
 
             axios.post('http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/uploadSong', formData)
@@ -187,17 +215,16 @@
         this.$refs.songForm.resetFields();
         this.songForm.fileUrl = '';
         this.selectedAlbum = null;
-        this.songForm.artistIds = [];
       },
     },
     created() {
-      this.fetchAlbums();
-      this.fetchArtists();
+      //this.fetchAlbums();
+      //this.fetchArtists();
     },
   };
 </script>
 
-<style>
+<style >
 .main-container {
   display: flex;
   width: 100vw; 

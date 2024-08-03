@@ -14,7 +14,7 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: CreateAlbum
+        component: UploadSong
     },
     {
         path: '/my-music',
