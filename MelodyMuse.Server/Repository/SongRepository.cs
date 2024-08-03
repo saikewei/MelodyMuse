@@ -9,9 +9,9 @@ namespace MelodyMuse.Server.Repository
     {
         private readonly ModelContext _context;
 
-        public SongRepository(ModelContext context)
+        public SongRepository()
         {
-            _context = context;
+            _context = new ModelContext();
         }
 
         public async Task<bool> CreateSongAsync(Song song)

@@ -7,7 +7,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
     {
 
         Task<bool> CreateAlbumAsync(Album album);
-        Task<Album> GetAlbumByIdAsync(string albumId);
+        Task<Album> GetAlbumByIdAsync(string albumId);  //根据专辑ID获取指定专辑
         Task<IEnumerable<Album>> GetAllAlbumsByArtistIdAsync(string artistId); // 根据歌手ID获取专辑
     }
 }
