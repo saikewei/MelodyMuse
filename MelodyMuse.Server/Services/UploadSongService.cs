@@ -17,7 +17,13 @@ namespace MelodyMuse.Server.Services
             _albumRepository = albumRepository;
             _artistRepository = artistRepository;
         }
-
+        public string GenerateShortId(int length)
+        {
+            const string chars = "0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         public async Task<bool> UploadSongAsync(SongUploadModel songUploadDto)
         {
             // 获取专辑信息
@@ -35,13 +41,14 @@ namespace MelodyMuse.Server.Services
             }
 
             // 保存歌曲文件到Resources文件夹
-            var resourcesFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Songs");
+            var resourcesFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
             if (!Directory.Exists(resourcesFolderPath))
             {
                 Directory.CreateDirectory(resourcesFolderPath); // 如果文件夹不存在，则创建
             }
 
-            var songFilePath = Path.Combine(resourcesFolderPath, $"{Guid.NewGuid()}{Path.GetExtension(songUploadDto.SongFile.FileName)}");
+            var songid = GenerateShortId(3);
+            var songFilePath = Path.Combine(resourcesFolderPath, $"{songid}{Path.GetExtension(songUploadDto.SongFile.FileName)}");
             using (var stream = new FileStream(songFilePath, FileMode.Create))
             {
                 await songUploadDto.SongFile.CopyToAsync(stream);
@@ -61,12 +68,14 @@ namespace MelodyMuse.Server.Services
             // 创建歌曲实体对象
             var song = new Song
             {
-                SongId = Guid.NewGuid().ToString(),
+                SongId = songid,
                 SongName = songUploadDto.SongName,
                 Duration = songUploadDto.Duration,
                 SongGenre = songUploadDto.SongGenre,
                 Lyrics = songUploadDto.Lyrics,
                 SongDate = album.AlbumReleasedate,
+                ComposerId = album.AlbumProducer,
+                Status = 1,//表示已发布
                 Artists = artists // 设置歌曲的所有歌手
             };
 

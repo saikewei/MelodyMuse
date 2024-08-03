@@ -1,30 +1,34 @@
 ﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Services.Interfaces;
+using MelodyMuse.Server.Repository.Interfaces;
 
 
 namespace MelodyMuse.Server.Services
 {
     public class CreateAlbumService : ICreateAlbumService
     {
-        public class CreateAlbumService : ICreateAlbumService
-        {
-            private readonly IAlbumRepository _albumRepository;
+
+        private readonly IAlbumRepository _albumRepository;
 
             public CreateAlbumService(IAlbumRepository albumRepository)
             {
                 _albumRepository = albumRepository;
             }
-
+            public string GenerateShortId(int length)
+            {
+               const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+               var random = new Random();
+               return new string(Enumerable.Repeat(chars, length)
+               .Select(s => s[random.Next(s.Length)]).ToArray());
+            }
             public async Task<bool> CreateAlbumAsync(AlbumCreateModel albumCreateDto)
             {
-                try
-                {
-                    // 生成专辑ID
-                    var albumId = Guid.NewGuid().ToString();
-
-                    // 指定存储专辑封面的文件夹路径
-                    var albumCoverFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Covers");
+                   // 生成专辑ID
+                   var albumId = GenerateShortId(10);
+             
+                   // 指定存储专辑封面的文件夹路径
+                   var albumCoverFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Covers");
                     if (!Directory.Exists(albumCoverFolderPath))
                     {
                         Directory.CreateDirectory(albumCoverFolderPath); // 如果文件夹不存在，则创建
@@ -52,17 +56,18 @@ namespace MelodyMuse.Server.Services
                    
                     };
 
-                    // 将专辑信息保存到数据库
-                    return await _albumRepository.CreateAlbumAsync(album);
-                }
-                catch (Exception ex)
+
+                // 将专辑信息保存到数据库
+                bool result = await _albumRepository.CreateAlbumAsync(album);
+                if (!result)
                 {
-                    // 记录错误并返回失败
-                    // log the error (not implemented here)
-                    return false;
+                    throw new Exception("Failed to save album to the database.");
                 }
+
+                   return result;
+                
+                
             }
         }
-    }
 }
 
