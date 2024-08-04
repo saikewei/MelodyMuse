@@ -24,4 +24,35 @@ namespace MelodyMuse.Server.models
         public string AlbumId { get; set; }
         public List<string> ArtistIds { get; set; } // 用于存储多个歌手ID
     }
+
+    public class AlbumDto
+    {
+        public string AlbumId { get; set; }
+        public string AlbumName { get; set; }
+        public DateTime? AlbumReleasedate { get; set; }
+        public string AlbumCompany { get; set; }
+        public string AlbumProducer { get; set; }
+        public string ArtistId { get; set; }
+        public List<SongDto> Songs { get; set; }
+    }
+    
+
+    public class SongDto
+    {
+        public string SongId { get; set; }
+        public string SongName { get; set; }
+        public decimal? Duration { get; set; }
+        public string Lyrics { get; set; }
+        public DateTime? SongDate { get; set; }
+        public string SongGenre { get; set; }
+        public List<ArtistDto> Artists { get; set; }
+    }
+
+    public class ArtistDto
+    {
+        public string ArtistId { get; set; }
+        public string ArtistName { get; set; }
+    }
+
+   
 }

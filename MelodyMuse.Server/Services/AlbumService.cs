@@ -1,6 +1,7 @@
 ﻿using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
+using MelodyMuse.Server.models;
 
 namespace MelodyMuse.Server.Services
 {
@@ -13,7 +14,7 @@ namespace MelodyMuse.Server.Services
             _albumRepository = albumRepository;
         }
 
-        public async Task<IEnumerable<Album>> GetAllAlbumsByArtistIdAsync(string artistId)
+        public async Task<IEnumerable<AlbumDto>> GetAllAlbumsByArtistIdAsync(string artistId)
         {
             return await _albumRepository.GetAllAlbumsByArtistIdAsync(artistId);
         }

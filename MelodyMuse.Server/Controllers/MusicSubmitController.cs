@@ -2,6 +2,7 @@
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Services;
+using Microsoft.Extensions.Logging;
 
 namespace MelodyMuse.Server.Controllers
 {
@@ -13,6 +14,7 @@ namespace MelodyMuse.Server.Controllers
         private readonly IUploadSongService _songService;
         private readonly IArtistService _artistService;
         private readonly IAlbumService _albumInfoService;
+        
 
         // 构造函数注入ICreateAlbumService、IUploadSongService、IArtistService和IAlbumService
         public MusicSubmitController(ICreateAlbumService albumService, IUploadSongService songService, IArtistService artistService, IAlbumService albumInfoService)
@@ -21,6 +23,7 @@ namespace MelodyMuse.Server.Controllers
             _songService = songService;
             _artistService = artistService;
             _albumInfoService = albumInfoService;
+          
         }
 
         /// <summary>
@@ -47,10 +50,13 @@ namespace MelodyMuse.Server.Controllers
             var result = await _albumService.CreateAlbumAsync(albumCreateDto);
             if (result)
             {
-                return Ok(new { message = "Album created successfully." });
+                
+                return Ok("Album created successfully.");
             }
 
-            return BadRequest("Error creating album.");
+            return BadRequest("Error create album.");
+
+
         }
 
         /// <summary>
@@ -88,7 +94,7 @@ namespace MelodyMuse.Server.Controllers
         /// </summary>
         /// <param name="name">歌手名</param>
         /// <returns>返回查询到的歌手列表</returns>
-        [HttpGet("{ArtistName}")]
+        [HttpGet("/search/{ArtistName}")]
         public async Task<IActionResult> SearchArtists(string ArtistName)
         {
             if (string.IsNullOrEmpty(ArtistName))
@@ -104,16 +110,17 @@ namespace MelodyMuse.Server.Controllers
         /// 获取某位歌手所有专辑的方法
         /// </summary>
         /// <returns>返回所有专辑的信息</returns>
-        [HttpGet("{ArtistId}")]
-        public async Task<IActionResult> GetAllAlbumsByArtistId(string artistId)
+        [HttpGet("/albums/{ArtistId}")]
+        public async Task<IActionResult> GetAllAlbumsByArtistId(string ArtistId)
         {
-            if (string.IsNullOrEmpty(artistId))
+            if (string.IsNullOrEmpty(ArtistId))
             {
                 return BadRequest("Artist ID is required.");
             }
+            var albums = await _albumInfoService.GetAllAlbumsByArtistIdAsync(ArtistId);
 
-            var albums = await _albumInfoService.GetAllAlbumsByArtistIdAsync(artistId);
             return Ok(albums);
+
         }
     }
 }

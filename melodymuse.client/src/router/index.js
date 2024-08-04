@@ -5,13 +5,16 @@ import Singer from '../pages/Singer.vue';
 import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
+import CreateAlbum from "../components/newAlbum.vue"
+//import CreateAlbum from "../pages/CreateAlbum.vue"
 import Sign from "../pages/Sign.vue"
+import UploadSong from "../components/uploadSong.vue"
 
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: Home
+        component: UploadSong
     },
     {
         path: '/my-music',
@@ -38,10 +41,20 @@ const routes = [
         name: 'Register',
         component: Register
     },
+    {
+        path:'/createalbum',
+        name:'createalbum',
+        component: CreateAlbum
+    },
+    {
+        path:'/uploadsong',
+        name:'uploadsong',
+        component:UploadSong
+    }
 ];
 
 const router = createRouter({
-    history: createWebHistory(), // 使用默认的 base URL
+    history: createWebHistory(), // 使锟斤拷默锟较碉拷 base URL
     routes
 });
 
