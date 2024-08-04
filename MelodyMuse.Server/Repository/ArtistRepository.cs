@@ -1,6 +1,7 @@
 ﻿using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Oracle.ManagedDataAccess.Client;
 using System;
 
 namespace MelodyMuse.Server.Repository
@@ -25,6 +26,13 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Artists
                 .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+        }
+
+        public async Task<bool> artistSingSongAsync(string songId, string artistId)
+        {
+            var sql = "INSERT INTO ARTIST_SING_SONG (SONG_ID, ARTIST_ID) VALUES (:songId, :artistId)";
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("songId", songId), new OracleParameter("artistId", artistId));
+            return result > 0;
         }
     }
 }

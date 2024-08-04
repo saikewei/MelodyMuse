@@ -1,5 +1,6 @@
 ﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
+using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
 
@@ -16,14 +17,9 @@ namespace MelodyMuse.Server.Services
             _songRepository = songRepository;
             _albumRepository = albumRepository;
             _artistRepository = artistRepository;
+            
         }
-        public string GenerateShortId(int length)
-        {
-            const string chars = "0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
+        
         public async Task<bool> UploadSongAsync(SongUploadModel songUploadDto)
         {
             // 获取专辑信息
@@ -47,7 +43,7 @@ namespace MelodyMuse.Server.Services
                 Directory.CreateDirectory(resourcesFolderPath); // 如果文件夹不存在，则创建
             }
 
-            var songid = GenerateShortId(3);
+            var songid = Guid.NewGuid().ToString().Substring(0,3);
             var songFilePath = Path.Combine(resourcesFolderPath, $"{songid}{Path.GetExtension(songUploadDto.SongFile.FileName)}");
             using (var stream = new FileStream(songFilePath, FileMode.Create))
             {
@@ -74,13 +70,39 @@ namespace MelodyMuse.Server.Services
                 SongGenre = songUploadDto.SongGenre,
                 Lyrics = songUploadDto.Lyrics,
                 SongDate = album.AlbumReleasedate,
-                ComposerId = album.AlbumProducer,
+                ComposerId = album.ArtistId,
                 Status = 1,//表示已发布
-                Artists = artists // 设置歌曲的所有歌手
             };
 
             // 将歌曲信息保存到数据库
-            return await _songRepository.CreateSongAsync(song);
+            var createSongAsync = await _songRepository.CreateSongAsync(song);
+            if (!createSongAsync)
+            {
+                return false;
+            }
+
+            // 更新SongMakeupAlbum关系
+            var songMakeupAlbumCreated = await _songRepository.songMakeupAlbumAsync(song.SongId, album.AlbumId);
+            if (!songMakeupAlbumCreated)
+            {
+                return false; // 如果关系保存失败，返回错误
+            }
+
+            // 更新ArtistSingSong关系
+            foreach (var artist in artists)
+            {
+                var artistSingSongCreated = await _artistRepository.artistSingSongAsync(song.SongId, artist.ArtistId);
+                if (!artistSingSongCreated)
+                {
+                    return false; // 如果关系保存失败，返回错误
+                }
+            }
+
+            
+            return true;
         }
     }
 }
+
+
+
