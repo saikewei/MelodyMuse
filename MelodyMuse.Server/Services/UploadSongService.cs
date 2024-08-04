@@ -43,7 +43,7 @@ namespace MelodyMuse.Server.Services
                 Directory.CreateDirectory(resourcesFolderPath); // 如果文件夹不存在，则创建
             }
 
-            var songid = Guid.NewGuid().ToString().Substring(0,3);
+            var songid = Guid.NewGuid().ToString().Substring(0,10);
             var songFilePath = Path.Combine(resourcesFolderPath, $"{songid}{Path.GetExtension(songUploadDto.SongFile.FileName)}");
             using (var stream = new FileStream(songFilePath, FileMode.Create))
             {

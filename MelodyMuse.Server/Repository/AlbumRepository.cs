@@ -8,6 +8,8 @@ using System;
 
 namespace MelodyMuse.Server.Repository
 {
+
+    
     public class AlbumRepository : IAlbumRepository
     {
         private readonly ModelContext _context;
@@ -40,6 +42,24 @@ namespace MelodyMuse.Server.Repository
 
             return songIds;
         }
+        public async Task<List<ArtistDto>> GetArtistsBySongIdAsync(string songId)
+        {
+            var sql = "SELECT a.ARTIST_ID, a.ARTIST_NAME FROM ARTIST_SING_SONG ass " +
+                      "JOIN ARTIST a ON ass.ARTIST_ID = a.ARTIST_ID " +
+                      "WHERE ass.SONG_ID = :songId";
+
+            var artists = await _context.Artists
+                .FromSqlRaw(sql, new OracleParameter("songId", songId))
+                .Select(a => new ArtistDto
+                {
+                    ArtistId = a.ArtistId,
+                    ArtistName = a.ArtistName
+                })
+                .ToListAsync();
+
+            return artists;
+        }
+
 
         public async Task<IEnumerable<AlbumDto>> GetAllAlbumsByArtistIdAsync(string artistId)
         {
@@ -62,9 +82,6 @@ namespace MelodyMuse.Server.Repository
                     .Where(s => songIds.Contains(s.SongId))
                     .ToListAsync();
 
-                // 查找与该专辑相关的艺术家
-                var artist = await _context.Artists
-                    .FirstOrDefaultAsync(ar => ar.ArtistId == album.ArtistId);
 
                 // 创建 AlbumDto 对象
                 var albumDto = new AlbumDto
@@ -74,18 +91,27 @@ namespace MelodyMuse.Server.Repository
                     AlbumReleasedate = album.AlbumReleasedate,
                     AlbumCompany = album.AlbumCompany,
                     AlbumProducer = album.AlbumProducer,
-                    ArtistId = artist?.ArtistId,
-                    ArtistName = artist?.ArtistName,
-                    Songs = songs.Select(s => new SongDto
-                    {
-                        SongId = s.SongId,
-                        SongName = s.SongName,
-                        Duration = s.Duration,
-                        Lyrics = s.Lyrics,
-                        SongDate = s.SongDate,
-                        SongGenre = s.SongGenre
-                    }).ToList()
+                    ArtistId = album.ArtistId,
+                    
+                    Songs = new List<SongDto>()
                 };
+
+                // 遍历每个歌曲，查询演唱者信息并添加到 SongDto 中
+                foreach (var song in songs)
+                {
+                    var songDto = new SongDto
+                    {
+                        SongId = song.SongId,
+                        SongName = song.SongName,
+                        Duration = song.Duration,
+                        Lyrics = song.Lyrics,
+                        SongDate = song.SongDate,
+                        SongGenre = song.SongGenre,
+                        Artists = await GetArtistsBySongIdAsync(song.SongId)
+                    };
+                    
+                    albumDto.Songs.Add(songDto);
+                }
 
                 // 将 AlbumDto 对象添加到列表中
                 albumDtos.Add(albumDto);
