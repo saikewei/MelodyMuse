@@ -59,5 +59,37 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        // 获取海报
+        [HttpGet("{id}/poster")]
+        public async Task<IActionResult> GetPoster(string id)
+        {
+            var posterStream = await _songEditService.GetPosterAsync(id);
+            if (posterStream == null)
+                return NotFound();
+
+            return File(posterStream, "image/png");
+        }
+
+        // 上传海报
+        [HttpPost("{id}/poster")]
+        public async Task<IActionResult> UploadPoster(string id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            if (!file.ContentType.StartsWith("image/"))
+                return BadRequest("Invalid file type.");
+
+            try
+            {
+                await _songEditService.SavePosterAsync(id, file);
+                return Ok(new { message = "Poster uploaded successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

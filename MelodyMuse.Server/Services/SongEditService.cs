@@ -38,5 +38,27 @@ namespace MelodyMuse.Server.Services
         {
             return await _songEditRepository.GetAllSongsAsync();
         }
+
+        public async Task<Stream> GetPosterAsync(string id)
+        {
+            var filePath = _songEditRepository.GetPosterPath(id);
+            if (File.Exists(filePath))
+            {
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return await Task.FromResult(fileStream);
+            }
+            return null;
+        }
+
+        public async Task SavePosterAsync(string id, IFormFile file)
+        {
+            var filePath = _songEditRepository.GetPosterPath(id);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+        }
     }
 }
