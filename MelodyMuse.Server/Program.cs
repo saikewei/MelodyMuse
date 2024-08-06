@@ -24,17 +24,19 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
+// MusicPlayer services
+//������ط���
+builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
-  // 获取连接字符串
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        // 注册服务并提供连接字符串
-        builder.Services.AddScoped<ISongRepository>(provider => new SongRepository(connectionString));
-        builder.Services.AddScoped<IUserRepository>(provider => new UserRepository(connectionString));
 
-        // 其他服务注册
-        builder.Services.AddScoped<ISongService, SongService>();
-        builder.Services.AddScoped<IUserService, UserService>();
+// 注册服务并提供连接字符串
+builder.Services.AddScoped<ISongRepository>(provider => new SongRepository());
+builder.Services.AddScoped<IUserRepository>(provider => new UserRepository());
+
+// 其他服务注册
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 //����JWT����
@@ -57,9 +59,6 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-// MusicPlayer services
-//������ط���
-builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 
 

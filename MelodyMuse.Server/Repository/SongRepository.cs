@@ -1,87 +1,45 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MelodyMuse.Server.Models;
-using Oracle.ManagedDataAccess.Client;
 using MelodyMuse.Server.Repository.Interfaces;
 
 namespace MelodyMuse.Server.Repository
 {
     public class SongRepository : ISongRepository
     {
-        private readonly string _connectionString;
+        private readonly ModelContext _context;
 
-        public SongRepository(string connectionString)
+        public SongRepository()
         {
-            _connectionString = connectionString;
+            _context = new ModelContext();
         }
 
         // 获取待审核的歌曲
         public async Task<IEnumerable<Song>> GetPendingApprovalSongsAsync()
         {
-            var songs = new List<Song>();
-
-            using (var connection = new OracleConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                string query = "SELECT * FROM Songs WHERE Status = 0"; // 0 表示待审核
-                using (var command = new OracleCommand(query, connection))
-                {
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var song = new Song
-                            {
-                                SongId = reader["SongId"].ToString(),
-                                SongName = reader["SongName"] as string,
-                                SongGenre = reader["SongGenre"] as string,
-                                Duration = reader["Duration"] as decimal?,
-                                Lyrics = reader["Lyrics"] as string,
-                                SongDate = reader["SongDate"] as DateTime?,
-                                ComposerId = reader["ComposerId"] as string,
-                                Status = reader["Status"] as byte?
-                            };
-                            songs.Add(song);
-                        }
-                    }
-                }
-            }
-
-            return songs;
+            return await _context.Songs.Where(song => song.Status == 0).ToListAsync();
         }
 
         // 审核通过歌曲
         public async Task ApproveSongAsync(string songId)
         {
-            using (var connection = new OracleConnection(_connectionString))
+            var song = await _context.Songs.FirstOrDefaultAsync(s => s.SongId == songId);
+            if (song != null)
             {
-                await connection.OpenAsync();
-
-                string query = "UPDATE Songs SET Status = 1 WHERE SongId = :songId"; // 1 表示审核通过
-                using (var command = new OracleCommand(query, connection))
-                {
-                    command.Parameters.Add(new OracleParameter("songId", songId));
-
-                    await command.ExecuteNonQueryAsync();
-                }
+                song.Status = 1; // 1 表示审核通过
+                await _context.SaveChangesAsync();
             }
         }
 
         // 审核不通过歌曲
         public async Task RejectSongAsync(string songId)
         {
-            using (var connection = new OracleConnection(_connectionString))
+            var song = await _context.Songs.FirstOrDefaultAsync(s => s.SongId == songId);
+            if (song != null)
             {
-                await connection.OpenAsync();
-
-                string query = "UPDATE Songs SET Status = 2 WHERE SongId = :songId"; // 2 表示审核不通过
-                using (var command = new OracleCommand(query, connection))
-                {
-                    command.Parameters.Add(new OracleParameter("songId", songId));
-
-                    await command.ExecuteNonQueryAsync();
-                }
+                song.Status = 2; // 2 表示审核不通过
+                await _context.SaveChangesAsync();
             }
         }
     }
