@@ -1,33 +1,33 @@
 <template>
     <div>
-        <h1>User Information</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>User Name</th>
-                    <th>User Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="user in users" :key="user.userId">
-                    <td>{{ user.userId }}</td>
-                    <td>{{ user.userName }}</td>
-                    <td>{{ getStatusText(user.userStatus) }}</td>
-                    <td>
-                        <button @click="toggleBanUser(user)"
-                                :class="{'btn-ban': user.userStatus !== '0', 'btn-unban': user.userStatus === '0'}">
-                            {{ user.userStatus === '0' ? 'Unban User' : 'Ban User' }}
-                        </button>
-                        <button @click="toggleAdminUser(user)"
-                                :class="{'btn-promote': user.userStatus !== '2', 'btn-demote': user.userStatus === '2'}">
-                            {{ user.userStatus === '2' ? 'Demote Admin' : 'Promote to Admin' }}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <h1 class="title">User Information</h1>
+        <div class="table-container">
+            <el-table :data="users" style="width: 100%">
+                <el-table-column prop="userId" label="User ID" width="150" header-align="center" align="center" />
+                <el-table-column prop="userName" label="User Name" width="250" header-align="center" align="center" />
+                <el-table-column label="User Status" width="150" header-align="center" align="center">
+                    <template #default="scope">
+                        {{ getStatusText(scope.row.userStatus) }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="Actions" width="500" header-align="center" align="center">
+                    <template #default="scope">
+                        <el-button @click="toggleBanUser(scope.row)"
+                                   :type="scope.row.userStatus === '0' ? 'primary' : 'danger'"
+                                   size="mini"
+                                   class="action-button">
+                            {{ scope.row.userStatus === '0' ? 'Unban User' : 'Ban User' }}
+                        </el-button>
+                        <el-button @click="toggleAdminUser(scope.row)"
+                                   :type="scope.row.userStatus === '2' ? 'warning' : 'success'"
+                                   size="mini"
+                                   class="action-button">
+                            {{ scope.row.userStatus === '2' ? 'Demote Admin' : 'Promote to Admin' }}
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
     </div>
 </template>
 
@@ -39,7 +39,7 @@
 
     const fetchUserIds = async () => {
         try {
-            const response = await axios.get('https://localhost:7223/api/users');
+            const response = await axios.get('http://localhost:7223/api/users');
             return response.data;
         } catch (error) {
             console.error('Failed to fetch user IDs:', error);
@@ -49,7 +49,7 @@
 
     const fetchUserDetails = async (userId) => {
         try {
-            const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
+            const response = await axios.get(`http://localhost:7223/api/users/${userId}`);
             return response.data;
         } catch (error) {
             console.error(`Failed to fetch details for user ID ${userId}:`, error);
@@ -60,9 +60,9 @@
     const fetchUsers = async () => {
         try {
             const userIds = await fetchUserIds();
-            const userPromises = userIds.map(userId => fetchUserDetails(userId));
+            const userPromises = userIds.map((userId) => fetchUserDetails(userId));
             const userDetails = await Promise.all(userPromises);
-            users.value = userDetails.filter(user => user !== null);
+            users.value = userDetails.filter((user) => user !== null);
         } catch (error) {
             console.error('Failed to fetch users:', error);
         }
@@ -70,9 +70,9 @@
 
     const updateUserStatus = async (userId, newStatus) => {
         try {
-            const response = await axios.put(`https://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
+            const response = await axios.put(`http://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
             console.log(response.data.msg);
-            const user = users.value.find(u => u.userId === userId);
+            const user = users.value.find((u) => u.userId === userId);
             if (user) {
                 user.userStatus = newStatus;
             }
@@ -108,61 +108,21 @@
 </script>
 
 <style scoped>
-    table {
-        border-collapse: collapse;
+    .table-container {
         width: 100%;
+        margin: 0 auto;
     }
 
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
+    .title {
+        text-align: center;
     }
 
-    th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #f2f2f2;
+    .el-table th, .el-table td {
+        text-align: center;
     }
 
-    button {
-        margin: 5px;
-        padding: 5px 10px;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .btn-ban {
-        background-color: #808080;
-        color: white;
-    }
-
-    .btn-unban {
-        background-color: red;
-        color: white;
-    }
-
-    .btn-promote {
-        background-color: #808080;
-        color: white;
-    }
-
-    .btn-demote {
-        background-color: blue;
-        color: white;
-    }
-
-    button:hover {
-        opacity: 0.8;
+    .action-button {
+        width: 150px;
+        text-align: center;
     }
 </style>
-
-
-
-
-
-
-
-

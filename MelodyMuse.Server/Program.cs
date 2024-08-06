@@ -71,6 +71,7 @@ builder.Services.AddAuthentication(x =>
 //������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
+
 var app = builder.Build();
 
 // Enable CORS
