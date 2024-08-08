@@ -16,6 +16,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .WithOrigins("http://localhost:5173") // Vue应用的URL
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
 // Register services
 //������ط���
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -27,6 +38,9 @@ builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheS
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ISearchRepository>(provider =>
+    new SearchRepository());
 
 
 //����JWT����
@@ -50,7 +64,6 @@ builder.Services.AddAuthentication(x =>
 });
 
 // MusicPlayer services
-//������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 
