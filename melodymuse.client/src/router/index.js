@@ -5,16 +5,15 @@ import Singer from '../pages/Singer.vue';
 import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
-import CreateAlbum from "../components/newAlbum.vue"
-//import CreateAlbum from "../pages/CreateAlbum.vue"
+import CreateAlbum from "../pages/CreateAlbum.vue"
 import Sign from "../pages/Sign.vue"
-import UploadSong from "../components/uploadSong.vue"
+import UploadSong from '../pages/UploadSong.vue';
 
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: UploadSong
+        component: Home
     },
     {
         path: '/my-music',
@@ -50,7 +49,7 @@ const routes = [
         path:'/uploadsong',
         name:'uploadsong',
         component:UploadSong
-    }
+    },
 ];
 
 const router = createRouter({

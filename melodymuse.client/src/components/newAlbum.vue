@@ -1,193 +1,174 @@
 <template>
-<!--存放页面的主要容器-->
-<div class="main-container">
-  <header>
-    <TheHeader/>
-  </header>
-  <div class="pagecontent-container">
-    <!-- 留着放之后的侧边栏 -->
-    <div class="sidebar">
-      <p>放侧边栏的内容</p>
-    </div>
-
-    <!-- 填写专辑有关信息的区域 -->
-    <div class="album-upload">
-      <!-- 表单组件 -->
-      <el-form ref="albumForm" :model="albumForm" :rules="rules" label-width="120px">
-        <!-- 制作人ID输入框 -->
-        <el-form-item label="制作人ID" prop="producerId">
-          <el-input v-model="albumForm.producerId"></el-input>
-        </el-form-item>
-        <!-- 制作人姓名输入框 -->
-        <el-form-item label="制作人姓名" prop="producerName">
-          <el-input v-model="albumForm.producerName"></el-input>
-        </el-form-item>
-        <!-- 发行公司输入框 -->
-        <el-form-item label="发行公司" prop="company">
-          <el-input v-model="albumForm.company"></el-input>
-        </el-form-item>
-        <!-- 发行日期选择器 -->
-        <el-form-item label="发行日期" prop="releaseDate">
-          <el-date-picker v-model="albumForm.releaseDate" type="date" placeholder="选择日期"></el-date-picker>
-        </el-form-item>
-        <!-- 专辑展示图片上传组件 -->
-        <el-form-item label="专辑封面图片" prop="coverImage">
-          <el-upload
-            class="upload-demo"
-            action=""
-            :before-upload="handleFileUpload"
-            :show-file-list="false"
+  <!--存放页面的主要容器-->
+  <div class="main-container">
+    <div class="pagecontent-container">
+      <!-- 填写专辑有关信息的区域 -->
+      <div class="album-upload">
+        <!-- 表单组件 -->
+        <el-form ref="albumForm" :model="albumForm" :rules="rules" label-width="120px">
+          <!-- 专辑名称输入框 -->
+          <el-form-item label="专辑名称" prop="AlbumName">
+            <el-input v-model="albumForm.AlbumName"></el-input>
+          </el-form-item>
+          <!-- 艺人ID输入框 -->
+          <el-form-item label="艺人ID" prop="ArtistId">
+            <el-input v-model="albumForm.ArtistId"></el-input>
+          </el-form-item>
+          <!-- 发行公司输入框 -->
+          <el-form-item label="发行公司" prop="AlbumCompany">
+            <el-input v-model="albumForm.AlbumCompany"></el-input>
+          </el-form-item>
+          <!-- 发行日期选择器 -->
+          <el-form-item label="发行日期" prop="AlbumReleaseDate">
+            <el-date-picker v-model="albumForm.AlbumReleaseDate" type="date" placeholder="选择日期"></el-date-picker>
+          </el-form-item>
+          <!-- 专辑制作人输入框 -->
+          <el-form-item label="制作人" prop="AlbumProducer">
+            <el-input v-model="albumForm.AlbumProducer"></el-input>
+          </el-form-item>
+          <!-- 专辑展示图片上传组件 -->
+          <el-form-item label="专辑封面图片" prop="AlbumCover">
+            <el-upload
+              class="upload-demo"
+              action=""
+              :before-upload="handleFileUpload"
+              :show-file-list="false"
             >
-            <!-- 上传按钮 -->
-            <template #trigger>
-              <el-button size="small" type="primary">点击上传</el-button>
-            </template>
-            <!-- 上传提示信息 -->
-            <template #tip>
-              <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </template>
-          </el-upload>
-          <!-- 上传后的图片预览 -->
-          <img v-if="albumForm.coverImageUrl" :src="albumForm.coverImageUrl" class="cover-image-preview" />
-        </el-form-item>
-        <!-- 提交和重置按钮 -->
-        <el-form-item>
-          <el-button type="primary" @click="submitForm">提交</el-button>
-          <el-button @click="resetForm">重置</el-button>
-        </el-form-item>
-      </el-form>
+              <!-- 上传按钮 -->
+              <template #trigger>
+                <el-button size="small" type="primary">点击上传</el-button>
+              </template>
+              <!-- 上传提示信息 -->
+              <template #tip>
+                <div class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              </template>
+            </el-upload>
+            <!-- 上传后的图片预览 -->
+            <img v-if="albumForm.coverImageUrl" :src="albumForm.coverImageUrl" class="cover-image-preview" />
+          </el-form-item>
+          <!-- 提交和重置按钮 -->
+          <el-form-item>
+            <el-button type="primary" @click="submitForm">提交</el-button>
+            <el-button @click="resetForm">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
   </div>
-  <footer>
-    <TheFooter/>
-  </footer>
-</div>
-
-
 </template>
 
 <script>
-
-//引入项目展示框
-import TheHeader from "./TheHeader.vue"
-import TheFooter from "./TheFooter.vue"
-//引入其他组件
-import axios from "axios"
-import {ElForm,ElFormItem,ElInput,ElDatePicker,ElUpload,ElButton,ElMessage} from 'element-plus';
+import axios from "axios";
+import { ElForm, ElFormItem, ElInput, ElDatePicker, ElUpload, ElButton, ElMessage } from 'element-plus';
 
 export default {
-  name:"UploadAlbum",
+  name: "UploadAlbum",
 
-  components:{
-      TheFooter,
-      TheHeader,
-      ElForm,
-      ElFormItem,
-      ElInput,
-      ElDatePicker,
-      ElUpload,
-      ElButton,
-      ElMessage,
+  components: {
+    ElForm,
+    ElFormItem,
+    ElInput,
+    ElDatePicker,
+    ElUpload,
+    ElButton,
+    ElMessage,
   },
 
-  data(){
-    return{
-      //创建专辑需要填写的数据
-      albumForm:{
-        albumName:"",
-        artistId:"",
-        artistName:"",
-        company:"",
-        releaseDate:"",
-        coverImage:null,
+  data() {
+    return {
+      // 创建专辑需要填写的数据
+      albumForm: {
+        AlbumName: "",
+        AlbumReleaseDate: "",
+        AlbumCompany: "",
+        AlbumProducer: "",
+        AlbumCover: null,
+        ArtistId: ""
       },
-      //验证规则
-      rules:{
-          name: [{ required: true, message: '请输入专辑名', trigger: 'blur' }], // 专辑名验证规则
-          producerId: [{ required: true, message: '请输入制作人ID', trigger: 'blur' }], // 制作人ID验证规则
-          producerName: [{ required: true, message: '请输入制作人姓名', trigger: 'blur' }], // 制作人姓名验证规则
-          company: [{ required: true, message: '请输入发行公司', trigger: 'blur' }], // 发行公司验证规则
-          releaseDate: [{ required: true, message: '请选择发行日期', trigger: 'change' }], // 发行日期验证规则
-          coverImage: [{ required: true, message: '请上传专辑展示图片', trigger: 'change' }], // 专辑展示图片验证规则
+      // 验证规则
+      rules: {
+        AlbumName: [{ required: true, message: '请输入专辑名称', trigger: 'blur' }],
+        ArtistId: [{ required: true, message: '请输入艺人ID', trigger: 'blur' }],
+        AlbumCompany: [{ required: true, message: '请输入发行公司', trigger: 'blur' }],
+        AlbumReleaseDate: [{ required: true, message: '请选择发行日期', trigger: 'change' }],
+        AlbumProducer: [{ required: true, message: '请输入制作人', trigger: 'blur' }],
+        AlbumCover: [{ required: true, message: '请上传专辑展示图片', trigger: 'change' }],
       },
     };
   },
 
-  //相关方法
-  methods:{
+  methods: {
     // 文件上传前的处理函数
     handleFileUpload(file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.albumForm.coverImageUrl = e.target.result; // 设置图片预览URL
-        this.albumForm.coverImage = file; // 设置图片文件
+        this.albumForm.coverImageUrl = e.target.result;
+        this.albumForm.AlbumCover = file;
       };
-      reader.readAsDataURL(file); // 读取文件为DataURL
-      return false; // 阻止默认上传行为
+      reader.readAsDataURL(file);
+      return false;
     },
-    // 提交表单函数
-    submitForm() {
-      this.$refs.albumForm.validate((valid) => {
+
+    // 提交表单
+    async submitForm() {
+      this.$refs.albumForm.validate(async (valid) => {
         if (valid) {
-          // 表单验证通过，发送HTTP POST请求
-          axios.post('http://127.0.0.1:4523/m1/4804827-4459167-default/api/submit/createAlbum')
-          .then(response=>{
-            if(response.status===200){
-              ElMessage.success("成功创建专辑"); // 显示成功消息
-            }
-          })
-          .catch(error=>{
-            ElMessage.error('出错了，请过段时间尝试重新提交'); // 显示错误消息
-          })
-        } else {
-          ElMessage.error('请填写完整表单！'); // 显示错误消息
-          return false;
+          try {
+            const formData = new FormData();
+            // 格式化日期为 'YYYY-MM-DD'
+            this.albumForm.AlbumReleaseDate = this.albumForm.AlbumReleaseDate.toISOString().split('T')[0];
+            Object.keys(this.albumForm).forEach((key) => {
+              formData.append(key, this.albumForm[key]);
+            });
+            const response = await axios.post('http://localhost:7223/api/submit/createAlbum', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+            console.log(response.data);
+            ElMessage.success('专辑创建成功');
+          } catch (error) {
+            console.error(error);
+            ElMessage.error('专辑创建失败');
+          }
         }
       });
     },
-    // 重置表单函数
+
+    // 重置表单
     resetForm() {
-      this.$refs.albumForm.resetFields(); // 重置表单字段
-      this.albumForm.coverImageUrl = ''; // 清空图片预览URL
+      Object.keys(this.albumForm).forEach((key) => {
+        this.albumForm[key] = '';
+      });
+      this.albumForm.coverImageUrl = null;
+      this.$refs.albumForm.resetFields();
     },
-  }
+  },
+};
+</script>
 
-
-
-}
-</script >
-
-<style >
-
-.main-container{
+<style>
+.main-container {
   display: flex;
-  flex-direction: column;
-  width:100%;
-  box-sizing: border-box;
-  overflow: hidden;
+  width: 100vw; 
+  box-sizing: border-box; 
+  overflow-x: hidden; 
 }
 
-.pagecontent-container{
-  display:flex;
+.pagecontent-container {
+  display: flex;
   flex-direction: row;
   width: 100%;
 }
 
-.sidebar{
-  width:20%;
-  box-sizing: border-box;
-}
-
-.album-upload{
-  border: 5px dotted pink;
-  width:80%;
-  box-sizing: border-box;
+.album-upload {
+  width: 60%;
+  padding: 20px;
+  box-sizing: border-box; 
 }
 
 .cover-image-preview {
-  width:300px;
-  height:300px;
+  width: 300px;
+  height: 300px;
 }
-
-
 </style>

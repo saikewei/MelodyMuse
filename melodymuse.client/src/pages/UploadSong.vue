@@ -1,23 +1,32 @@
 <template>
-  <uploadSong_comp />
-</template>
+    <header>
+        <TheHeader />
+    </header>
+    <newSong />
+    <footer>
+        <TheFooter />
+    </footer>
 
+</template>
+  
 <script>
-    import ulpoadSong_comp from "../components/uploadSong.vue";
+    import TheHeader from "@/components/TheHeader.vue";
+    import TheFooter from "@/components/TheFooter.vue";
+    import newSong from "../components/newSong.vue";
     export default {
-        name:"UploadSong",
         components:{
-            ulpoadSong_comp,
+            TheFooter,
+            TheHeader,
+            newSong
         },
         data(){
-
             return{
-                
+                  
             }
         }
     }
 </script>
-
+  
 <style>
-
+  
 </style>
