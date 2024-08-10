@@ -26,4 +26,18 @@ namespace MelodyMuse.Server.models
 
     }
 
+
+    public class ArtistRegModel
+    {
+        public string ArtistId { get; set; } = null;
+        public string? Artistname { get; set; } = null;
+
+        public DateTime? ArtistBirthday { get; set; } = null;
+
+        public string? ArtistIntro { get; set; } = null;
+
+        public string? ArtistGenre { get; set; } = null;
+
+        public int ? ArtistFunsNum { get; set; }
+    }
 }

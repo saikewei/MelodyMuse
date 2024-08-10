@@ -6,6 +6,8 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.Services;
+using MelodyMuse.Server.Models;
+using TencentCloud.Ckafka.V20190819.Models;
 
 
 //命名空间:Controllers
@@ -74,7 +76,36 @@ namespace MelodyMuse.Server.Controllers
             {
                 msg = "注册失败！"
             };
-            return Unauthorized(failResponse);
+            return Unauthorized(failResponse); 
+        }
+
+
+
+        [HttpPost("UploadData")]
+        public async Task<IActionResult> UploadData([FromBody]  ArtistRegModel artistRegModel)
+        {
+            using(var _context = new ModelContext())
+            {
+                var artist = new Artist
+                {
+                    ArtistId = artistRegModel.ArtistId,
+                    ArtistName = artistRegModel.Artistname,
+                    ArtistBirthday = artistRegModel.ArtistBirthday,
+                    ArtistIntro = artistRegModel.ArtistIntro,
+                    ArtistGenre = artistRegModel.ArtistGenre,
+                    ArtistFansNum = artistRegModel.ArtistFunsNum
+                };
+
+
+                _context.Artists.Add(artist);
+
+                if(await _context.SaveChangesAsync() > 0)
+                {
+                    return Ok("创建成功");
+                }
+            }
+
+            return Unauthorized("创建失败");
         }
     }
 
