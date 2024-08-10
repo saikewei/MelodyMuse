@@ -134,18 +134,5 @@ methods: {
   display: table;
   clear: both;
   width:1200px;
-}
-
-.searchbutton {
-background-color:rgb(221, 153, 219);
-border-color:rgb(221, 153, 219);
-}
-
-.searchbutton:hover{
-  background-color:rgb(183, 128, 181);
-  border-color:rgb(183, 128, 181);
-}
-
-
-
+};
 </style>
