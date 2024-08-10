@@ -5,6 +5,7 @@
         <div class="loginbox-in">
           <div class="header">MelodyMuse</div>
           <div class="form-wrapper">
+
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
               <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="username">
@@ -14,13 +15,14 @@
               <input type="password" name="password" placeholder="密码" class="input-item" v-model="password">
             </div>
             <div class="btn2" @click="login">Login</div> 
+            
           </div>
           <p v-if="loginError" class="error-message">{{ loginError }}</p>
         </div>
       </div>
       <!-- 右侧盒子 -->
       <div class="background">
-        <div class="title">欢迎来到MelodyMuse！请先登录到您的账户</div>
+       <div class="title">欢迎来到MelodyMuse！请先登录到您的账户</div>
       </div>
     </div>
   </div>
@@ -185,8 +187,8 @@ html, body {
 .title {
     margin-top:440px;
     font-weight:bold;
-    font-size:24px;
-    color:#4E655D;
+    font-size:20px;
+    color:#b17fa4;
 }
 .title:hover {
   font-size: 21px;
