@@ -19,7 +19,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取待审核的歌曲
-        [HttpGet("pending-approval")]
+        [HttpGet("pending")]
         public async Task<IActionResult> GetPendingApprovalSongs()
         {
             var songs = await _songService.GetPendingApprovalSongsAsync();
@@ -27,7 +27,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 审核通过歌曲
-        [HttpPost("approve/{songId}")]
+        [HttpPost("{songId}/approve")]
         public async Task<IActionResult> ApproveSong(string songId)
         {
             await _songService.ApproveSongAsync(songId);
@@ -35,7 +35,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 审核不通过歌曲
-        [HttpPost("reject/{songId}")]
+        [HttpPost("{songId}/reject")]
         public async Task<IActionResult> RejectSong(string songId)
         {
             await _songService.RejectSongAsync(songId);
