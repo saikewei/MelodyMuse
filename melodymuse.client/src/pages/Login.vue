@@ -2,6 +2,7 @@
   <div id="app">
     <login_comp />
     <div class="title">
+        <div class="forget-password" @click="$router.push('/ForgottenPassword')">忘记密码 →</div>
         <div class="btn-register" @click="$router.push('/register')">还未注册，点击注册</div>
     </div>
   </div>
@@ -65,5 +66,26 @@ export default {
 }
 .btn-register:active {
     color:#284da0c1;
+}
+.forget-password {  
+    position:absolute;
+    top:600px; 
+    left:37%;
+    background-color: transparent;
+    border-radius:15px;
+    display:inline-block;
+    cursor:pointer;
+    color:grey;
+    font-family:Arial;
+    font-size:15px;
+    padding:16px 31px;
+    text-decoration:none;
+    margin: 10px 20px;  
+}
+.forget-password:hover {
+    color:black;
+}
+.forget-password:active {
+  color:black;
 }
 </style>
