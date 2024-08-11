@@ -75,6 +75,18 @@ builder.Services.AddScoped<ISongRepository, SongRepository>(provider =>
     new SongRepository());
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalhostSpecificPorts",
+        builder =>
+        {
+            builder
+                .WithOrigins("http://localhost:5173", "http://localhost:7223") // 允许特定来源和端口
+                .AllowAnyMethod() // 允许任何 HTTP 方法
+                .AllowAnyHeader(); // 允许任何请求头
+        });
+});
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -82,6 +94,7 @@ app.UseStaticFiles();
 //����JWT����
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("LocalhostSpecificPorts");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
