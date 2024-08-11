@@ -97,9 +97,8 @@ html, body {
 .container {
   height: 100vh;
   width: 100%;
-  background-image: linear-gradient(to right, #e1c1e4, white);
+  background-image: linear-gradient(to right, #6a8cdcc1, white);
   display: flex;
-  left: 10%;
   justify-content: left;
   align-items: center;
 }
@@ -109,11 +108,11 @@ html, body {
 }
 .registerbox {
   display: flex;
-  width: 1000px;
-  height: 500px;
+  width: 870px;
+  height: 550px;
   position: relative;
   top: 20%;
-  left: 33.5%;
+  left: 18%;
   box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
 .registerbox-in {
@@ -130,7 +129,7 @@ html, body {
 }
 .header {
   font-size: 36px;
-  color: #bb8bbe;
+  color: #284da0c1;
   font-weight: bolder;
   text-align: center;
   line-height: 80px;
@@ -147,7 +146,7 @@ html, body {
 }
 .input-item {
   display: block;
-  width: calc(100% - 40px);
+  width: calc(100% - 20px);
   margin-left: 10px;
   padding: 12px;
   border: 1px solid rgb(128, 125, 125);
@@ -163,21 +162,21 @@ html, body {
   padding: 8px;
   width: 100%;
   margin-top: 40px;
-  background-color: #c99fcb;
+  background-color: #6a8cdcc1;
   color: #ffffff;
   border-radius: 10px;
   cursor: pointer;
   font-size: 20px;
 }
 .btn2:hover {
-  background-color: #bb8bbe;
+  background-color: #284da0c1;
 }
 .btn2:active {
   position: relative;
   top: 1px;
 }
 .error-message {
-  color: red;
+  color: rgba(209, 41, 41, 0.815);
   text-align: center;
   margin-top: 10px;
 }
@@ -189,10 +188,11 @@ html, body {
   background-size: cover;
 }
 .title {
-  margin-top: 440px;
-  font-weight: bold;
-  font-size: 20px;
-  color: #b17fa4;
+  position:absolute;
+  top: 650px;
+  left:920px;
+  font-size: 22px;
+  color: #284da0c1;
 }
 .title:hover {
   font-size: 21px;
