@@ -28,6 +28,7 @@
 
 
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -54,28 +55,42 @@ export default {
       }
 
       try {
-        const response = await axios.post('http://127.0.0.1:4523/m1/4804827-4459167-default/api/account/login?apifoxResponseId=487488274', {
-          msg: this.username,
-          token: this.password
-        });
+      const response = await axios.post('http://localhost:7223/api/account/login', {
+        msg: this.username,
+        token: this.password
+      });
 
-        if (response.status === 200 && response.data.token) {
-          alert('Login successful!');
-          // Store the token in localStorage or Vuex store
-          localStorage.setItem('token', response.data.token);
-          // Redirect to the dashboard or another page
-          this.$router.push('/dashboard');
-        } else {
-          this.loginError = response.data.msg || 'Login failed, please try again.';
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.loginError = error.response.data.msg || 'Login failed, please try again.';
-        } else {
-          console.error(error);
-          this.loginError = 'An error occurred during login. Please try again later.';
-        }
+      if (response.status === 200 && response.data.token) {
+        alert('登录成功');
+        localStorage.setItem('token', response.data.token);
+        this.$router.push('/dashboard');
+      } else {
+        this.loginError = typeof response.data === 'string' 
+          ? response.data 
+          : (response.data.msg || '登录失败，请再次尝试');
       }
+    } catch (error) {
+  if (error.response) {
+    // 服务器返回了一个非 2xx 的响应
+    console.error('Response error:', error.response);
+    if (error.response.data && typeof error.response.data === 'string') {
+      this.loginError = error.response.data;
+    } else if (error.response.data && error.response.data.msg) {
+      this.loginError = error.response.data.msg;
+    } else {
+      this.loginError = `服务器错误，状态码: ${error.response.status}`;
+    }
+  } else if (error.request) {
+    // 请求已经发出，但没有收到响应
+    console.error('Request error:', error.request);
+    this.loginError = '请求已发送，但服务器无响应，请稍后重试。';
+  } else {
+    // 其他类型的错误
+    console.error('Other error:', error.message);
+    this.loginError = '发生未知错误，请稍后重试。';
+  }
+}
+
     }
   },
   name: "Login"

@@ -19,23 +19,26 @@
       </div>
 
       <el-table :data="musicList" style="width: 100%; height: 180px;"
-      :header-cell-style="{ textAlign: 'center' }"
-      :cell-style="{ textAlign: 'center' }">
-        <el-table-column prop="SongId" label="歌曲ID" ></el-table-column>
-        <el-table-column prop="SongName" label="歌名"></el-table-column>
-        <el-table-column prop="ComposerId" label="歌手ID"></el-table-column>
-        <el-table-column prop="Lyrics" label="歌词"></el-table-column>
+    :header-cell-style="{ textAlign: 'center' }"
+    :cell-style="{ textAlign: 'center' }">
+    <el-table-column prop="SongId" label="歌曲ID"></el-table-column>
+    <el-table-column prop="SongName" label="歌名"></el-table-column>
+    <el-table-column prop="ComposerId" label="歌手ID"></el-table-column>
+    <el-table-column prop="Lyrics" label="歌词"></el-table-column>
 
-        <el-table-column label="操作" width="160">
-              <el-button type="success" size="small" @click="approveMusic(scope.row)">通过</el-button>
-              <el-button type="danger" size="small" @click="rejectMusic(scope.row)">拒绝</el-button>
-        </el-table-column>
+    <el-table-column label="操作" width="160">
+        <template #default="scope">
+            <el-button type="success" size="small" @click="approveMusic(scope.row)">通过</el-button>
+            <el-button type="danger" size="small" @click="rejectMusic(scope.row)">拒绝</el-button>
+        </template>
+    </el-table-column>
 
-        <el-table-column label="审核意见" width="180">
-           <el-input type="textarea" placeholder="请输入" ></el-input>
-        </el-table-column>
-        <el-table-column prop="SongDate" label="上传时间" width="180"></el-table-column>
-      </el-table>
+    <el-table-column label="审核意见" width="180">
+        <el-input type="textarea" placeholder="请输入"></el-input>
+    </el-table-column>
+    <el-table-column prop="SongDate" label="上传时间" width="180"></el-table-column>
+</el-table>
+
     </el-card>
   </div>
 </template>
@@ -69,7 +72,7 @@ methods: {
   //获取音乐列表
   async fetchMusicList() {
     try {
-      const response = await axios.get('http://127.0.0.1:4523/m1/4804827-4459167-default/api/songs/pending'); 
+      const response = await axios.get('https://localhost:7223/api/songs/pending'); 
       this.musicList = response.data; // Update musicList with fetched data
     } catch (error) {
       console.error('Error fetching music list:', error);
@@ -79,7 +82,7 @@ methods: {
   //搜索逻辑的实现
   async handleSearch() {
     try {
-      const response = await axios.get('http://127.0.0.1:4523/m1/4804827-4459167-default/api/songs/pending', {
+      const response = await axios.get('https://localhost:7223/api/songs/pending', {
         params: {
           keyword: this.searchKeyword,
           timeRange: this.selectedTimeRange
@@ -90,26 +93,40 @@ methods: {
       console.error('搜索时发生错误:', error);
     }
   },
-
-  //审核通过
   async approveMusic(song) {
-    try {
-      await axios.post(`http://127.0.0.1:4523/m1/4804827-4459167-default/api/songs/${song.SongId}/approve`); 
-      song.Status = 1; // 修改状态为通过
-    } catch (error) {
-      console.error('审核音乐时发生错误:', error);
-    }
-  },
+  console.log('Approving song:', song); // 确认song对象内容
+  if (!song.songId) {
+    console.error('SongId is undefined');
+    return;
+  }
 
-  //审核不通过
-  async rejectMusic(song) {
-    try {
-      await axios.post(`http://127.0.0.1:4523/m1/4804827-4459167-default/api/songs/${song.SongId}/reject`); 
-      song.Status = 2; // 修改状态为拒绝
-    } catch (error) {
-      console.error('审核音乐时发生错误:', error);
-    }
-  },
+  try {
+    const response = await axios.post(`https://localhost:7223/api/songs/${song.songId}/approve`);
+    console.log('Approval response:', response.data); // 打印服务器返回的响应
+    song.Status = 1; // 修改状态为通过
+    await this.fetchMusicList(); // 重新获取列表
+  } catch (error) {
+    console.error('Error approving music:', error);
+  }
+},
+
+async rejectMusic(song) {
+  console.log('Rejecting song:', song); // 确认song对象内容
+  if (!song.songId) {
+    console.error('SongId is undefined');
+    return;
+  }
+
+  try {
+    const response = await axios.post(`https://localhost:7223/api/songs/${song.songId}/reject`);
+    console.log('Rejection response:', response.data); // 打印服务器返回的响应
+    song.Status = 2; // 修改状态为拒绝
+    await this.fetchMusicList(); // 重新获取列表
+  } catch (error) {
+    console.error('Error rejecting music:', error);
+  }
+}
+,
 
 
   getStatusTagType(status) {
