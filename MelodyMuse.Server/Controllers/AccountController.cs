@@ -76,6 +76,27 @@ namespace MelodyMuse.Server.Controllers
             };
             return Unauthorized(failResponse);
         }
+
+        // 验证手机号是否已注册
+        [HttpPost("check-phone")]
+        public async Task<IActionResult> CheckPhoneNumber([FromBody] string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                return BadRequest(new { msg = "手机号不能为空。" });
+            }
+
+            bool isRegistered = await _accountService.CheckPhoneNumberExistsAsync(phoneNumber);
+
+            if (isRegistered)
+            {
+                return Ok(new { msg = "手机号已注册。" });
+            }
+            else
+            {
+                return NotFound(new { msg = "手机号未注册。" });
+            }
+        }
     }
 
 }

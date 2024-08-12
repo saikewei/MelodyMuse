@@ -98,5 +98,11 @@ namespace MelodyMuse.Server.Repository
                 return false;
             }
         }
+      // 新方法：检查手机号是否已注册
+        public async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == phoneNumber);
+        }
+        
     }
 }
