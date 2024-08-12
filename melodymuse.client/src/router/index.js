@@ -6,6 +6,7 @@ import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
 import Sign from "../pages/Sign.vue"
+import ForgottenPassword from '../pages/ForgottenPassword.vue';
 
 const routes = [
     {
@@ -38,10 +39,15 @@ const routes = [
         name: 'Register',
         component: Register
     },
+    {
+        path: '/ForgottenPassword',
+        name: 'ForgottenPassword',
+        component: ForgottenPassword
+      }
 ];
 
 const router = createRouter({
-    history: createWebHistory(), // 使用默认的 base URL
+    history: createWebHistory(), // 使锟斤拷默锟较碉拷 base URL
     routes
 });
 
