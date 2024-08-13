@@ -38,8 +38,13 @@ namespace MelodyMuse.Server.Services
         {
             return await _accountRepository.RegisterAsync(_registerModel);
         }
-
+        public async Task<bool> CheckPhoneNumberExistsAsync(string phoneNumber) // 实现新方法
+        {
+            var user = await _accountRepository.GetUserByPhoneNumberAsync(phoneNumber);
+            return user != null;
+        }
      
+
     }
     
 }
