@@ -183,7 +183,7 @@ html, body {
   width: 500px;
   justify-content:center;
   align-items:flex-end;
-  background-image: url('./melodymuse.client/src/assets/m.png'); /* 确保存在该图片 */
+  background-image: url('src/assets/logo1.png'); /* 确保存在该图片 */
   background-size: cover;
    
 }
@@ -195,7 +195,7 @@ html, body {
     color:#284da0c1;
 }
 .title:hover {
-  font-size: 21px;
+  font-size: 20px;
   transition: all 0.4s ease-in-out;
   cursor: pointer;
 }

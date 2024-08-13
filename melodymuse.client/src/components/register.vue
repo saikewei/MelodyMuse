@@ -188,7 +188,7 @@ html, body {
   width: 500px;
   justify-content: center;
   align-items: flex-end;
-  background-image: url('./melodymuse.client/src/assets/m.png');
+  background-image: url('src/assets/logo1.png');
   background-size: cover;
 }
 .title {
@@ -199,7 +199,7 @@ html, body {
   color: #284da0c1;
 }
 .title:hover {
-  font-size: 21px;
+  font-size: 20px;
   transition: all 0.4s ease-in-out;
   cursor: pointer;
 }
