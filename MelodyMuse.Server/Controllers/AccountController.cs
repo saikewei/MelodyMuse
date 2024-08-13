@@ -79,7 +79,7 @@ namespace MelodyMuse.Server.Controllers
 
         // 验证手机号是否已注册
         [HttpPost("check-phone")]
-        public async Task<IActionResult> CheckPhoneNumber([FromBody] string phoneNumber)
+        public async Task<IActionResult> CheckPhoneNumber(string phoneNumber)
         {
             if (string.IsNullOrEmpty(phoneNumber))
             {

@@ -2,7 +2,7 @@
    Accountrepository提供的服务接口
  */
 
-
+using MelodyMuse.Server.Models;
 using System.Threading.Tasks;
 using MelodyMuse.Server.models;
 
