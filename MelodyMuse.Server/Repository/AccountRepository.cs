@@ -103,6 +103,11 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == phoneNumber);
         }
-        
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

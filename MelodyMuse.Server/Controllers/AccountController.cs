@@ -97,6 +97,28 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound(new { msg = "手机号未注册。" });
             }
         }
+     
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ChangePasswordModel model)
+        {
+            if (model == null || string.IsNullOrEmpty(model.phoneNumber) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest(new { msg = "Invalid request data." });
+            }
+
+            bool resetResult = await _accountService.ResetPasswordAsync(model.phoneNumber, model.Password);
+
+            if (resetResult)
+            {
+                return Ok(new { msg = "Password reset successful." });
+            }
+            else
+            {
+                return BadRequest(new { msg = "Failed to reset password." });
+            }
+        }
+
+        
     }
 
 }
