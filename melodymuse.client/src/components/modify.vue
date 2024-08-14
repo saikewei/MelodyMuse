@@ -50,7 +50,7 @@ export default defineComponent({
     return {
       //avatar: 'https://via.placeholder.com/100',
       userInfo: {
-        userId: '',
+        userId: '001',
         nickname: '',
         password: '',
         birthday: '',
@@ -91,6 +91,8 @@ export default defineComponent({
       try {
         const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
         if (response.status === 200) {
+                // 打印从后端获取的用户信息
+      console.log('用户信息:', response.data);
         this.userInfo = {
           userId: response.data.UserId,
           nickname: response.data.UserName,
@@ -184,7 +186,8 @@ export default defineComponent({
   mounted() {
     const userId = this.$route.params.userId;  
       // 处理获取到的用户信息
-      this.fetchUserInfo(userId); // 使用获取到的 userId
+      // this.fetchUserInfo(userId);
+      this.fetchUserInfo(this.userInfo.userId); // 使用获取到的 userId
     }
 
     /*放在template中的修改头像部分
