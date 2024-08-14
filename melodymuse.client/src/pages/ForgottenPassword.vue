@@ -74,7 +74,7 @@ export default {
 
       try {
         // 此处是发送验证码的API
-        const response = await axios.post('https://apifoxmock.com/m1/4804827-4459167-default/api/sms/sendsms', {
+        const response = await axios.post('https://localhost:7223/api/sms/sendsms', {
           phoneNumber: this.phoneNumber,
           event: this.event
         });
@@ -93,7 +93,7 @@ export default {
 
     async verifyCode() {
       try {
-        const response = await axios.post('https://apifoxmock.com/m1/4804827-4459167-default/api/sms/verifycode', {
+        const response = await axios.post('https://localhost:7223/api/sms/verifycode', {
           phoneNumber: this.phoneNumber,
           event: this.event,
           verificationCode: this.verificationCode
@@ -139,7 +139,7 @@ export default {
       }
 
       try {
-        const response = await axios.post('http://127.0.0.1:4523/m2/4804827-4459167-default/reset-password', {
+        const response = await axios.post('https://localhost:7223/api/account/reset-password', {
           phoneNumber: this.phoneNumber,
           Password: this.newPassword
         });
