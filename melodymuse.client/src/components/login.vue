@@ -57,8 +57,8 @@ export default {
 
       try {
       const response = await axios.post('https://localhost:7223/api/account/login', {
-        msg: this.username,
-        token: this.password
+        PhoneNumber: this.username,
+        Password: this.password
       });
 
       if (response.status === 200 && response.data.token) {

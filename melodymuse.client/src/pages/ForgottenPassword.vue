@@ -32,31 +32,35 @@
   </template>
   
   <script>
+import axios from 'axios'; // 添加这行代码
+
+
 export default {
   data() {
-    return {
-      phoneNumber: '',
-      verificationCode: '',
-      newPassword: '',
-      confirmPassword: '',
-      resetError: ''
-    };
-  },
+  return {
+    phoneNumber: '',
+    verificationCode: '',
+    newPassword: '',
+    confirmPassword: '',
+    resetError: '',
+    event: '验证'  // 默认事件类型
+  };
+},
+
   methods: {
 
     async checkPhoneExists() {
-      try {
-        const response = await axios.post('https://localhost:7223/api/account/check-phone', {
-          phoneNumber: this.phoneNumber
-        });
-        return response.status === 200;
-        //手机号存在，返回true，不存在则返回false
-      } catch (error) {
-        console.error(error);
-        this.resetError = '检查手机号时发生错误，请稍后重试。';
-        return false;
-      }
-    },
+  try {
+    const response = await axios.post(`https://localhost:7223/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phoneNumber)}`);
+    return response.status === 200;
+  } catch (error) {
+    console.error(error);
+    this.resetError = '检查手机号时发生错误，请稍后重试。';
+    return false;
+  }
+}
+
+,
 
     async sendCode() {
       // 验证手机号码格式
