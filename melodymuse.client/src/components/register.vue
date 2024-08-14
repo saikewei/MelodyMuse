@@ -64,7 +64,7 @@ export default {
       }
 
       try {
-        const response = await axios.post ('http://127.0.0.1:4523/m2/4804827-4459167-default/192699877', {
+        const response = await axios.post ('https://localhost:7223/api/account/register', {
           username: this.username,
 
 
