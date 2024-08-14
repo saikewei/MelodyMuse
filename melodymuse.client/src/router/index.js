@@ -6,11 +6,8 @@ import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
 import Sign from "../pages/Sign.vue"
-<<<<<<< Updated upstream
 import Check from "../pages/Check.vue"
-=======
 import modify from "../components/modify.vue"
->>>>>>> Stashed changes
 
 const routes = [
     {
