@@ -43,7 +43,33 @@ namespace MelodyMuse.Server.Services
             var user = await _accountRepository.GetUserByPhoneNumberAsync(phoneNumber);
             return user != null;
         }
-     
+      public async Task<bool> ResetPasswordAsync(string phoneNumber, string Password)
+        {
+            try
+            {
+                // 查找用户
+                var user = await _accountRepository.GetUserByPhoneNumberAsync(phoneNumber);
+
+                if (user == null)
+                {
+                    return false; // 用户不存在
+                }
+                // 更新用户密码
+                user.Password = Password;
+
+                // 保存更改
+                await _accountRepository.UpdateUserAsync(user);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // 记录异常
+                Console.WriteLine("Exception in ResetPasswordAsync: " + ex.Message);
+                return false;
+            }
+        }
+
 
     }
     
