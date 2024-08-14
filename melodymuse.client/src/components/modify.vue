@@ -90,6 +90,7 @@ export default defineComponent({
     async fetchUserInfo(userId: string) {
       try {
         const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
+        if (response.status === 200) {
         this.userInfo = {
           userId: response.data.UserId,
           nickname: response.data.UserName,
@@ -100,9 +101,14 @@ export default defineComponent({
           email: response.data.UserEmail,
           status: response.data.UserStatus,
         };
+        } else {
+          console.error(`获取用户信息失败，状态码：${response.status}`);
+          this.$message.error('获取用户信息失败');
+        }
         //this.avatar = response.data.UserAvatar || 'https://via.placeholder.com/100'; // Assuming UserAvatar field
       } catch (error) {
         console.error('获取用户信息失败:', error);
+        this.$message.error('获取用户信息失败');
       }
     },
 
@@ -119,11 +125,20 @@ export default defineComponent({
           UserAge: this.calculateAge(this.userInfo.birthday.toISOString()), 
           UserStatus: this.userInfo.status,
         };
-        await axios.put(`https://localhost:7223/api/users/${this.userInfo.userId}`, updatedInfo);
+        const response = await axios.put(`https://localhost:7223/api/users/${this.userInfo.userId}`, updatedInfo);
+        if (response.status === 200) {
         this.$message.success('信息更新成功');
+        } else {
+          console.error(`信息更新失败，状态码：${response.status}`);
+          this.$message.error('信息更新失败');
+        }
       } catch (error) {
-        console.error('Failed to update user info:', error);
-        this.$message.error('信息更新失败');
+        if (error.response && error.response.status === 400) {
+          this.$message.error('请求有误，请检查输入数据');
+        } else {
+          console.error('Failed to update user info:', error);
+          this.$message.error('信息更新失败');
+        }
       }
     },
     /*showChangeAvatarDialog() {
