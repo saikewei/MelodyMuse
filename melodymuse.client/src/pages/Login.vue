@@ -27,7 +27,7 @@ export default {
 
 .btn-login {  
     position:absolute;
-    top:650px; 
+    top:69%; 
     left:30%;
     background-color: transparent;
     border-radius:10px;
@@ -48,8 +48,8 @@ export default {
 }
 .btn-register {   
     position:absolute;
-    top:630px; 
-    left:29%;
+    top:69%; 
+    left:30%;
     background-color: transparent;
     border-radius:10px;
     display:inline-block;
@@ -69,7 +69,7 @@ export default {
 }
 .forget-password {  
     position:absolute;
-    top:600px; 
+    top:65%; 
     left:37%;
     background-color: transparent;
     border-radius:15px;

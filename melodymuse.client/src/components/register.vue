@@ -111,16 +111,16 @@ html, body {
 }
 .registerbox {
   display: flex;
-  width: 870px;
-  height: 550px;
-  position: relative;
-  top: 20%;
-  left: 30%;
+  width: 52%;
+  height: 60%;
+  position: absolute;
+  top:20%;
+  left:24%;
   box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
   background-image: linear-gradient(to left, #c6d6f7c1, rgba(255, 255, 255, 0.902));
 }
 .registerbox-in {
-  width: 360px;
+  width: 42%;
   border-radius: 15px;
   padding: 0 50px;
   position: absolute;
@@ -193,8 +193,8 @@ html, body {
 }
 .title {
   position:absolute;
-  top: 650px;
-  left:820px;
+  top: 70%;
+  left:48%;
   font-size: 22px;
   color: #284da0c1;
 }

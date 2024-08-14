@@ -26,8 +26,8 @@ export default {
 
 .btn-login {  
     position:absolute;
-    top:650px; 
-    left:30%;
+    top:69%; 
+    left:29%;
     background-color: transparent;
     border-radius:10px;
     display:inline-block;
@@ -47,8 +47,8 @@ export default {
 }
 .btn-register {   
     position:absolute;
-    top:630px; 
-    left:29%;
+    top:69%; 
+    left:28%;
     background-color: transparent;
     border-radius:10px;
     display:inline-block;
