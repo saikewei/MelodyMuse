@@ -8,7 +8,7 @@
   
               <!-- Grouping phone input and send code button -->
               <div class="input-group">
-                <input type="text" v-model="phone" placeholder="手机号" class="input-item" />
+                <input type="text" v-model="phoneNumber" placeholder="手机号" class="input-item" />
                 <div class="btn-send-code" @click="sendCode">发送验证码</div>
               </div>
   
@@ -35,7 +35,7 @@
 export default {
   data() {
     return {
-      phone: '',
+      phoneNumber: '',
       verificationCode: '',
       newPassword: '',
       confirmPassword: '',
@@ -43,17 +43,40 @@ export default {
     };
   },
   methods: {
+
+    async checkPhoneExists() {
+      try {
+        const response = await axios.post('https://localhost:7223/api/account/check-phone', {
+          phoneNumber: this.phoneNumber
+        });
+        return response.status === 200;
+        //手机号存在，返回true，不存在则返回false
+      } catch (error) {
+        console.error(error);
+        this.resetError = '检查手机号时发生错误，请稍后重试。';
+        return false;
+      }
+    },
+
     async sendCode() {
       // 验证手机号码格式
-      if (!/^\d{11}$/.test(this.phone)) {
+      if (!/^\d{11}$/.test(this.phoneNumber)) {
         this.resetError = '请输入11位有效的手机号码。';
+        return;
+      }
+
+      //检查手机号是否存在
+      const phoneExists = await this.checkPhoneExists();
+      if (!phoneExists) {
+        this.resetError = '手机号不存在。';
         return;
       }
 
       try {
         // 此处是发送验证码的API
-        const response = await axios.post('http://127.0.0.1:4523/m2/4804827-4459167-default/send-code', {
-          phone: this.phone
+        const response = await axios.post('https://apifoxmock.com/m1/4804827-4459167-default/api/sms/sendsms', {
+          phoneNumber: this.phoneNumber,
+          event: this.event
         });
 
         if (response.status === 200) {
@@ -66,9 +89,27 @@ export default {
         this.resetError = '发送验证码时发生错误，请稍后重试。';
       }
     },
+    
+
+    async verifyCode() {
+      try {
+        const response = await axios.post('https://apifoxmock.com/m1/4804827-4459167-default/api/sms/verifycode', {
+          phoneNumber: this.phoneNumber,
+          event: this.event,
+          verificationCode: this.verificationCode
+        });
+
+        return response.status === 200;
+      } catch (error) {
+        console.error(error);
+        this.resetError = '验证验证码时发生错误，请稍后重试。';
+        return false;
+      }
+    },
+
     async resetPassword() {
       // 验证手机号码格式
-      if (!/^\d{11}$/.test(this.phone)) {
+      if (!/^\d{11}$/.test(this.phoneNumber)) {
         this.resetError = '请输入11位有效的手机号码。';
         return;
       }
@@ -76,6 +117,12 @@ export default {
       // 验证验证码是否为空
       if (this.verificationCode.trim() === '') {
         this.resetError = '验证码不能为空。';
+        return;
+      }
+
+      const codeValid = await this.verifyCode();
+      if (!codeValid) {
+        this.resetError = '验证码无效或已过期。';
         return;
       }
 
@@ -93,9 +140,8 @@ export default {
 
       try {
         const response = await axios.post('http://127.0.0.1:4523/m2/4804827-4459167-default/reset-password', {
-          phone: this.phone,
-          code: this.verificationCode,
-          newPassword: this.newPassword
+          phoneNumber: this.phoneNumber,
+          Password: this.newPassword
         });
 
         if (response.status === 200) {
