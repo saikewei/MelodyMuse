@@ -44,7 +44,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
-
 export default defineComponent({
   data() {
     return {
@@ -55,7 +54,7 @@ export default defineComponent({
         password: '',
         birthday: '',
         gender: '',
-        phone: '',
+        phone: '1',
         email: '',
         status:'',
       },
@@ -116,17 +115,24 @@ export default defineComponent({
 
     async updateUserInfo() {
       try {
-        const updatedInfo = {
-          UserId: this.userInfo.userId,
-          UserName: this.userInfo.nickname,
-          Password: this.userInfo.password,
-          UserBirthday: this.userInfo.birthday.toISOString(),
-          UserSex: this.userInfo.gender,
-          UserPhone: this.userInfo.phone,
-          UserEmail: this.userInfo.email,
-          UserAge: this.calculateAge(this.userInfo.birthday.toISOString()), 
-          UserStatus: this.userInfo.status,
-        };
+        const userId = '001';
+        // 获取原始用户信息，用于填充空值
+    const originalInfo = await this.fetchUserInfo(userId);
+    console.log('Sending updated user info:', originalInfo); // 打印发送的数据
+    // 创建一个包含更新数据的对象，如果字段为空则使用原始数据
+    const updatedInfo = {
+      userId: this.userInfo.userId||'001',
+      userName: this.userInfo.nickname || originalInfo.userName,
+      password: this.userInfo.password || originalInfo.password,
+      userEmail: this.userInfo.email || originalInfo.userEmail,
+      userPhone: this.userInfo.phone || originalInfo.userPhone,
+      userSex: this.userInfo.gender || originalInfo.userSex,
+      userAge: this.calculateAge(this.userInfo.birthday.toISOString()) || originalInfo.userAge,
+      userBirthday: this.userInfo.birthday ? this.userInfo.birthday.toISOString() : originalInfo.userBirthday,
+      userStatus: this.userInfo.status || originalInfo.userStatus,
+    };
+
+        console.log('Sending updated user info:', this.userInfo.userId); // 打印发送的数据
         const response = await axios.put(`https://localhost:7223/api/users/${this.userInfo.userId}`, updatedInfo);
         if (response.status === 200) {
         this.$message.success('信息更新成功');
