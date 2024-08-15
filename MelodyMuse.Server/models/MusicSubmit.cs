@@ -54,5 +54,17 @@ namespace MelodyMuse.Server.models
         public string ArtistName { get; set; }
     }
 
-   
+
+    public class SongCreateModel
+    {
+        public string ArtistId { get; set; }
+        public string ArtistName { get; set; }
+        public string SongId { get; set; }
+        public string SongName { get; set; }
+        public decimal Duration { get; set; }
+        public string SongGenre { get; set; }
+        
+       
+    }
+
 }

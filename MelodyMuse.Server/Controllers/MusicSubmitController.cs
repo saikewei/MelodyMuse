@@ -122,5 +122,39 @@ namespace MelodyMuse.Server.Controllers
             return Ok(albums);
 
         }
+
+
+
+        // 批量创建歌曲的API端点
+        [HttpPost("batch")]
+        public async Task<IActionResult> CreateSongsBatch([FromBody] List<SongCreateModel> songs)
+        {
+            if (songs == null || songs.Count == 0)
+            {
+                return BadRequest("The song list is empty or null.");
+            }
+
+            foreach (var song in songs)                 
+            {
+                var result = await _songService.CreateSongAsync(song);
+                if (!result)
+                {
+                    return StatusCode(500, "An error occurred while creating songs.");
+                }
+            }
+
+            return Ok("Batch creation successful");
+        }
+
+
+
+
+
+
+
+
+
+
+
     }
 }
