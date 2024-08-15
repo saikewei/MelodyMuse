@@ -50,7 +50,7 @@ export default defineComponent({
     return {
       //avatar: 'https://via.placeholder.com/100',
       userInfo: {
-        userId: '001',
+        userId: '',
         nickname: '',
         password: '',
         birthday: '',
@@ -184,10 +184,10 @@ export default defineComponent({
     }
   },
   mounted() {
-    const userId = this.$route.params.userId;  
+    const userId = localStorage.getItem('userId');
       // 处理获取到的用户信息
       // this.fetchUserInfo(userId);
-      this.fetchUserInfo(this.userInfo.userId); // 使用获取到的 userId
+      this.fetchUserInfo(userId); // 使用获取到的 userId
     }
 
     /*放在template中的修改头像部分
