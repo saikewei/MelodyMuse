@@ -66,6 +66,7 @@ data() {
 },
 mounted() {
   //
+  console.log(this.musicList); // 检查musicList是否有数据
   this.fetchMusicList();
 },
 methods: {
@@ -73,6 +74,7 @@ methods: {
   async fetchMusicList() {
     try {
       const response = await axios.get('https://localhost:7223/api/songs/pending'); 
+      console.log(response.data); // 打印后端返回的数据
       this.musicList = response.data; // Update musicList with fetched data
     } catch (error) {
       console.error('Error fetching music list:', error);
@@ -95,7 +97,7 @@ methods: {
   },
   async approveMusic(song) {
   console.log('Approving song:', song); // 确认song对象内容
-  if (!song.songId) {
+  if (!song.SongId) {
     console.error('SongId is undefined');
     return;
   }
@@ -112,7 +114,7 @@ methods: {
 
 async rejectMusic(song) {
   console.log('Rejecting song:', song); // 确认song对象内容
-  if (!song.songId) {
+  if (!song.SongId) {
     console.error('SongId is undefined');
     return;
   }
