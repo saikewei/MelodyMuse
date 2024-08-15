@@ -58,23 +58,29 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)//接收到的数据自动绑定到loginModel数据块上
         {
-            //调用下层服务接口提供的函数完成相应的逻辑操作
-            var result = await _accountService.RegisterAsync(registerModel);
-
-            if (result)
+            try
             {
-                var seccessResponse = new
+                //调用下层服务接口提供的函数完成相应的逻辑操作
+                var result = await _accountService.RegisterAsync(registerModel);
+
+                if (result)
                 {
-                    msg = "注册成功！"
-                };
-                return Ok(seccessResponse);
+                    var seccessResponse = new
+                    {
+                        msg = "注册成功！"
+                    };
+                    return Ok(seccessResponse);
+                }
+                else { throw new Exception("未知错误"); }
             }
-
-            var failResponse = new
+            catch(Exception ex)
             {
-                msg = "注册失败！"
-            };
-            return Unauthorized(failResponse);
+                var failResponse = new
+                {
+                    msg = ex.Message
+                };
+                return Unauthorized(failResponse);
+            }
         }
 
         // 验证手机号是否已注册

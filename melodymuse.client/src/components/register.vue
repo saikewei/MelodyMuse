@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   data() {
@@ -79,8 +80,12 @@ export default {
           this.registerError = response.data.msg || 'Registration failed, please try again.';
         }
       } catch (error) {
-        console.error(error);
-        this.registerError = 'An error occurred during registration. Please try again later.';
+        // 检查错误对象，获取详细信息
+      if (error.response && error.response.data && error.response.data.msg) {
+        this.registerError = `错误：${error.response.data.msg}`;
+      } else {
+        this.registerError = '注册失败，请重试。';
+      }
       }
     }
   },
