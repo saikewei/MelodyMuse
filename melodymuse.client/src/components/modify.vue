@@ -49,12 +49,12 @@ export default defineComponent({
     return {
       //avatar: 'https://via.placeholder.com/100',
       userInfo: {
-        userId: '',
+        userId: '001',
         nickname: '',
         password: '',
         birthday: '',
         gender: '',
-        phone: '1',
+        phone: '',
         email: '',
         status:'',
       },
@@ -93,14 +93,14 @@ export default defineComponent({
                 // 打印从后端获取的用户信息
       console.log('用户信息:', response.data);
         this.userInfo = {
-          userId: response.data.UserId,
-          nickname: response.data.UserName,
-          password:response.data.Password,
-          birthday: new Date(response.data.UserBirthday),
-          sex: response.data.UserSex,
-          phone: response.data.UserPhone,
-          email: response.data.UserEmail,
-          status: response.data.UserStatus,
+          userId: response.data.userId,
+          nickname: response.data.userName,
+          password:response.data.password,
+          birthday: new Date(response.data.userBirthday),
+          sex: response.data.userSex,
+          phone: response.data.userPhone,
+          email: response.data.userEmail,
+          status: response.data.userStatus,
         };
         } else {
           console.error(`获取用户信息失败，状态码：${response.status}`);
@@ -115,27 +115,28 @@ export default defineComponent({
 
     async updateUserInfo() {
       try {
-        const userId = '001';
         // 获取原始用户信息，用于填充空值
-    const originalInfo = await this.fetchUserInfo(userId);
-    console.log('Sending updated user info:', originalInfo); // 打印发送的数据
+    //const originalInfo = await this.fetchUserInfo(this.userInfo.userId);
+    console.log('啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊:', this.userInfo.userId); // 打印发送的数据
+    console.log('啵啵啵啵啵啵啵啵啵啵啵啵:', this.userInfo.sex); // 打印发送的数据
     // 创建一个包含更新数据的对象，如果字段为空则使用原始数据
     const updatedInfo = {
-      userId: this.userInfo.userId||'001',
-      userName: this.userInfo.nickname || originalInfo.userName,
-      password: this.userInfo.password || originalInfo.password,
-      userEmail: this.userInfo.email || originalInfo.userEmail,
-      userPhone: this.userInfo.phone || originalInfo.userPhone,
-      userSex: this.userInfo.gender || originalInfo.userSex,
-      userAge: this.calculateAge(this.userInfo.birthday.toISOString()) || originalInfo.userAge,
-      userBirthday: this.userInfo.birthday ? this.userInfo.birthday.toISOString() : originalInfo.userBirthday,
-      userStatus: this.userInfo.status || originalInfo.userStatus,
+      userId: this.userInfo.userId,
+      userName: this.userInfo.nickname ,
+      password: this.userInfo.password ,
+      userEmail: this.userInfo.email ,
+      userPhone: this.userInfo.phone ,
+      userSex: this.userInfo.sex ,
+      userAge: this.calculateAge(this.userInfo.birthday.toISOString()) ,
+      userBirthday: this.userInfo.birthday ,
+      userStatus: this.userInfo.status,
     };
 
         console.log('Sending updated user info:', this.userInfo.userId); // 打印发送的数据
         const response = await axios.put(`https://localhost:7223/api/users/${this.userInfo.userId}`, updatedInfo);
         if (response.status === 200) {
         this.$message.success('信息更新成功');
+        console.log('ccccccccccccccccc:', this.userInfo); // 打印发送的数据
         } else {
           console.error(`信息更新失败，状态码：${response.status}`);
           this.$message.error('信息更新失败');
@@ -193,7 +194,7 @@ export default defineComponent({
     const userId = localStorage.getItem('userId');
       // 处理获取到的用户信息
       // this.fetchUserInfo(userId);
-      this.fetchUserInfo(userId); // 使用获取到的 userId
+      this.fetchUserInfo('001'); // 使用获取到的 userId
     }
 
     /*放在template中的修改头像部分

@@ -21,10 +21,10 @@
       <el-table :data="musicList" style="width: 100%; height: 180px;"
     :header-cell-style="{ textAlign: 'center' }"
     :cell-style="{ textAlign: 'center' }">
-    <el-table-column prop="SongId" label="歌曲ID"></el-table-column>
-    <el-table-column prop="SongName" label="歌名"></el-table-column>
-    <el-table-column prop="ComposerId" label="歌手ID"></el-table-column>
-    <el-table-column prop="Lyrics" label="歌词"></el-table-column>
+    <el-table-column prop="songId" label="歌曲ID"></el-table-column>
+    <el-table-column prop="songName" label="歌名"></el-table-column>
+    <el-table-column prop="composerId" label="歌手ID"></el-table-column>
+    <el-table-column prop="lyrics" label="歌词"></el-table-column>
 
     <el-table-column label="操作" width="160">
         <template #default="scope">
@@ -36,7 +36,7 @@
     <el-table-column label="审核意见" width="180">
         <el-input type="textarea" placeholder="请输入"></el-input>
     </el-table-column>
-    <el-table-column prop="SongDate" label="上传时间" width="180"></el-table-column>
+    <el-table-column prop="songDate" label="上传时间" width="180"></el-table-column>
 </el-table>
 
     </el-card>
@@ -52,15 +52,7 @@ data() {
     selectedTimeRange: 'all', // 默认选择全部时间段
     searchKeyword: '', // 搜索关键词
     musicList: [
-      /*{
-        SongId: 123,
-        SongName: "Example Song",
-        ComposerId: 456,  
-        Lyrics: "If we can only encounter each other...",
-        SongDate: "2023-07-20T00:00:00",
-        Status: "0",
-      }
-       */    
+ 
     ] // 待审核音乐列表
   };
 },
@@ -97,8 +89,8 @@ methods: {
   },
   async approveMusic(song) {
   console.log('Approving song:', song); // 确认song对象内容
-  if (!song.SongId) {
-    console.error('SongId is undefined');
+  if (!song.songId) {
+    console.error('songId is undefined');
     return;
   }
 
@@ -114,7 +106,7 @@ methods: {
 
 async rejectMusic(song) {
   console.log('Rejecting song:', song); // 确认song对象内容
-  if (!song.SongId) {
+  if (!song.songId) {
     console.error('SongId is undefined');
     return;
   }
