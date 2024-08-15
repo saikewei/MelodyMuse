@@ -1,18 +1,9 @@
 <template>
   <div>
-    <TheHeader :currentPage="currentPage"  />
     <h2>歌曲管理</h2>
-    <TheAside />
-    <el-dialog 
-      v-model="dialogFromVisible" 
-      title="歌曲信息编辑" 
-      width="1500"
-      v-if="dialogFromVisible">
-        <EditForm :song_id="currentSong" @cancelEvent="dialogFromVisible=false" @submitEvent="refreshSongs"/>
-    </el-dialog>
     <el-dialog 
       v-model="dialogCoverVisible" 
-      title="更换歌曲海报" 
+      title="更换专辑海报" 
       width="1500"
       v-if="dialogCoverVisible">
       <div class="cover-container">
@@ -33,7 +24,7 @@
     <el-table
       :data="songs"
       :default-sort="{ prop: 'songName', order: 'ascending' }"
-      class="song-el-table"
+      style="width: 90%"
       :height="tableHeight"
     >
       <el-table-column fixed prop="index" label="序号" type="index" :index="indexMethod" sortable width="180" />
@@ -51,36 +42,36 @@
           >编辑信息</el-button>
         </template>
       </el-table-column>
+      <el-table-column>
+        <template v-slot="scope">
+          <el-button
+            type="primary"
+            @click="handleCoverChange(scope.row)"
+          >更改封面</el-button>
+        </template>
+      </el-table-column>
     </el-table> 
   </div>
 </template>
 
 <script>
 import { ElTable, ElTableColumn, ElButton } from "element-plus"
-import EditForm from "../components/SongInfoEditForm.vue"
 import axios from "axios";
 import { format } from 'date-fns';
-import TheHeader from "../components/SimpleHeader.vue";
-import TheAside from "../components/TheAside.vue";
 
 export default {
   data() {
     return {
-      dialogFromVisible: false,
       dialogCoverVisible: false,
       currentSong: null,
       songs: null,
-      tableHeight: 0,
-      currentPage: "歌曲信息"
+      tableHeight: 0
     };
   },
   components: {
-    EditForm,
     ElTable,
     ElTableColumn,
-    ElButton,
-    TheHeader,
-    TheAside,
+    ElButton
   },
   mounted() {
     this.updateTableHeight();
@@ -95,11 +86,6 @@ export default {
   methods: {
     indexMethod(index) {
       return index + 1;
-    },
-    handleEdit(row) {
-      this.currentSong = row.songId;
-      this.dialogFromVisible = true;
-      console.log(this.currentSong);
     },
     handleCoverChange(row){
       this.currentSong = row.songId;
@@ -123,7 +109,7 @@ export default {
       }
     },
     dateFormatter(row) {
-
+      console.log(row);
       return format(new Date(row.songDate), 'yyyy-MM-dd');
     },
     updateTableHeight() {
@@ -155,10 +141,5 @@ export default {
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-}
-
-.song-el-table{
-  width: 85%;
-  left: 150px;
 }
 </style>
