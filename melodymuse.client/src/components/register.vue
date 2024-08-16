@@ -12,7 +12,7 @@
 
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
-              <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phoneNumber">
+              <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phonenumber">
             </div>
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
@@ -60,6 +60,7 @@ export default {
 
       // 验证手机号码长度和格式
       if (!/^\d{11}$/.test(this.phonenumber)) {
+        console.log('啵啵啵啵啵啵啵啵啵啵啵啵:', this.phonenumber); // 打印发送的数据
         this.registerError = '请输入11位有效的手机号码。';
         return;
       }
@@ -75,14 +76,14 @@ export default {
         this.registerError = '两次输入的密码不一致。';
         return;
       }
-
+      
       try {
         const response = await axios.post ('https://localhost:7223/api/account/register', {
+          userphone: this.phonenumber,
           username: this.username,
-          phonenumber: this.phonenumber,
           password: this.password
         });
-
+       
         if (response.status === 200) {
           alert('Registration successful!');
           // Redirect to the login page
@@ -93,7 +94,9 @@ export default {
       } catch (error) {
         // 检查错误对象，获取详细信息
       if (error.response && error.response.data && error.response.data.msg) {
+        //console.log('啵啵啵啵啵啵啵啵啵啵啵啵:', response); // 打印发送的数据
         this.registerError = `错误：${error.response.data.msg}`;
+       
       } else {
         this.registerError = '注册失败，请重试。';
       }

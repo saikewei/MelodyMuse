@@ -64,7 +64,7 @@ export default {
       if (response.status === 200 && response.data.token) {
         alert('登录成功');
         localStorage.setItem('token', response.data.token);
-        this.$router.push('/dashboard');
+        this.$router.push('/');
       } else {
         this.loginError = typeof response.data === 'string' 
           ? response.data 
