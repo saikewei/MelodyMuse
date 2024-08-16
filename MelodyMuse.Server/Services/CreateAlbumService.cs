@@ -33,7 +33,8 @@ namespace MelodyMuse.Server.Services
             var coverFolderPath = $"/albumCover/{albumId}";
 
             // 以专辑ID命名封面文件
-            var fileExtension = Path.GetExtension(albumCreateDto.AlbumCover.FileName);
+            //var fileExtension = Path.GetExtension(albumCreateDto.AlbumCover.FileName);
+            var fileExtension = ".jpg";
             var albumCoverFileName = $"{albumId}{fileExtension}";
 
             var token = new CancellationToken();
@@ -49,13 +50,13 @@ namespace MelodyMuse.Server.Services
                 }
 
                 // 上传封面文件到FTP服务器的albumCover文件夹中
-                using (var memoryStream = new MemoryStream())
-                {
-                    await albumCreateDto.AlbumCover.CopyToAsync(memoryStream);
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    var ftpFilePath = $"{coverFolderPath}/{albumCoverFileName}";
-                    await ftp.UploadStream(memoryStream, ftpFilePath, token: token);
-                }
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    await albumCreateDto.AlbumCover.CopyToAsync(memoryStream);
+                //    memoryStream.Seek(0, SeekOrigin.Begin);
+                //    var ftpFilePath = $"{coverFolderPath}/{albumCoverFileName}";
+                //    await ftp.UploadStream(memoryStream, ftpFilePath, token: token);
+                //}
 
                 await ftp.Disconnect(token);
             }

@@ -41,10 +41,10 @@ namespace MelodyMuse.Server.Controllers
             }
 
             // 检查专辑封面文件是否存在
-            if (albumCreateDto.AlbumCover == null || albumCreateDto.AlbumCover.Length == 0)
-            {
-                return BadRequest("Album cover is required.");
-            }
+            //if (albumCreateDto.AlbumCover == null || albumCreateDto.AlbumCover.Length == 0)
+            //{
+            //    return BadRequest("Album cover is required.");
+            //}
 
             // 调用服务层方法创建专辑
             var result = await _albumService.CreateAlbumAsync(albumCreateDto);
@@ -123,8 +123,33 @@ namespace MelodyMuse.Server.Controllers
 
         }
 
+        [HttpPost("AlbumBatch")]
+        public async Task<IActionResult> CreateAlbumBatch([FromBody] List<AlbumCreateModel> albums)
+        {
+            if (albums == null || albums.Count == 0)
+            {
+                return BadRequest("Album List Are NULL");
+            }
 
+            foreach (var album in albums)
+            {
 
+                var result = await _albumService.CreateAlbumAsync(album);
+
+                if (album.AlbumName.Length > 18)
+                {
+                    album.AlbumName.Substring(0, 19);
+                }
+
+                if (!result)
+                {
+                    return StatusCode(500, "An error occured while creating albums");
+                }
+            }
+
+            return Ok("Batch creation successful");
+
+        }
         // 批量创建歌曲的API端点
         [HttpPost("batch")]
         public async Task<IActionResult> CreateSongsBatch([FromBody] List<SongCreateModel> songs)

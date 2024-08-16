@@ -11,7 +11,7 @@ namespace MelodyMuse.Server.models
         public string AlbumCompany { get; set; }//专辑发行公司
         public string AlbumProducer { get; set; }//专辑制作人
         public string ArtistId { get; set; }//专辑艺术家/制作人ID
-        public IFormFile AlbumCover { get; set; }//专辑封面
+        public IFormFile? AlbumCover { get; set; }//专辑封面
     }
 
     public class SongUploadModel
