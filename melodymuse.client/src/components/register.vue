@@ -12,7 +12,7 @@
 
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
-              <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phoneNumber">
+              <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phonenumber">
             </div>
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
