@@ -145,7 +145,7 @@ export default defineComponent({
         if (error.response && error.response.status === 400) {
           this.$message.error('请求有误，请检查输入数据');
         } else {
-          console.error('Failed to update user info:', error);
+          console.error('更新个人信息失败:', error);
           this.$message.error('信息更新失败');
         }
       }

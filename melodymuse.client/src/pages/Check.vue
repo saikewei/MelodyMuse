@@ -69,7 +69,7 @@ methods: {
       console.log(response.data); // 打印后端返回的数据
       this.musicList = response.data; // Update musicList with fetched data
     } catch (error) {
-      console.error('Error fetching music list:', error);
+      console.error('获取音乐列表错误:', error);
     }
   },
 
@@ -90,7 +90,7 @@ methods: {
   async approveMusic(song) {
   console.log('Approving song:', song); // 确认song对象内容
   if (!song.songId) {
-    console.error('songId is undefined');
+    console.error('歌曲Id尚未定义');
     return;
   }
 
@@ -100,14 +100,14 @@ methods: {
     song.Status = 1; // 修改状态为通过
     await this.fetchMusicList(); // 重新获取列表
   } catch (error) {
-    console.error('Error approving music:', error);
+    console.error('通过歌曲错误:', error);
   }
 },
 
 async rejectMusic(song) {
   console.log('Rejecting song:', song); // 确认song对象内容
   if (!song.songId) {
-    console.error('SongId is undefined');
+    console.error('歌曲Id尚未定义');
     return;
   }
 
@@ -117,7 +117,7 @@ async rejectMusic(song) {
     song.Status = 2; // 修改状态为拒绝
     await this.fetchMusicList(); // 重新获取列表
   } catch (error) {
-    console.error('Error rejecting music:', error);
+    console.error('拒绝歌曲错误:', error);
   }
 }
 ,
