@@ -31,8 +31,6 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<Upload> Uploads { get; set; }
 
-    public virtual DbSet<UploadCreatorSong> UploadCreatorSongs { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserCollectAlbum> UserCollectAlbums { get; set; }
@@ -382,36 +380,6 @@ public partial class ModelContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("SYS_C007573");
-        });
-
-        modelBuilder.Entity<UploadCreatorSong>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.SongId }).HasName("SYS_C007566");
-
-            entity.ToTable("UPLOAD_CREATOR_SONG");
-
-            entity.Property(e => e.UserId)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("USER_ID");
-            entity.Property(e => e.SongId)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("SONG_ID");
-            entity.Property(e => e.UploadData)
-                .HasMaxLength(500)
-                .IsUnicode(false)
-                .HasColumnName("UPLOAD_DATA");
-
-            entity.HasOne(d => d.Song).WithMany(p => p.UploadCreatorSongs)
-                .HasForeignKey(d => d.SongId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("SYS_C007568");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UploadCreatorSongs)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("SYS_C007567");
         });
 
         modelBuilder.Entity<User>(entity =>
