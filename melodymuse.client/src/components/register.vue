@@ -86,11 +86,11 @@ export default {
         });
        
         if (response.status === 200) {
-          alert('Registration successful!');
+          alert('注册成功!');
           // Redirect to the login page
           this.$router.push('/login');
         } else {
-          this.registerError = response.data.msg || 'Registration failed, please try again.';
+          this.registerError = response.data.msg || '注册失败，请再次尝试';
         }
       } catch (error) {
         // 检查错误对象，获取详细信息
