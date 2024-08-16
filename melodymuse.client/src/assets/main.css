@@ -28,5 +28,7 @@ a,
 
   #app {
     display: grid;
+    width: 100%; /* 让#app占据全部宽度 */
+    max-width: 1920px; /* 限制最大宽度 */
   }
 }

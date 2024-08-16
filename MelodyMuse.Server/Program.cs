@@ -37,6 +37,8 @@ builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
+builder.Services.AddScoped<ISongEditRepository>(provider =>
+    new SongEditRepository());
 
 // 注册服务并提供连接字符串
 builder.Services.AddScoped<ISongRepository>(provider => new SongRepository());
@@ -67,8 +69,12 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+// MusicPlayer services
+//������ط���
+builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
-
+//SongEdit services
+builder.Services.AddScoped<ISongEditService, SongEditService>();
 
 var app = builder.Build();
 
@@ -84,6 +90,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin"); // Apply CORS policy

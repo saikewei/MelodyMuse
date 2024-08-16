@@ -10,7 +10,7 @@ namespace MelodyMuse.Server.Controllers
     public class MusicPlayerController : Controller
     {
         private readonly IMusicPlayerService _musicService;
-        private readonly string _songFilePath = @"./Resources/";
+        private readonly string _songFilePath = @"./Resources/songs";
 
         public MusicPlayerController(IMusicPlayerService musicService)
         {
