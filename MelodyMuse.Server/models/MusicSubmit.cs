@@ -25,6 +25,13 @@ namespace MelodyMuse.Server.models
         public List<string> ArtistIds { get; set; } // 用于存储多个歌手ID
     }
 
+    public class AlbumSongModel
+    {
+        public string AlbumId { get; set; }
+
+        public string SongId { get; set; }
+    }
+
     public class AlbumDto
     {
         public string AlbumId { get; set; }

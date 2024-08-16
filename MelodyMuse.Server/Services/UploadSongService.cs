@@ -144,6 +144,18 @@ namespace MelodyMuse.Server.Services
             
             return true;
         }
+
+        public async Task<bool> UploadPair(AlbumSongModel pair)
+        {
+            var albums= await _albumRepository.GetAllAlbumsByArtistIdAsync(pair.AlbumId);
+            foreach(var album in albums)
+            {
+                _songRepository.songMakeupAlbumAsync(pair.SongId, album.AlbumId);
+            }
+
+            return true;
+
+        }
         public async Task<bool> CreateSongAsync(SongCreateModel song)
         {
             var Song = new Song

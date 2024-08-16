@@ -58,6 +58,7 @@ namespace MelodyMuse.Server.Controllers
 
 
         }
+        
 
         /// <summary>
         /// 上传歌曲的API端点
@@ -88,6 +89,8 @@ namespace MelodyMuse.Server.Controllers
 
             return BadRequest("Error uploading song.");
         }
+
+
 
         /// <summary>
         /// 查询歌手的方法
@@ -122,7 +125,27 @@ namespace MelodyMuse.Server.Controllers
             return Ok(albums);
 
         }
+        [HttpPost("SongAlbum")]
+        public async Task<IActionResult> AlbumSong([FromBody] List<AlbumSongModel> pairs)
+        {
+            if(pairs== null || pairs.Count == 0)
+            {
+                return BadRequest("pairs are null");
+            }
 
+            foreach(var pair in pairs)
+            {
+                Console.WriteLine(pair);
+                var result = await _songService.UploadPair(pair);
+
+                if (!result)
+                {
+                    return StatusCode(500, "upload pair failed");
+                }
+            }
+
+            return Ok("success");
+        }
         [HttpPost("AlbumBatch")]
         public async Task<IActionResult> CreateAlbumBatch([FromBody] List<AlbumCreateModel> albums)
         {
@@ -170,16 +193,6 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok("Batch creation successful");
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 }
