@@ -5,6 +5,10 @@
         <div class="registerbox-in">
           <div class="header">MelodyMuse</div>
           <div class="form-wrapper">
+            <div class="input-wrapper">
+  <!--<span class="iconfont icon-account"></span>-->
+  <input type="text" name="username" placeholder="用户名" class="input-item" v-model="username">
+</div>
 
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
@@ -39,6 +43,7 @@ export default {
   data() {
     return {
       username: '',
+      phonenumber: '',
       password: '',
       confirmPassword: '',
       registerError: ''
@@ -46,8 +51,15 @@ export default {
   },
   methods: {
     async register() {
+
+   // 验证用户名是否为空
+    if (this.username.trim() === '') {
+        this.registerError = '用户名不能为空。';
+        return;
+      }
+
       // 验证手机号码长度和格式
-      if (!/^\d{11}$/.test(this.username)) {
+      if (!/^\d{11}$/.test(this.phonenumber)) {
         this.registerError = '请输入11位有效的手机号码。';
         return;
       }
@@ -67,8 +79,7 @@ export default {
       try {
         const response = await axios.post ('https://localhost:7223/api/account/register', {
           username: this.username,
-
-
+          phonenumber: this.phonenumber,
           password: this.password
         });
 
@@ -151,7 +162,7 @@ html, body {
 .input-wrapper {
   display: flex;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 12px;
 }
 .input-item {
   display: block;
@@ -170,7 +181,7 @@ html, body {
   text-align: center;
   padding: 8px;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 20px;
   background-color: #6a8cdcc1;
   color: #ffffff;
   border-radius: 10px;

@@ -33,14 +33,14 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      username: '',
+      phonenumber: '',
       password: '',
       loginError: ''
     };
   },
   methods: {
     async login() {
-      if (this.username.trim() === '') {
+      if (this.phonenumber.trim() === '') {
         this.loginError = '手机号码不能为空。';
         return;
       }
@@ -50,14 +50,14 @@ export default {
         return;
       }
 
-      if (!/^\d{11}$/.test(this.username)) {
+      if (!/^\d{11}$/.test(this.phonenumber)) {
         this.loginError = '请输入11位有效的手机号码。';
         return;
       }
 
       try {
       const response = await axios.post('https://localhost:7223/api/account/login', {
-        PhoneNumber: this.username,
+        PhoneNumber: this.phonenumber,
         Password: this.password
       });
 
