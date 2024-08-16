@@ -28,22 +28,17 @@ builder.Services.AddCors(options =>
 });
 
 // Register services
-//������ط���
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IAccountRepository>(provider =>
-   new AccountRepository());
+builder.Services.AddScoped<IAccountRepository>(provider => new AccountRepository());
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
 builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
-builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
-    new MusicPlayerRepository());
+builder.Services.AddScoped<IMusicPlayerRepository>(provider => new MusicPlayerRepository());
 builder.Services.AddScoped<ISearchService, SearchService>();
-builder.Services.AddScoped<ISearchRepository>(provider =>
-    new SearchRepository());
+builder.Services.AddScoped<ISearchRepository>(provider => new SearchRepository());
 
-
-//����JWT����
+// Configure JWT authentication
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>
 {
@@ -66,13 +61,15 @@ builder.Services.AddAuthentication(x =>
 // MusicPlayer services
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
-
-
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-//����JWT����
+
+// Enable CORS before authentication and authorization middlewares
+app.UseCors("AllowSpecificOrigin");
+
+// Enable JWT authentication
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -84,8 +81,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

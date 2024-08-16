@@ -4,6 +4,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.Services.Interfaces;
+using System.Web;
+
 
 //命名空间:Controllers
 namespace MelodyMuse.Server.Controllers
@@ -32,7 +34,11 @@ namespace MelodyMuse.Server.Controllers
             {
                 return BadRequest(new { msg = "请求体不能为空" });
             }
-            var artists = await _searchService.SearchArtists(query);
+
+            // 对查询参数进行解码
+            var decodedQuery = HttpUtility.UrlDecode(query);
+
+            var artists = await _searchService.SearchArtists(decodedQuery);
 
             if (artists == null || !artists.Any())
             {

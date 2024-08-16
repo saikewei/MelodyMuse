@@ -2,11 +2,13 @@
     <div>
         <div v-if="results.length">
             <ul>
-                <li v-for="result in results" :key="result.id">{{ result.name || result.title }}</li>
+                <li v-for="result in results" :key="result.artistId">
+                    {{ result.artistName }} - {{ result.artistIntro }}
+                </li>
             </ul>
         </div>
         <div v-else>
-          NO
+            NO RESULTS
         </div>
     </div>
 </template>
