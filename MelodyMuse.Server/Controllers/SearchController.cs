@@ -57,7 +57,11 @@ namespace MelodyMuse.Server.Controllers
             {
                 return BadRequest(new { msg = "请求体不能为空" });
             }
-            var songs = await _searchService.SearchSongsByName(query);
+
+            // 对查询参数进行解码
+            var decodedQuery = HttpUtility.UrlDecode(query);
+
+            var songs = await _searchService.SearchSongsByName(decodedQuery);
 
             if (songs == null || !songs.Any())
             {
@@ -76,8 +80,10 @@ namespace MelodyMuse.Server.Controllers
             {
                 return BadRequest(new { msg = "查询参数不能为空" });
             }
+            // 对查询参数进行解码
+            var decodedQuery = HttpUtility.UrlDecode(query);
 
-            var songs = await _searchService.SearchSongsByLyrics(query);
+            var songs = await _searchService.SearchSongsByLyrics(decodedQuery);
 
             if (songs == null || !songs.Any())
             {
