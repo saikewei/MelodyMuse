@@ -6,7 +6,6 @@ import SongList from "../pages/SongList.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 import SongInfoEdit from "../pages/SongInfo.vue";
-import AlbumInfo from "../pages/AlbumInfo.vue";
 
 const routes = [
   {
@@ -43,11 +42,6 @@ const routes = [
     path: "/edit-song-info",
     name: "EditSongInfo",
     component: SongInfoEdit,
-  },
-  {
-    path: "/edit-album-info",
-    name: "EditAlbumInfo",
-    component: AlbumInfo,
   },
 ];
 

@@ -1,7 +1,6 @@
 <template>
   <div>
     <TheHeader :currentPage="currentPage"  />
-    <h2>歌曲管理</h2>
     <TheAside />
     <el-dialog 
       v-model="dialogFromVisible" 
@@ -10,28 +9,15 @@
       v-if="dialogFromVisible">
         <EditForm :song_id="currentSong" @cancelEvent="dialogFromVisible=false" @submitEvent="refreshSongs"/>
     </el-dialog>
-    <el-dialog 
-      v-model="dialogCoverVisible" 
-      title="更换歌曲海报" 
-      width="1500"
-      v-if="dialogCoverVisible">
-      <div class="cover-container">
-        <div class="cover-image">
-          <img :src="oldCoverUrl" alt="旧海报" />
-          <p>旧海报</p>
-        </div>
-        <div class="cover-image">
-          <img :src="newCoverUrl" alt="新海报" />
-          <p>新海报</p>
-        </div>
-      </div>
-      <div class="dialog-footer">
-        <el-button @click="dialogCoverVisible = false">保存</el-button>
-        <el-button @click="dialogCoverVisible = false">取消</el-button>
-      </div>
-    </el-dialog>
+    <el-input
+    v-model="searchQuery"
+    class="search-el-input"
+    style="width: 240px"
+    placeholder="输入要查找的歌名"
+    clearable
+  />
     <el-table
-      :data="songs"
+      :data="filteredSongs"
       :default-sort="{ prop: 'songName', order: 'ascending' }"
       class="song-el-table"
       :height="tableHeight"
@@ -71,7 +57,9 @@ export default {
       currentSong: null,
       songs: null,
       tableHeight: 0,
-      currentPage: "歌曲信息"
+      currentPage: "歌曲信息",
+      searchQuery: '', // New data property for the search input
+      filteredSongs: [], // New reactive property for filtered songs
     };
   },
   components: {
@@ -92,6 +80,14 @@ export default {
   created() {
     this.fetchSongs();
   },
+  watch: {
+  searchQuery: {
+    immediate: true,
+    handler(newQuery) {
+      this.filterSongsAsync(newQuery);
+    }
+  }
+},
   methods: {
     indexMethod(index) {
       return index + 1;
@@ -110,6 +106,7 @@ export default {
       try {
         const response = await axios.get('https://localhost:7223/api/songedit');
         this.songs = response.data;
+        this.filteredSongs = this.songs;
       } catch (error) {
         console.error('获取歌曲数据失败', error);
       }
@@ -126,9 +123,31 @@ export default {
 
       return format(new Date(row.songDate), 'yyyy-MM-dd');
     },
+    async filterSongsAsync(query) {
+      if (query === '') {
+            // Perform the operation asynchronously
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    this.filteredSongs = [...this.songs];
+                    resolve();
+                }, 0);
+            });
+      }
+
+      return new Promise((resolve) => {
+      setTimeout(() => {
+        this.filteredSongs = this.songs.filter(song => {
+          return song.songName.includes(query) ||
+                 song.singerName.includes(query);
+        });
+        resolve();
+      }, 0);
+      });
+  },
     updateTableHeight() {
       this.tableHeight = window.innerHeight - 200; // Adjust 100 to the desired offset
-    }
+    },
+    
   }
 };
 </script>
@@ -159,6 +178,10 @@ export default {
 
 .song-el-table{
   width: 85%;
+  left: 150px;
+}
+
+.search-el-input{
   left: 150px;
 }
 </style>
