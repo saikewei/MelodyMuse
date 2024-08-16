@@ -1,12 +1,11 @@
 <template>
   <div>
-    <el-card>
-      <div slot="header" class="clearfix">
-        <span></span>
-
-      </div>
+    <TheHeader :currentPage="currentPage"/>
+    <TheAside />
+    <div
+    >
       <div style=" margin-bottom: 20px; width: 500px; display: flex; align-items: center;">
-        <el-select  v-model="selectedTimeRange" placeholder="选择时间段">
+        <el-select  v-model="selectedTimeRange" placeholder="选择时间段" style="left: 150px;">
           <el-option label="全部" value="all"></el-option>
           <el-option label="一天内" value="1d"></el-option>
           <el-option label="两天内" value="2d"></el-option>
@@ -14,11 +13,11 @@
           <el-option label="一周内" value="1w"></el-option>
           <el-option label="一个月内" value="1m"></el-option>
         </el-select>
-        <el-input  v-model="searchKeyword" placeholder="输入关键词" style="margin-left: 10px; width: 600px; "></el-input>
-        <el-button class="searchbutton" type="primary" @click="handleSearch" style="margin-left: 10px;">查询</el-button>
+        <el-input  v-model="searchKeyword" placeholder="输入关键词" style="margin-left: 10px; width: 600px; left: 150px;"></el-input>
+        <el-button class="searchbutton" type="primary" @click="handleSearch" style="margin-left: 10px; left: 150px;">查询</el-button>
       </div>
 
-      <el-table :data="musicList" style="width: 100%; height: 180px;"
+      <el-table :data="musicList" style="width: 80%; height: 180px;left: 150px;"
     :header-cell-style="{ textAlign: 'center' }"
     :cell-style="{ textAlign: 'center' }">
     <el-table-column prop="songId" label="歌曲ID"></el-table-column>
@@ -38,13 +37,15 @@
     </el-table-column>
     <el-table-column prop="songDate" label="上传时间" width="180"></el-table-column>
 </el-table>
-
-    </el-card>
+    </div>
+    
   </div>
 </template>
 
 <script>
 import axios from 'axios'; // Import Axios or your preferred HTTP client library
+import TheHeader from '@/components/SimpleHeader.vue';
+import TheAside from '@/components/TheAside.vue';
 
 export default {
 data() {
@@ -53,9 +54,14 @@ data() {
     searchKeyword: '', // 搜索关键词
     musicList: [
  
-    ] // 待审核音乐列表
+    ], // 待审核音乐列表
+    currentPage: '歌曲审核'
   };
 },
+components: {
+  TheAside,
+  TheHeader
+}, 
 mounted() {
   //
   console.log(this.musicList); // 检查musicList是否有数据
@@ -144,6 +150,11 @@ async rejectMusic(song) {
   content: "";
   display: table;
   clear: both;
-  width:1200px;
+  width:1000px;
 };
+
+.check-el-card{
+  display: flex;
+  left: 150px;
+}
 </style>

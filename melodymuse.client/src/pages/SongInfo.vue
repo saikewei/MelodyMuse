@@ -57,7 +57,7 @@ export default {
       currentSong: null,
       songs: null,
       tableHeight: 0,
-      currentPage: "歌曲信息",
+      currentPage: "歌曲管理",
       searchQuery: '', // New data property for the search input
       filteredSongs: [], // New reactive property for filtered songs
     };

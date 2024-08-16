@@ -1,5 +1,7 @@
 <template>
   <div class="personal-info">
+    <TheHeader :current-page="currentPage"/>
+    <TheAside />
     <el-card>
       <div slot="header" class="clearfix">
         <span>个人信息</span>
@@ -44,6 +46,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
+import TheHeader from '@/components/SimpleHeader.vue';
+import TheAside from '@/components/TheAside.vue';
 export default defineComponent({
   data() {
     return {
@@ -58,6 +62,7 @@ export default defineComponent({
         email: '',
         status:'',
       },
+      currentPage: '个人信息',
       //changeAvatarDialogVisible: false,
       changePasswordDialogVisible: false,
       changeEmailDialogVisible: false,
@@ -71,8 +76,11 @@ export default defineComponent({
       resetError: '',
     };
   },
+  components: {
+    TheHeader,
+    TheAside
+  },
   methods: {
-
     //利用出生日期计算年龄
     calculateAge(birthday: string) {
       if (!birthday) return '';

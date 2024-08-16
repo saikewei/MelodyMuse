@@ -7,7 +7,7 @@ import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 import SongInfoEdit from "../pages/SongInfo.vue";
 import Check from "../pages/Check.vue";
-import modify from "../components/modify.vue";
+import modify from "../pages/modify.vue";
 
 const routes = [
   {
@@ -21,7 +21,7 @@ const routes = [
     component: MyMusic,
   },
   {
-    path: "/modify",
+    path: "/edit-personal-info",
     name: "modify",
     component: modify,
   },
@@ -51,7 +51,7 @@ const routes = [
     component: SongInfoEdit,
   },
   {
-    path: "/check",
+    path: "/check-song",
     name: "Check",
     component: Check,
   },
