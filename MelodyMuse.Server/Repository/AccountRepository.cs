@@ -59,15 +59,15 @@ namespace MelodyMuse.Server.Repository
             }
 
             // 检查用户手机号是否已注册
-            var checkUserByPhone = await _context.Users.FirstAsync(u => u.UserPhone == model.UserPhone);
-            if (checkUserByPhone != null)
+            var checkUserByPhone = await _context.Users.CountAsync(u => u.UserPhone == model.UserPhone);
+            if (checkUserByPhone != 0)
             {
                 throw new Exception("手机号已被注册");
             }
 
             // 检查用户名是否已注册
-            var checkUserByName = await _context.Users.FirstAsync(u => u.UserName == model.Username);
-            if (checkUserByName != null)
+            var checkUserByName = await _context.Users.CountAsync(u => u.UserName == model.Username);
+            if (checkUserByName != 0)
             {
                 throw new Exception("用户名已被注册");
             }
