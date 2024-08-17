@@ -2,13 +2,14 @@
     <header>
         <TheHeader />
     </header>
+    <aside>
+        <TheAside />
+
+    </aside>
     <main>
         <newAlbum />
     </main>
     
-    <footer>
-        <TheFooter />
-    </footer>
 
 </template>
 
@@ -16,12 +17,16 @@
     import newAlbum from "../components/newAlbum.vue";
     import TheHeader from "@/components/TheHeader.vue";
     import TheFooter from "@/components/TheFooter.vue";
+    import TheAside from "@/components/TheAside.vue";
+
 
     export default {
         components:{
             TheHeader,
             TheFooter,
-            newAlbum
+            newAlbum,
+            TheAside
+
         },
         data(){
             return{
@@ -51,5 +56,9 @@ footer {
 main {
     margin-top: 60px; /* 或者 padding-top: 60px; */
     margin-bottom: 40px; /* 或者 padding-bottom: 40px; */
+}
+
+aside{
+
 }
 </style>
