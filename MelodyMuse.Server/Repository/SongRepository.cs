@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
+using Oracle.ManagedDataAccess.Client;
+
+
 
 namespace MelodyMuse.Server.Repository
 {
@@ -42,6 +45,30 @@ namespace MelodyMuse.Server.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<bool> CreateSongAsync(Song song)
+        {
+            _context.Songs.Add(song);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Song> GetSongByNameAndAlbumAsync(string songName, string albumId)
+        {
+            return await _context.Songs
+                .Include(s => s.Albums)
+                .FirstOrDefaultAsync(s => s.SongName == songName && s.Albums.Any(a => a.AlbumId == albumId));
+        }
+
+        public async Task<bool> songMakeupAlbumAsync(string songId, string albumId)
+        {
+            var sql = "INSERT INTO SONG_MAKEUP_ALBUM (SONG_ID, ALBUM_ID) VALUES (:songId, :albumId)";
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("songId", songId), new OracleParameter("albumId", albumId));
+            return result > 0;
+        }
+
     }
 }
+
+
+
 
