@@ -11,6 +11,7 @@ import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue"
 import UploadSong from '../pages/UploadSong.vue';
+import mediaplayer from '../pages/mediaplayer.vue';
 
 const routes = [
     {
@@ -73,6 +74,11 @@ const routes = [
         name: 'Register',
         component: Register
     },
+    {
+        path: '/mediaplayer',
+        name:'mediaplayer',
+        component: mediaplayer
+    }
 ];
 
 const router = createRouter({
