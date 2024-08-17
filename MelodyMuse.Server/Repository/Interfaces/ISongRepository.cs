@@ -10,5 +10,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<IEnumerable<Song>> GetPendingApprovalSongsAsync();
         Task ApproveSongAsync(string songId);
         Task RejectSongAsync(string songId);
+        Task<List<Song>> GetSongsByComposerIdAsync(string composerId);
+        Task<Song> GetSongByIdAsync(string songId);
     }
 }

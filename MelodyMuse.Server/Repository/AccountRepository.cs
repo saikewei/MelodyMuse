@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MelodyMuse.Server.Repository
 {
