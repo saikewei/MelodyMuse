@@ -32,5 +32,34 @@ namespace MelodyMuse.Server.Repository
                 .Where(song => song.Artists.Any(artist => artist.ArtistId == artistId))
                 .ToListAsync();
         }
+         public async Task<bool> FollowArtistAsync(string userId, string artistId)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Artists)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+                
+                var artist = await _context.Artists
+                    .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+
+                if (user == null || artist == null)
+                {
+                    return false;
+                }
+
+                if (!user.Artists.Contains(artist))
+                {
+                    user.Artists.Add(artist);
+                    await _context.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

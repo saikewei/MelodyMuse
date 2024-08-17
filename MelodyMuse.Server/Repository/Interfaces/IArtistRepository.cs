@@ -8,5 +8,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
     {
         Task<Artist> GetArtistByIdAsync(string artistId);
          Task<List<Song>> GetSongsByArtistIdAsync(string artistId);
+         Task<bool> FollowArtistAsync(string userId, string artistId);
     }
 }

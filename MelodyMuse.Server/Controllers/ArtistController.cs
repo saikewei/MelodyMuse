@@ -42,5 +42,23 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok(songs);
         }
+
+        // 用户关注艺术家
+        [HttpPost("follow")]
+        public async Task<IActionResult> FollowArtist([FromBody] FollowArtistRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.UserId) || string.IsNullOrEmpty(request.ArtistId))
+            {
+                return BadRequest(new { message = "请求为空" });
+            }
+
+            var result = await _artistService.FollowArtistAsync(request.UserId, request.ArtistId);
+            if (result)
+            {
+                return Ok(new { message = "关注歌手成功" });
+            }
+
+            return BadRequest(new { message = "关注歌手失败" });
+        }
     }
 }

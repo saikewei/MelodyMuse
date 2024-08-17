@@ -24,5 +24,9 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.GetSongsByArtistIdAsync(artistId);
         }
+        public async Task<bool> FollowArtistAsync(string userId, string artistId)
+        {
+            return await _artistRepository.FollowArtistAsync(userId, artistId);
+        }
     }
 }
