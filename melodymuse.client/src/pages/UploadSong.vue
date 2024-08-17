@@ -1,6 +1,6 @@
 <template>
     <header>
-        <TheHeader />
+        <SimpleHeader />
     </header>
     <aside>
         <TheAside />
@@ -18,6 +18,7 @@
     import TheFooter from "@/components/TheFooter.vue";
     import newSong from "../components/newSong.vue";
     import TheAside from "@/components/TheAside.vue";
+    import SimpleHeader from "@/components/SimpleHeader.vue";
 
 
     export default {
@@ -25,7 +26,8 @@
             TheFooter,
             TheHeader,
             newSong,
-            TheAside
+            TheAside,
+            SimpleHeader
         },
         data(){
             return{
