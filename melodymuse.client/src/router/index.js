@@ -5,8 +5,11 @@ import Singer from '../pages/Singer.vue';
 import SongList from '../pages/SongList.vue';
 import Login from '../pages/Login.vue'
 import Register from "../pages/Register.vue"
-import CreateAlbum from "../pages/CreateAlbum.vue"
 import Sign from "../pages/Sign.vue"
+import SongInfoEdit from "../pages/SongInfo.vue";
+import Check from "../pages/Check.vue";
+import modify from "../pages/modify.vue";
+import CreateAlbum from "../pages/CreateAlbum.vue"
 import UploadSong from '../pages/UploadSong.vue';
 
 const routes = [
@@ -20,6 +23,39 @@ const routes = [
         name: 'my-music',
         component: MyMusic
     },
+    {
+        path: "/edit-personal-info",
+        name: "modify",
+        component: modify,
+    },
+    {
+        path: "/create-album",
+        name: "CreateAlbum",
+        component: CreateAlbum,
+    },
+    {
+        path: "/upload-song",
+        name: "UploadSong",
+        component: UploadSong,
+    },
+    {
+        path: "/check",
+        name: "Check",
+        component: Check,
+    },
+    {
+        path: '/song-info',
+        name:'song-info',
+        component: SongInfoEdit
+    },
+    {
+        path: '/sign',
+        name: 'Sign',
+        component: Sign
+    },
+
+
+
     {
         path: '/singer',
         name: 'singer',
@@ -40,21 +76,11 @@ const routes = [
         name: 'Register',
         component: Register
     },
-    {
-        path:'/createalbum',
-        name:'createalbum',
-        component: CreateAlbum
-    },
-    {
-        path:'/uploadsong',
-        name:'uploadsong',
-        component:UploadSong
-    },
 ];
 
 const router = createRouter({
-    history: createWebHistory(), // ʹ��Ĭ�ϵ� base URL
-    routes
+  history: createWebHistory(), // ʹ��Ĭ�ϵ� base URL
+  routes,
 });
 
 export default router;

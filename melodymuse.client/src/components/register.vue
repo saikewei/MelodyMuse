@@ -14,7 +14,7 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -47,21 +47,19 @@ export default {
       try {
         const response = await axios.post ('http://127.0.0.1:4523/m2/4804827-4459167-default/192699877', {
           msg: this.username,
-
-
           token: this.password
         });
 
         if (response.status === 200) {
-          alert('Registration successful!');
+          alert('注册成功');
           // Redirect to the login page
           this.$router.push('/login');
         } else {
-          this.registerError = response.data.msg || 'Registration failed, please try again.';
+          this.registerError = response.data.msg || '注册失败，请再次尝试';
         }
       } catch (error) {
         console.error(error);
-        this.registerError = 'An error occurred during registration. Please try again later.';
+        this.registerError = '注册过程中发生错误。请稍后再试。';
       }
     }
   },
