@@ -9,7 +9,7 @@ import Sign from "../pages/Sign.vue"
 import SongInfoEdit from "../pages/SongInfo.vue";
 import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
-import CreateAlbum from "../pages/CreateAlbum.vue"
+import createAlbum from "../pages/CreateAlbum.vue"
 import UploadSong from '../pages/UploadSong.vue';
 
 const routes = [
@@ -29,17 +29,17 @@ const routes = [
         component: modify,
     },
     {
-        path: "/create-album",
-        name: "CreateAlbum",
-        component: CreateAlbum,
+        path: "/createAlbum",
+        name: "createAlbum",
+        component: createAlbum,
     },
     {
-        path: "/upload-song",
+        path: "/uploadSong",
         name: "UploadSong",
         component: UploadSong,
     },
     {
-        path: "/check",
+        path: "/check-song",
         name: "Check",
         component: Check,
     },
@@ -53,9 +53,6 @@ const routes = [
         name: 'Sign',
         component: Sign
     },
-
-
-
     {
         path: '/singer',
         name: 'singer',
