@@ -11,6 +11,7 @@ import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue"
 import UploadSong from '../pages/UploadSong.vue';
+import SingerDetail from '../pages/SingerDetail.vue'; 
 
 const routes = [
     {
@@ -72,6 +73,11 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: Register
+    },
+    {
+        path: '/singerDetail',
+        name: 'SingerDetail',
+        component: SingerDetail
     },
 ];
 
