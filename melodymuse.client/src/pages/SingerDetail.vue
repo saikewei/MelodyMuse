@@ -55,7 +55,7 @@
       return {
         profilePicture,
         userId: '',//获取逻辑在下方created()中，从localStorage获取
-        artistId: '64',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
+        artistId: '17',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
         artist: {
           artistName:'',
           artistGenre: '',
@@ -93,20 +93,20 @@
     //获取艺术家信息，前端已测试成功
     async fetchArtistData() {
       try {
-        const artistResponse = await axios.get(`https://localhost:7223/api/artist/{artistId}`);
+        const artistResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}`);
         this.artist = artistResponse.data;
         this.followersCount = artistResponse.data.artistFansNum;//获取当前艺术家的关注人数，，前端已测试成功
       } catch (error) {
-        console.error('获取信息失败:', error);
+        console.error('获取艺术家信息信息失败:', error);
       }
     },
     //获取歌单
     async fetchSongs() {
       try {
-        const songsResponse = await axios.get(`https://apifoxmock.com/m1/4804827-4459167-default/api/artist/64/songs`);
+        const songsResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}/songs`);
         this.songs = await Promise.all(
           songsResponse.data.map(async (song) => {
-            const albumResponse = await axios.get(`https://apifoxmock.com/m1/4804827-4459167-default/api/songs/31640aa5-8/album`);
+            const albumResponse = await axios.get(`https://localhost:7223/api/songs/${song.songId}/album`);
             return { ...song, albumName: albumResponse.data };
           })
         );
@@ -115,7 +115,7 @@
         这个对象包含了原有的 song 信息和从 albumResponse.data 获取到的 albumName。
         Promise.all 确保所有歌曲的专辑信息都被获取到并完成，然后统一返回结果。*/
       } catch (error) {
-        console.error('获取信息失败：', error);
+        console.error('获取歌单信息失败：', error);
       }
     },
 
@@ -164,7 +164,7 @@
     }
   },  
   async created() {
-    this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
+    this.artistId = '17';//this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
       await this.fetchArtistData();
       await this.fetchSongs();
