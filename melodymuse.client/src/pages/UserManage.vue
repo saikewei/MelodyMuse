@@ -1,28 +1,28 @@
 <template>
-    <div>
-        <h1 class="title">User Information</h1>
+    <div class="UserManage">
+        <h1 class="title">用户账号管理</h1>
         <div class="table-container">
             <el-table :data="users" style="width: 100%">
-                <el-table-column prop="userId" label="User ID" width="150" header-align="center" align="center" />
-                <el-table-column prop="userName" label="User Name" width="250" header-align="center" align="center" />
-                <el-table-column label="User Status" width="150" header-align="center" align="center">
+                <el-table-column prop="userId" label="用户ID" width="250" header-align="center" align="center" />
+                <el-table-column prop="userName" label="用户名" width="250" header-align="center" align="center" />
+                <el-table-column label="账号状态" width="150" header-align="center" align="center">
                     <template #default="scope">
                         {{ getStatusText(scope.row.userStatus) }}
                     </template>
                 </el-table-column>
-                <el-table-column label="Actions" width="500" header-align="center" align="center">
+                <el-table-column label="账号管理" width="500" header-align="center" align="center">
                     <template #default="scope">
                         <el-button @click="toggleBanUser(scope.row)"
                                    :type="scope.row.userStatus === '0' ? 'primary' : 'danger'"
                                    size="mini"
                                    class="action-button">
-                            {{ scope.row.userStatus === '0' ? 'Unban User' : 'Ban User' }}
+                            {{ scope.row.userStatus === '0' ? '解禁用户' : '封禁用户' }}
                         </el-button>
                         <el-button @click="toggleAdminUser(scope.row)"
                                    :type="scope.row.userStatus === '2' ? 'warning' : 'success'"
                                    size="mini"
                                    class="action-button">
-                            {{ scope.row.userStatus === '2' ? 'Demote Admin' : 'Promote to Admin' }}
+                            {{ scope.row.userStatus === '2' ? '解除管理员任命' : '任命为管理员' }}
                         </el-button>
                     </template>
                 </el-table-column>
@@ -42,7 +42,7 @@
             const response = await axios.get('http://localhost:7223/api/users');
             return response.data;
         } catch (error) {
-            console.error('Failed to fetch user IDs:', error);
+            console.error('获取用户ID失败:', error);
             return [];
         }
     };
@@ -52,7 +52,7 @@
             const response = await axios.get(`http://localhost:7223/api/users/${userId}`);
             return response.data;
         } catch (error) {
-            console.error(`Failed to fetch details for user ID ${userId}:`, error);
+            console.error(`获取用户ID ${userId} 的详细信息失败:`, error);
             return null;
         }
     };
@@ -64,7 +64,7 @@
             const userDetails = await Promise.all(userPromises);
             users.value = userDetails.filter((user) => user !== null);
         } catch (error) {
-            console.error('Failed to fetch users:', error);
+            console.error('获取用户失败:', error);
         }
     };
 
@@ -77,20 +77,20 @@
                 user.userStatus = newStatus;
             }
         } catch (error) {
-            console.error('Failed to update user status:', error);
+            console.error('更新用户状态失败:', error);
         }
     };
 
     const getStatusText = (status) => {
         switch (status) {
             case '0':
-                return 'Banned';
+                return '已封禁';
             case '1':
-                return 'User';
+                return '用户';
             case '2':
-                return 'Admin';
+                return '管理员';
             default:
-                return 'Unknown';
+                return '未知';
         }
     };
 
@@ -107,7 +107,7 @@
     onMounted(fetchUsers);
 </script>
 
-<style scoped>
+<style scope>
     .table-container {
         width: 100%;
         margin: 0 auto;
