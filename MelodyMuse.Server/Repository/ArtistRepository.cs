@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
 namespace MelodyMuse.Server.Repository
 {
@@ -61,5 +62,25 @@ namespace MelodyMuse.Server.Repository
                 return false;
             }
         }
+    
+
+
+
+        public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
+        {
+            return await _context.Artists
+                .Where(a => a.ArtistName.Contains(name))
+                .ToListAsync();
+        }
+
+
+
+        public async Task<bool> artistSingSongAsync(string songId, string artistId)
+        {
+            var sql = "INSERT INTO ARTIST_SING_SONG (SONG_ID, ARTIST_ID) VALUES (:songId, :artistId)";
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("songId", songId), new OracleParameter("artistId", artistId));
+            return result > 0;
+        }
+
     }
 }

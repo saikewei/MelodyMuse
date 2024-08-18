@@ -28,5 +28,10 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.FollowArtistAsync(userId, artistId);
         }
+  
+        public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
+        {
+            return await _artistRepository.GetArtistsByNameAsync(name);
+        }
     }
 }
