@@ -1,5 +1,6 @@
 <template>
     <div class="profile">
+      <TheHeader />
       <div class="header">
         <img class="profile-picture" :src="profilePicture" alt="Profile Picture" />
         <div class="profile-info">
@@ -49,6 +50,7 @@
   <script>
   import profilePicture from '../assets/logo2.jpg';
   import axios from 'axios';
+  import TheHeader from '@/components/TheHeader.vue';
   
   export default {
     data() {
@@ -88,6 +90,9 @@
       const birthday = new Date(this.artist.artistBirthday);
       return birthday.toLocaleDateString();
       }
+    },
+    components: {
+      TheHeader,
     },
     methods: {
     //获取艺术家信息，前端已测试成功
