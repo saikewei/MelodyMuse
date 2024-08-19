@@ -13,5 +13,6 @@ namespace MelodyMuse.Server.Services.Interfaces
 
         Task<bool> UnfollowArtistAsync(string userId, string artistId);
         Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name);
+         Task<bool> IncrementArtistFansNumAsync(string artistId);
     }
 }

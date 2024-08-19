@@ -91,5 +91,24 @@ namespace MelodyMuse.Server.Repository
             return result > 0;
         }
 
+        public async Task<bool> IncrementArtistFansNumAsync(string artistId)
+    {
+        try
+        {
+            var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == artistId);
+            if (artist != null)
+            {
+                artist.ArtistFansNum = (artist.ArtistFansNum ?? 0) + 1;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     }
 }

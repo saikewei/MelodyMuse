@@ -75,6 +75,19 @@ namespace MelodyMuse.Server.Controllers
             return BadRequest(new { Message = "取消关注失败" });
         }
     }
+     [HttpPost("follow/increment-fans")]
+    public async Task<IActionResult> IncrementFansNum([FromQuery]string artistId)
+    {
+        var result = await _artistService.IncrementArtistFansNumAsync(artistId);
 
+        if (result)
+        {
+            return Ok(new { Message = "艺术家粉丝添加成功" });
+        }
+        else
+        {
+            return BadRequest(new { Message = "添加失败" });
+        }
+    }
     }
 }
