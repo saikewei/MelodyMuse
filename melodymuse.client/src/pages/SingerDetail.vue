@@ -175,7 +175,7 @@ async updateFollowersCount() {
     }
   },  
   async created() {
-    this.artistId = '64';//this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
+    this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
       await this.fetchArtistData();
       await this.fetchSongs();
