@@ -23,6 +23,8 @@ public partial class User
 
     public string? UserStatus { get; set; }
 
+    public virtual ICollection<Artist> Artists { get; set; } = new List<Artist>();
+
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
@@ -41,5 +43,5 @@ public partial class User
 
     public virtual ICollection<UserCollectSong> UserCollectSongs { get; set; } = new List<UserCollectSong>();
 
-    public virtual ICollection<Artist> Artists { get; set; } = new List<Artist>();
+    public virtual ICollection<Artist> ArtistsNavigation { get; set; } = new List<Artist>();
 }

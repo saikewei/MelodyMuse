@@ -10,7 +10,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
 {
     public interface IAccountRepository
     {
-        Task<bool> LoginAsync(LoginModel loginModel);
+        Task<GenerateTokenModel> LoginAsync(LoginModel loginModel);
         Task<bool> RegisterAsync(RegisterModel registerModel);  
     }
 }

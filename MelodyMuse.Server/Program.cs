@@ -2,9 +2,28 @@ using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Services;
-using MelodyMuse.Server;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using MelodyMuse.Server.Configure;
+using System.Text;
+using MelodyMuse.Server.OuterServices.Interfaces;
+using MelodyMuse.Server.OuterServices;
+using FluentFTP;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// é…ç½®ä¾èµ–æ³¨å…¥
+builder.Services.AddSingleton<IAsyncFtpClient>(sp =>
+{
+
+    var ftpClient = new AsyncFtpClient("101.126.23.58", "ftpuser", "tongjiORCL2024");
+    ftpClient.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
+    
+    return ftpClient;
+});
+
+
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -12,22 +31,73 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register services
-//¿ªÆôÏà¹Ø·şÎñ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
-    new AccountRepository());
+   new AccountRepository());
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ISMSService, SMSService>();
+builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
+builder.Services.AddScoped<ITencentSMSService, TencentSMSService>();
+builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
+    new MusicPlayerRepository());
+
+
+//ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
+var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // MusicPlayer services
-//¿ªÆôÏà¹Ø·şÎñ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
+
+
+
+
+//MusicSubmit services
+
+builder.Services.AddScoped<ICreateAlbumService, CreateAlbumService>();
+builder.Services.AddScoped<IUploadSongService, UploadSongService>();
+
+builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>(provider =>
+    new ArtistRepository());
+
+builder.Services.AddScoped<IAlbumService, AlbumService>();
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>(provider =>
+    new AlbumRepository());
+
+builder.Services.AddScoped<ISongRepository, SongRepository>(provider =>
+    new SongRepository());
+
+
 
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+//ï¿½ï¿½ï¿½ï¿½JWTï¿½ï¿½ï¿½ï¿½
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

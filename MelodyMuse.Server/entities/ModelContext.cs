@@ -113,6 +113,14 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("ARTIST_NAME");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("USER_ID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Artists)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_USERID");
         });
 
         modelBuilder.Entity<Playlist>(entity =>
@@ -202,6 +210,9 @@ public partial class ModelContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("SONG_NAME");
+            entity.Property(e => e.Status)
+                .HasPrecision(2)
+                .HasColumnName("STATUS");
 
             entity.HasOne(d => d.Composer).WithMany(p => p.SongsNavigation)
                 .HasForeignKey(d => d.ComposerId)
@@ -446,7 +457,7 @@ public partial class ModelContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("USER_STATUS");
 
-            entity.HasMany(d => d.Artists).WithMany(p => p.Users)
+            entity.HasMany(d => d.ArtistsNavigation).WithMany(p => p.Users)
                 .UsingEntity<Dictionary<string, object>>(
                     "UserFollowArtist",
                     r => r.HasOne<Artist>().WithMany()

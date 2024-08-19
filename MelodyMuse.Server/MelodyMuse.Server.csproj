@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="FluentFTP" Version="51.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>6.*-*</Version>
     </PackageReference>
@@ -21,6 +23,7 @@
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.13" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="TencentCloudSDK" Version="3.0.1047" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="entities\" />
+    <Folder Include="Covers\" />
   </ItemGroup>
 
 </Project>

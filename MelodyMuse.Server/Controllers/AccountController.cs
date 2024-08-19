@@ -4,6 +4,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
+using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.Services;
 
 
 //命名空间:Controllers
@@ -13,9 +15,7 @@ namespace MelodyMuse.Server.Controllers
     [ApiController]
     //注册/api/account分支路由
     [Route("api/account")]
-
-    //新建Account控制器类,继承于基控制器类
-    public class AccountController:ControllerBase
+    public class AccountController : ControllerBase
     {
         //维护一个到下层服务的接口
         private readonly IAccountService _accountService;
@@ -32,13 +32,16 @@ namespace MelodyMuse.Server.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)//接收到的数据自动绑定到loginModel数据块上
         {
             //调用下层服务接口提供的函数完成相应的逻辑操作
-            var result = await _accountService.LoginAsync(loginModel);
+            GenerateTokenModel UserInfo = await _accountService.LoginAsync(loginModel);
 
-            if (result)
+            if (UserInfo!=null)
             {
+                //根据用户信息生成JWT
+                var JWT = JWTGenerator.GenerateToken(UserInfo,JWTConfigure.serect_key);
                 var seccessResponse = new
                 {
-                    msg = "登录成功！"
+                    msg = "登录成功！",
+                    Token = JWT
                 };
                 return Ok(seccessResponse);
             }
@@ -73,6 +76,6 @@ namespace MelodyMuse.Server.Controllers
             };
             return Unauthorized(failResponse);
         }
-
     }
+
 }

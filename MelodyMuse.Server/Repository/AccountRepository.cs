@@ -19,17 +19,29 @@ namespace MelodyMuse.Server.Repository
             _context = new ModelContext();
         }
 
-        public async Task<bool> LoginAsync(LoginModel loginModel)
+        public async Task<GenerateTokenModel> LoginAsync(LoginModel loginModel)
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginModel.Username && u.Password == loginModel.Password);
-                return user != null;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == loginModel.PhoneNumber && u.Password == loginModel.Password);
+
+                if (user == null) {
+                    return null;
+                }
+
+                var UserInfo = new GenerateTokenModel
+                {
+                    Username = user.UserName,
+                    UserID = user.UserId,
+                    UserPhone = user.UserPhone
+                };
+
+                return UserInfo;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("发生异常：" + ex.Message);
-                return false;
+                return null;
             }
         }
 
