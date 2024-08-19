@@ -160,12 +160,11 @@
   },
 async updateFollowersCount() {
     try {
-      await axios.put(`https://localhost:7223/api/artist/${this.artistId}/updateFollowersCount`, {
-        artistId: this.artistId,
-        artistFansNum: this.followersCount
-      });
+      await axios.post(`https://localhost:7223/api/artist/follow/increment-fans` , null, {
+          params: { artistId: this.artistId}
+        });
     } catch (error) {
-      console.error('Failed to update followers count:', error);
+      console.error('添加人数失败:', error);
     }
   },
     //处理歌曲时长，将秒数转换为 mm:ss 格式
