@@ -64,6 +64,12 @@ builder.Services.AddScoped<IUserRepository>(provider => new UserRepository());
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+//用户服务
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUsersRepository>(provider =>
+    new UsersRepository());
+
+
 
 //����JWT����
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
@@ -93,6 +99,9 @@ builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 builder.Services.AddScoped<ISongEditService, SongEditService>();
 
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("AllowSpecificOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
