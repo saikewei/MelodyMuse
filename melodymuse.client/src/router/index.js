@@ -75,7 +75,7 @@ const routes = [
         component: Register
     },
     {
-        path: '/singerDetail',
+        path: '/SingerDetail/:artistId',
         name: 'SingerDetail',
         component: SingerDetail
     },
