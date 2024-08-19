@@ -55,7 +55,7 @@
       return {
         profilePicture,
         userId: '',//获取逻辑在下方created()中，从localStorage获取
-        artistId: '64',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
+        artistId: '',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
         artist: {
           artistName:'',
           artistGenre: '',
