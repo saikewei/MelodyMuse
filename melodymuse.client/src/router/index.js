@@ -84,8 +84,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(), // ??????? base URL
   routes,
-  history: createWebHistory(), // ??????? base URL
-  routes,
 });
 
 export default router;

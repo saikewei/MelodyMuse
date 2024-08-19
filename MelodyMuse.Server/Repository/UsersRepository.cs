@@ -45,6 +45,26 @@ namespace MelodyMuse.Server.Repository
             return user;
         }
 
+        // 更新用户资料
+        public async Task UpdateUserAsync(User user)
+        {
+            var existingUser = await _context.Users.FindAsync(user.UserId);
+
+            if (existingUser != null)
+            {
+                existingUser.UserName = user.UserName;
+                existingUser.Password = user.Password;
+                existingUser.UserEmail = user.UserEmail;
+                existingUser.UserPhone = user.UserPhone;
+                existingUser.UserSex = user.UserSex;
+                existingUser.UserAge = user.UserAge;
+                existingUser.UserBirthday = user.UserBirthday;
+                existingUser.UserStatus = user.UserStatus;
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
         //更新用户数据
         public async Task<User?> UpdateUserStatus(string userId, string newStatus)
         {

@@ -71,6 +71,19 @@ namespace MelodyMuse.Server.Controllers
             }
         }
 
+        // 更新用户资料
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(string userId, [FromBody] User updateUser)
+        {
+            if (userId != updateUser.UserId)
+            {
+                return BadRequest(new { msg = "用户ID不匹配" });
+            }
+
+            await _usersService.UpdateUserAsync(updateUser);
+            return Ok(new { msg = "用户资料更新成功" });
+        }
+
         // 更新用户状态
         [HttpPut("{userId}/updateStatus")]
         public async Task<IActionResult> UpdateUserStatus(string userId, [FromQuery] string newStatus)
