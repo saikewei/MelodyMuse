@@ -149,13 +149,25 @@
         this.isFollowing = true;
         this.followersCount += 1;
       }
+      // 更新粉丝人数到后端
+      await this.updateFollowersCount();
+
     } catch (error) {
       console.error('Failed to toggle follow:', error);
       // 如果操作失败，恢复到原来的状态
       this.isFollowing = !this.isFollowing;
     }
   },
-
+async updateFollowersCount() {
+    try {
+      await axios.put(`https://localhost:7223/api/artist/${this.artistId}/updateFollowersCount`, {
+        artistId: this.artistId,
+        artistFansNum: this.followersCount
+      });
+    } catch (error) {
+      console.error('Failed to update followers count:', error);
+    }
+  },
     //处理歌曲时长，将秒数转换为 mm:ss 格式
     formatDuration(duration) {
       const minutes = Math.floor(duration / 60);
