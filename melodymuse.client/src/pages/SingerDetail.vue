@@ -1,4 +1,5 @@
 <template>
+  <div class="page-container">
     <div class="profile">
       <TheHeader />
       <div class="header">
@@ -24,7 +25,7 @@
       </div>
   
       <div class="songs">
-        <h2>所有歌曲</h2>
+        <h2 style=" margin-top: 10px;margin-bottom: 5px; margin-left: 10px;color:#284da0c1;" > 所有歌曲</h2>
         <div class="songs-table">
           <table>
             <thead>
@@ -45,6 +46,7 @@
         </div>
       </div>
     </div>
+  </div>
   </template>
   
   <script>
@@ -193,16 +195,30 @@ async updateFollowersCount() {
   </script>
   
   <style scoped>
-  .profile {
-    width: 1000px;
-    margin: auto;
-  }
+
+.page-container {
+  background: radial-gradient(circle, #f0f0f5, #d8d8fb); /* 从中心向外的渐变 */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.profile {
+  width: 90%;
+  max-width: 1200px; /* 设置最大宽度 */
+  margin: 20px auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+}
   
   .header {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-  }
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
   
   .profile-picture {
     width: 150px;
@@ -251,8 +267,10 @@ async updateFollowersCount() {
   }
   
   .songs {
-    margin-top: 20px;
-  }
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+}
   
   .songs-table {
     max-height: 400px;
