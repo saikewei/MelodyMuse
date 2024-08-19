@@ -37,5 +37,9 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.UnfollowArtistAsync(userId, artistId);
         }
+         public async Task<bool> IncrementArtistFansNumAsync(string artistId)
+    {
+        return await _artistRepository.IncrementArtistFansNumAsync(artistId);
+    }
     }
 }

@@ -15,6 +15,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<bool> artistSingSongAsync(string SongId, string ArtistId);
         //更新歌曲和音乐家的关系
         Task<bool> UnfollowArtistAsync(string userId, string artistId);
+        Task<bool> IncrementArtistFansNumAsync(string artistId);
     }
 
       
