@@ -20,6 +20,9 @@
         <el-menu-item index="/uploadSong">
           <span>上传歌曲</span>
         </el-menu-item>
+        <el-menu-item index="/usermanage">
+          <span>用户管理</span>
+        </el-menu-item>
       </el-menu>
 </div>
 </template>

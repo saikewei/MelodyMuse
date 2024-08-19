@@ -58,11 +58,9 @@ builder.Services.AddScoped<ISongRepository, SongRepository>(provider =>
 
 // 注册服务并提供连接字符串
 builder.Services.AddScoped<ISongRepository>(provider => new SongRepository());
-builder.Services.AddScoped<IUserRepository>(provider => new UserRepository());
 
 // 其他服务注册
 builder.Services.AddScoped<ISongService, SongService>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 //用户服务
 builder.Services.AddScoped<IUsersService, UsersService>();

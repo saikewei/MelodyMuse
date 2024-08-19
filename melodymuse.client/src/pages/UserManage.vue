@@ -1,8 +1,9 @@
 <template>
     <div class="UserManage">
-        <h1 class="title">用户账号管理</h1>
+        <SimpleHeader current-page="用户管理"/>
+        <TheAside />
         <div class="table-container">
-            <el-table :data="users" style="width: 100%">
+            <el-table :data="users" style="width: 75%; left: 150px;">
                 <el-table-column prop="userId" label="用户ID" width="250" header-align="center" align="center" />
                 <el-table-column prop="userName" label="用户名" width="250" header-align="center" align="center" />
                 <el-table-column label="账号状态" width="150" header-align="center" align="center">
@@ -34,12 +35,14 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import axios from 'axios';
+    import TheAside from '@/components/TheAside.vue';
+    import SimpleHeader from '@/components/SimpleHeader.vue';
 
     const users = ref([]);
 
     const fetchUserIds = async () => {
         try {
-            const response = await axios.get('http://localhost:7223/api/users');
+            const response = await axios.get('https://localhost:7223/api/users');
             return response.data;
         } catch (error) {
             console.error('获取用户ID失败:', error);
@@ -49,7 +52,7 @@
 
     const fetchUserDetails = async (userId) => {
         try {
-            const response = await axios.get(`http://localhost:7223/api/users/${userId}`);
+            const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
             return response.data;
         } catch (error) {
             console.error(`获取用户ID ${userId} 的详细信息失败:`, error);
@@ -70,7 +73,7 @@
 
     const updateUserStatus = async (userId, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
+            const response = await axios.put(`https://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
             console.log(response.data.msg);
             const user = users.value.find((u) => u.userId === userId);
             if (user) {
