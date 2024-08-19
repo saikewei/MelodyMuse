@@ -11,7 +11,7 @@ namespace MelodyMuse.Server.Services.Interfaces
         Task<List<Song>> GetSongsByArtistIdAsync(string artistId);
         Task<bool> FollowArtistAsync(string userId, string artistId);
 
-
+        Task<bool> UnfollowArtistAsync(string userId, string artistId);
         Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name);
     }
 }

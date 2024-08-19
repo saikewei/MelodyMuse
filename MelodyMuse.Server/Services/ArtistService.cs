@@ -33,5 +33,9 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.GetArtistsByNameAsync(name);
         }
+          public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
+        {
+            return await _artistRepository.UnfollowArtistAsync(userId, artistId);
+        }
     }
 }

@@ -35,7 +35,10 @@ namespace MelodyMuse.Server.Repository
         }
          public async Task<bool> FollowArtistAsync(string userId, string artistId)
         {
-            try
+              var sql = "INSERT INTO USER_FOLLOW_ARTIST (USER_ID, ARTIST_ID) VALUES (:userId, :artistId)";
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("userId", userId), new OracleParameter("artistId", artistId));
+            return result > 0;
+            /*try
             {
                 var user = await _context.Users
                     .Include(u => u.Artists)
@@ -60,11 +63,17 @@ namespace MelodyMuse.Server.Repository
             catch
             {
                 return false;
-            }
+            }*/
+            
         }
     
 
-
+         public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
+    {
+        var sql = "DELETE FROM USER_FOLLOW_ARTIST WHERE USER_ID = :userId AND ARTIST_ID = :artistId";
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("userId", userId), new OracleParameter("artistId", artistId));
+            return result > 0;
+    }
 
         public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
         {

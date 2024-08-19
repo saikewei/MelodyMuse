@@ -60,5 +60,21 @@ namespace MelodyMuse.Server.Controllers
 
             return BadRequest(new { message = "关注歌手失败" });
         }
+
+        [HttpPost("unfollow")]
+    public async Task<IActionResult> UnfollowArtist([FromBody] FollowArtistRequest model)
+    {
+        var result = await _artistService.UnfollowArtistAsync(model.UserId, model.ArtistId);
+
+        if (result)
+        {
+            return Ok(new { Message = "取消关注成功" });
+        }
+        else
+        {
+            return BadRequest(new { Message = "取消关注失败" });
+        }
+    }
+
     }
 }

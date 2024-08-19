@@ -55,7 +55,7 @@
       return {
         profilePicture,
         userId: '',//获取逻辑在下方created()中，从localStorage获取
-        artistId: '17',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
+        artistId: '64',//为方便测试而设置一个值，实际需要从前一个页面（比如歌手列表）获取，获取逻辑在created中实现
         artist: {
           artistName:'',
           artistGenre: '',
@@ -135,8 +135,8 @@
     try {
       if (this.isFollowing) {
         // 如果已经关注，执行取消关注操作
-        await axios.delete(`https://localhost:7223/api/artist/unfollow`, {
-          data: { userId: this.userId, artistId: this.artistId }
+        await axios.post(`https://localhost:7223/api/artist/unfollow`, {
+          userId: this.userId, artistId: this.artistId
         });
         this.isFollowing = false;
         this.followersCount -= 1;
@@ -164,14 +164,14 @@
     }
   },  
   async created() {
-    this.artistId = '17';//this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
+    this.artistId = '64';//this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
       await this.fetchArtistData();
       await this.fetchSongs();
     } else {
       console.error('未找到 artistId');
     }
-    this.userId = this.$route.params.userId
+    this.userId ='001';// this.$route.params.userId
   }
   };
   </script>
