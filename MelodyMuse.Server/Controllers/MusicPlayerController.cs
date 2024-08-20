@@ -9,61 +9,7 @@ using TencentCloud.Tiia.V20190529.Models;
 
 namespace MelodyMuse.Server.Controllers
 {
-    public class LRUCache
-    {
-        private readonly int _capacity;
-        private readonly Dictionary<string, LinkedListNode<string>> _cacheMap;
-        private readonly LinkedList<string> _lruList;
-       
-
-        public LRUCache(int capacity)
-        {
-            _capacity = capacity;
-            _cacheMap = new Dictionary<string, LinkedListNode<string>>();
-            _lruList = new LinkedList<string>();
-        }
-
-        public string? Get(string key)
-        {
-            if (_cacheMap.TryGetValue(key, out var node))
-            {
-                // 将节点移动到链表头部，表示最近使用
-                _lruList.Remove(node);
-                _lruList.AddFirst(node);
-                return node.Value;
-            }
-
-            return null;
-        }
-
-        public void Put(string key, string filePath)
-        {
-            if (_cacheMap.ContainsKey(key))
-            {
-                // 更新现有文件的使用顺序
-                _lruList.Remove(_cacheMap[key]);
-                _lruList.AddFirst(_cacheMap[key]);
-            }
-            else
-            {
-                if (_cacheMap.Count >= _capacity)
-                {
-                    // 移除链表尾部的最久未使用文件
-                    var lruKey = _lruList.Last.Value;
-                    _lruList.RemoveLast();
-                    _cacheMap.Remove(lruKey);
-
-                    // 删除文件以腾出空间
-                    File.Delete(lruKey);
-                }
-
-                // 插入新文件到链表头部
-                var node = new LinkedListNode<string>(filePath);
-                _lruList.AddFirst(node);
-                _cacheMap[key] = node;
-            }
-        }
-    }
+   
 
     [ApiController]
     [Route("api/player")]
@@ -72,7 +18,8 @@ namespace MelodyMuse.Server.Controllers
         private readonly IMusicPlayerService _musicService;
        
         private readonly string _cacheDirectory;
-        private readonly LRUCache _cache;
+        // 设置缓存目录的最大大小限制 (例如: 500MB)
+        private readonly long _cacheSizeLimit = 500 * 1024 * 1024; // 500 MB
 
         private readonly string _ftpServer = "101.126.23.58";
         private readonly string _ftpUsername = "ftpuser";
@@ -80,7 +27,7 @@ namespace MelodyMuse.Server.Controllers
 
         public MusicPlayerController(IMusicPlayerService musicService)
         {
-            _cache = new LRUCache(60); // 假设最大缓存为60首歌
+            
             _musicService = musicService;
            
             // 使用相对路径设置缓存目录
@@ -134,28 +81,43 @@ namespace MelodyMuse.Server.Controllers
             return File(fileStream, "text/plain");
         }
 
+        // 管理缓存大小，删除最近最少使用的文件
+        private void ManageCacheSize()
+        {
+            var cacheFiles = Directory.GetFiles(_cacheDirectory).Select(f => new FileInfo(f)).OrderBy(f => f.LastAccessTime).ToList();
+            long totalCacheSize = cacheFiles.Sum(f => f.Length);
+
+            // 如果缓存大小超过限制，按LRU策略删除文件
+            while (totalCacheSize > _cacheSizeLimit && cacheFiles.Any())
+            {
+                var oldestFile = cacheFiles.First();
+                totalCacheSize -= oldestFile.Length;
+                oldestFile.Delete();
+                cacheFiles.RemoveAt(0);
+            }
+        }
         private async Task DownloadAndCacheFileAsync(string cacheKey, string localFilePath, string ftpFilePath)
         {
-            
-            if (!System.IO.File.Exists(localFilePath) || _cache.Get(cacheKey)==null)
+            // 如果文件不存在或缓存过期，下载文件
+            if (!System.IO.File.Exists(localFilePath))
             {
-                
+                // 在下载前检查缓存大小，并清理缓存
+                ManageCacheSize();
+
                 using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
                 {
                     ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
                     await ftp.Connect();
-                    _cache.Put(cacheKey, localFilePath); // 更新缓存
                     await ftp.DownloadFile(localFilePath, ftpFilePath, FtpLocalExists.Overwrite, FtpVerify.None, null, CancellationToken.None);
-                    
                     await ftp.Disconnect();
                 }
 
+                // 更新文件的最后访问时间
+                System.IO.File.SetLastAccessTime(localFilePath, DateTime.Now);
             }
-
-
-           
         }
+
 
         [HttpGet]
         [Route("{songId}")]
