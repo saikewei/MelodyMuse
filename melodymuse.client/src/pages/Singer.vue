@@ -135,7 +135,7 @@ export default {
     // 获取歌手信息
     async fetchArtists() {
       try {
-        const response = await axios.get('https://apifoxmock.com/m1/4804827-4459167-default/api/artist/all');
+        const response = await axios.get('https://localhost:7223/api/artist/all');
         this.originalArtists = response.data;
         this.artists = response.data;
       } catch (error) {
