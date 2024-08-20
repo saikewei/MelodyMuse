@@ -110,5 +110,18 @@ namespace MelodyMuse.Server.Repository
         }
     }
 
+         public async Task<List<Artist>> GetAllArtistsAsync()
+    {
+        return await _context.Artists.ToListAsync();
+    }
+
+     public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
+    {
+        return await _context.Users
+            .Where(u => u.UserId == userId)
+            .SelectMany(u => u.Artists)
+            .ToListAsync();
+    }
+
     }
 }
