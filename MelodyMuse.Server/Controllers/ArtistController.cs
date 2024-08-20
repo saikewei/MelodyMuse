@@ -89,5 +89,18 @@ namespace MelodyMuse.Server.Controllers
             return BadRequest(new { Message = "添加失败" });
         }
     }
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllArtists()
+    {
+        var artists = await _artistService.GetAllArtistsAsync();
+        return Ok(artists);
+    }
+    [HttpGet("user/{userId}/followed")]
+    public async Task<IActionResult> GetFollowedArtistsByUserId(string userId)
+    {
+        var artists = await _artistService.GetArtistsByUserIdAsync(userId);
+        return Ok(artists);
+    }
+
     }
 }

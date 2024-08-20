@@ -38,8 +38,16 @@ namespace MelodyMuse.Server.Services
             return await _artistRepository.UnfollowArtistAsync(userId, artistId);
         }
          public async Task<bool> IncrementArtistFansNumAsync(string artistId)
-    {
-        return await _artistRepository.IncrementArtistFansNumAsync(artistId);
-    }
+        {
+            return await _artistRepository.IncrementArtistFansNumAsync(artistId);
+        }
+         public async Task<List<Artist>> GetAllArtistsAsync()
+        {
+            return await _artistRepository.GetAllArtistsAsync();
+        }
+         public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
+        {
+            return await _artistRepository.GetArtistsByUserIdAsync(userId);
+        }
     }
 }
