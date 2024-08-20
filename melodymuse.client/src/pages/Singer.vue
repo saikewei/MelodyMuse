@@ -77,7 +77,7 @@
     methods: {
       async fetchArtists() {
         try {
-          const response = await axios.get("/api/artists");
+          const response = await axios.get('https://apifoxmock.com/m1/4804827-4459167-default/api/artist/all');
           this.artists = response.data;
           this.sortArtistsByFans();
           this.updateArtistDisplay();
