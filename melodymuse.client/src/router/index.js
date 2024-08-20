@@ -12,6 +12,7 @@ import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue"
 import UploadSong from '../pages/UploadSong.vue';
 import SingerDetail from '../pages/SingerDetail.vue'; 
+import FollowedArtist from '../pages/FollowedArtist.vue';
 
 const routes = [
     {
@@ -79,6 +80,13 @@ const routes = [
         name: 'SingerDetail',
         component: SingerDetail
     },
+
+    {
+        path: '/FollowedArtist',
+        name: 'FollowedArtist',
+        component: FollowedArtist
+    },
+
 ];
 
 const router = createRouter({
