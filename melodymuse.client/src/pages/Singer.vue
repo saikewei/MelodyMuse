@@ -11,7 +11,7 @@
           <button
             class="filter-button"
             :class="{ active: activeLetter === 'all' }"
-            @click="setActiveLetter('all'); filterAll()"
+            @click="setActiveLetter('all')"
           >
             全部
           </button>
@@ -20,7 +20,7 @@
             v-for="letter in alphabet"
             :key="letter"
             :class="{ active: activeLetter === letter }"
-            @click="setActiveLetter(letter); filterByLetter(letter)"
+            @click="setActiveLetter(letter)"
           >
             {{ letter }}
           </button>
@@ -31,21 +31,21 @@
           <button
             class="filter-button"
             :class="{ active: activeGender === 'all' }"
-            @click="setActiveGender('all'); filterAll()"
+            @click="setActiveGender('all')"
           >
             全部
           </button>
           <button
             class="filter-button"
             :class="{ active: activeGender === 'male' }"
-            @click="setActiveGender('male'); filterByGender('male')"
+            @click="setActiveGender('male')"
           >
             男
           </button>
           <button
             class="filter-button"
             :class="{ active: activeGender === 'female' }"
-            @click="setActiveGender('female'); filterByGender('female')"
+            @click="setActiveGender('female')"
           >
             女
           </button>
@@ -54,7 +54,7 @@
     </div>
     <div class="artist-list">
       <ul>
-        <li v-for="artist in sortedArtists" :key="artist.artistId" class="artist-item">
+        <li v-for="artist in filteredArtists" :key="artist.artistId" class="artist-item">
           <a @click="goToArtistPage(artist.artistId)">
             {{ artist.artistName }}
           </a>
@@ -79,62 +79,78 @@ export default {
   data() {
     return {
       alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
-      artists: [
-        { artistId: 1, artistName: "Adele", gender: "female", artistFansNum: 1200 },
-        { artistId: 2, artistName: "Beyoncé", gender: "female", artistFansNum: 1500 },
-        { artistId: 3, artistName: "Bruno Mars", gender: "male", artistFansNum: 1400 },
-        { artistId: 4, artistName: "Coldplay", gender: "male", artistFansNum: 1800 },
-        { artistId: 5, artistName: "Drake", gender: "male", artistFansNum: 2000 },
-        { artistId: 6, artistName: "Ed Sheeran", gender: "male", artistFansNum: 1700 },
-        { artistId: 7, artistName: "Eminem", gender: "male", artistFansNum: 2200 },
-        { artistId: 8, artistName: "Katy Perry", gender: "female", artistFansNum: 1300 },
-        { artistId: 9, artistName: "Lady Gaga", gender: "female", artistFansNum: 1600 },
-        { artistId: 10, artistName: "Madonna", gender: "female", artistFansNum: 1900 },
-        { artistId: 11, artistName: "Michael Jackson", gender: "male", artistFansNum: 2500 },
-        { artistId: 12, artistName: "Taylor Swift", gender: "female", artistFansNum: 2300 },
-        { artistId: 13, artistName: "The Weeknd", gender: "male", artistFansNum: 2100 },
-        { artistId: 14, artistName: "Ariana Grande", gender: "female", artistFansNum: 1400 },
-        { artistId: 15, artistName: "Shakira", gender: "female", artistFansNum: 1200 },
+      originalArtists: [
+        { artistId: 1, artistName: "Adele", artistGenre: "female", artistFansNum: 1200 },
+        { artistId: 2, artistName: "Beyoncé", artistGenre: "female", artistFansNum: 1500 },
+        { artistId: 3, artistName: "Bruno Mars", artistGenre: "male", artistFansNum: 1400 },
+        { artistId: 4, artistName: "Coldplay", artistGenre: "male", artistFansNum: 1800 },
+        { artistId: 5, artistName: "Drake", artistGenre: "male", artistFansNum: 2000 },
+        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "male", artistFansNum: 1700 },
+        { artistId: 7, artistName: "Eminem", artistGenre: "male", artistFansNum: 2200 },
+        { artistId: 8, artistName: "Katy Perry", artistGenre: "female", artistFansNum: 1300 },
+        { artistId: 9, artistName: "Lady Gaga", artistGenre: "female", artistFansNum: 1600 },
+        { artistId: 10, artistName: "Madonna", artistGenre: "female", artistFansNum: 1900 },
+        { artistId: 11, artistName: "Michael Jackson", artistGenre: "male", artistFansNum: 2500 },
+        { artistId: 12, artistName: "Taylor Swift", artistGenre: "female", artistFansNum: 2300 },
+        { artistId: 13, artistName: "The Weeknd", artistGenre: "male", artistFansNum: 2100 },
+        { artistId: 14, artistName: "Ariana Grande", artistGenre: "female", artistFansNum: 1400 },
+        { artistId: 15, artistName: "Shakira", artistGenre: "female", artistFansNum: 1200 },
       ],
+      artists: [
+        { artistId: 1, artistName: "Adele", artistGenre: "female", artistFansNum: 1200 },
+        { artistId: 2, artistName: "Beyoncé", artistGenre: "female", artistFansNum: 1500 },
+        { artistId: 3, artistName: "Bruno Mars", artistGenre: "male", artistFansNum: 1400 },
+        { artistId: 4, artistName: "Coldplay", artistGenre: "male", artistFansNum: 1800 },
+        { artistId: 5, artistName: "Drake", artistGenre: "male", artistFansNum: 2000 },
+        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "male", artistFansNum: 1700 },
+        { artistId: 7, artistName: "Eminem", artistGenre: "male", artistFansNum: 2200 },
+        { artistId: 8, artistName: "Katy Perry", artistGenre: "female", artistFansNum: 1300 },
+        { artistId: 9, artistName: "Lady Gaga", artistGenre: "female", artistFansNum: 1600 },
+        { artistId: 10, artistName: "Madonna", artistGenre: "female", artistFansNum: 1900 },     
+      ], // 当前过滤的歌手数据
       activeLetter: 'all', // 默认激活“全部”字母
       activeGender: 'all', // 默认激活“全部”性别
     };
   },
   computed: {
-    // 按照粉丝数排序
-    sortedArtists() {
+    // 对过滤后的歌手列表按照粉丝数排序
+    filteredArtists() {
       return this.artists.sort((a, b) => b.artistFansNum - a.artistFansNum);
     }
   },
   methods: {
+    // 应用字母和性别筛选的逻辑
+    applyFilters() {
+      // 从原始数据中进行筛选，防止数据丢失
+      if(Array.isArray(this.originalArtists)){
+      this.artists = this.originalArtists.filter(artist => {
+        const matchesLetter = this.activeLetter === 'all' || artist.artistName.startsWith(this.activeLetter);
+        const matchesGender = this.activeGender === 'all' || artist.artistGenre === this.activeGender;
+        return matchesLetter && matchesGender;
+      })}
+      else{
+        console.error('originalArtists is not an array');
+      }
+    },
     // 获取歌手信息
     async fetchArtists() {
       try {
         const response = await axios.get('https://apifoxmock.com/m1/4804827-4459167-default/api/artist/all');
+        this.originalArtists = response.data;
         this.artists = response.data;
       } catch (error) {
         console.error('获取歌手信息失败:', error);
       }
     },
-    filterAll() {
-      this.fetchArtists();
-    },
-    // 根据首字母过滤
-    filterByLetter(letter) {
-      this.artists = this.artists.filter((artist) =>
-        artist.artistName.startsWith(letter)
-      );
-    },
-    // 根据性别过滤
-    filterByGender(gender) {
-      this.artists = this.artists.filter((artist) => artist.gender === gender);
-    },
+  
     // 设置激活的筛选按钮
     setActiveLetter(letter) {
       this.activeLetter = letter;
+      this.applyFilters();
     },
     setActiveGender(gender) {
       this.activeGender = gender;
+      this.applyFilters();
     },
     // 跳转到关注的歌手
     goToFollowedArtists() {
@@ -223,7 +239,11 @@ export default {
   border: none;
   color: #333;
   font-size: 16px;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: color 0.3s ease, transform 0.
+}
+  .filter-button.active {
+  background-color: #284da0c1; /* 激活状态下的背景色 */
+  color: white; /* 激活状态下的文字颜色 */
 }
 
 .filter-button.active {
