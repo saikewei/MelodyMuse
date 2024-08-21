@@ -37,15 +37,15 @@
           </button>
           <button
             class="filter-button"
-            :class="{ active: activeGender === 'male' }"
-            @click="setActiveGender('male')"
+            :class="{ active: activeGender === '男' }"
+            @click="setActiveGender('男')"
           >
             男
           </button>
           <button
             class="filter-button"
-            :class="{ active: activeGender === 'female' }"
-            @click="setActiveGender('female')"
+            :class="{ active: activeGender === '女' }"
+            @click="setActiveGender('女')"
           >
             女
           </button>
@@ -80,33 +80,33 @@ export default {
     return {
       alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
       originalArtists: [
-        { artistId: 1, artistName: "Adele", artistGenre: "female", artistFansNum: 1200 },
-        { artistId: 2, artistName: "Beyoncé", artistGenre: "female", artistFansNum: 1500 },
-        { artistId: 3, artistName: "Bruno Mars", artistGenre: "male", artistFansNum: 1400 },
-        { artistId: 4, artistName: "Coldplay", artistGenre: "male", artistFansNum: 1800 },
-        { artistId: 5, artistName: "Drake", artistGenre: "male", artistFansNum: 2000 },
-        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "male", artistFansNum: 1700 },
-        { artistId: 7, artistName: "Eminem", artistGenre: "male", artistFansNum: 2200 },
-        { artistId: 8, artistName: "Katy Perry", artistGenre: "female", artistFansNum: 1300 },
-        { artistId: 9, artistName: "Lady Gaga", artistGenre: "female", artistFansNum: 1600 },
-        { artistId: 10, artistName: "Madonna", artistGenre: "female", artistFansNum: 1900 },
-        { artistId: 11, artistName: "Michael Jackson", artistGenre: "male", artistFansNum: 2500 },
-        { artistId: 12, artistName: "Taylor Swift", artistGenre: "female", artistFansNum: 2300 },
-        { artistId: 13, artistName: "The Weeknd", artistGenre: "male", artistFansNum: 2100 },
-        { artistId: 14, artistName: "Ariana Grande", artistGenre: "female", artistFansNum: 1400 },
-        { artistId: 15, artistName: "Shakira", artistGenre: "female", artistFansNum: 1200 },
+        { artistId: 1, artistName: "Adele", artistGenre: "女", artistFansNum: 1200 },
+        { artistId: 2, artistName: "Beyoncé", artistGenre: "女", artistFansNum: 1500 },
+        { artistId: 3, artistName: "Bruno Mars", artistGenre: "男", artistFansNum: 1400 },
+        { artistId: 4, artistName: "Coldplay", artistGenre: "男", artistFansNum: 1800 },
+        { artistId: 5, artistName: "Drake", artistGenre: "男", artistFansNum: 2000 },
+        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "男", artistFansNum: 1700 },
+        { artistId: 7, artistName: "Eminem", artistGenre: "男", artistFansNum: 2200 },
+        { artistId: 8, artistName: "Katy Perry", artistGenre: "女", artistFansNum: 1300 },
+        { artistId: 9, artistName: "Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
+        { artistId: 10, artistName: "Madonna", artistGenre: "女", artistFansNum: 1900 },
+        { artistId: 11, artistName: "Michael Jackson", artistGenre: "男", artistFansNum: 2500 },
+        { artistId: 12, artistName: "Taylor Swift", artistGenre: "女", artistFansNum: 2300 },
+        { artistId: 13, artistName: "The Weeknd", artistGenre: "男", artistFansNum: 2100 },
+        { artistId: 14, artistName: "Ariana Grande", artistGenre: "女", artistFansNum: 1400 },
+        { artistId: 15, artistName: "Shakira", artistGenre: "女", artistFansNum: 1200 },
       ],
       artists: [
-        { artistId: 1, artistName: "Adele", artistGenre: "female", artistFansNum: 1200 },
-        { artistId: 2, artistName: "Beyoncé", artistGenre: "female", artistFansNum: 1500 },
-        { artistId: 3, artistName: "Bruno Mars", artistGenre: "male", artistFansNum: 1400 },
-        { artistId: 4, artistName: "Coldplay", artistGenre: "male", artistFansNum: 1800 },
-        { artistId: 5, artistName: "Drake", artistGenre: "male", artistFansNum: 2000 },
-        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "male", artistFansNum: 1700 },
-        { artistId: 7, artistName: "Eminem", artistGenre: "male", artistFansNum: 2200 },
-        { artistId: 8, artistName: "Katy Perry", artistGenre: "female", artistFansNum: 1300 },
-        { artistId: 9, artistName: "Lady Gaga", artistGenre: "female", artistFansNum: 1600 },
-        { artistId: 10, artistName: "Madonna", artistGenre: "female", artistFansNum: 1900 },     
+        { artistId: 1, artistName: "Adele", artistGenre: "女", artistFansNum: 1200 },
+        { artistId: 2, artistName: "Beyoncé", artistGenre: "女", artistFansNum: 1500 },
+        { artistId: 3, artistName: "Bruno Mars", artistGenre: "男", artistFansNum: 1400 },
+        { artistId: 4, artistName: "Coldplay", artistGenre: "男", artistFansNum: 1800 },
+        { artistId: 5, artistName: "Drake", artistGenre: "男", artistFansNum: 2000 },
+        { artistId: 6, artistName: "Ed Sheeran", artistGenre: "男", artistFansNum: 1700 },
+        { artistId: 7, artistName: "Eminem", artistGenre: "男", artistFansNum: 2200 },
+        { artistId: 8, artistName: "Katy Perry", artistGenre: "女", artistFansNum: 1300 },
+        { artistId: 9, artistName: "Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
+        { artistId: 10, artistName: "Madonna", artistGenre: "女", artistFansNum: 1900 },     
       ], // 当前过滤的歌手数据
       activeLetter: 'all', // 默认激活“全部”字母
       activeGender: 'all', // 默认激活“全部”性别
@@ -119,12 +119,19 @@ export default {
     }
   },
   methods: {
+    //汉字转拼音首字母的函数
+    getPinyinInitials(name) {
+      const pinyin = require('pinyin'); // 需要安装pinyin库：npm install pinyin
+      const initials = pinyin(name, { style: pinyin.STYLE_FIRST_LETTER }).flat();
+      return initials[0] ? initials[0].toUpperCase() : '';
+    },
     // 应用字母和性别筛选的逻辑
     applyFilters() {
       // 从原始数据中进行筛选，防止数据丢失
       if(Array.isArray(this.originalArtists)){
-      this.artists = this.originalArtists.filter(artist => {
-        const matchesLetter = this.activeLetter === 'all' || artist.artistName.startsWith(this.activeLetter);
+        this.artists = this.originalArtists.filter(artist => {
+        const nameInitial = this.getPinyinInitials(artist.artistName);
+        const matchesLetter = this.activeLetter === 'all' || artist.artistName.startsWith(this.activeLetter) || nameInitial === this.activeLetter;
         const matchesGender = this.activeGender === 'all' || artist.artistGenre === this.activeGender;
         return matchesLetter && matchesGender;
       })}
@@ -158,7 +165,7 @@ export default {
     },
     // 跳转到艺术家详情
     goToArtistPage(artistId) {
-      this.$router.push({ name: "SingerDetail", params: { id: artistId } });
+      this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
     },
   },
   mounted() {
