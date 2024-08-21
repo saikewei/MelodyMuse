@@ -1,7 +1,7 @@
 <template>
-    <div class="header-container">
+    <div class="header-container" @click="handleOutsideClick">
         <nav class="the-header">
-            <div class="header-logo">
+            <div class="header-logo" @click="goHome">
                 <img :src="Images.logoUrl" alt="Home Icon" style="height: 40px; width: 40px;">
                 <img :src="Images.nameUr1" alt="Home Icon" style="height: 40px; width: 90px;">
             </div>
@@ -11,14 +11,14 @@
                 </li>
             </ul>
             <div class="navbar-search">
-                <select v-model="searchType">
-                    <option value="artists">Artist</option>
-                    <option value="songs">Song Name</option>
+                <select v-model="searchType" @change="handleSearchTypeChange">
+                    <option value="song">搜索单曲</option>
+                    <option value="artist">搜索歌手</option>
                 </select>
-                <input type="text" v-model="searchQuery" placeholder="Search..." />
-                <button @click="performSearch">Search</button>
-                <div v-if="searchResults.length" class="search-results-popup">
-                    <search-results :results="searchResults" :searchType="searchType" />
+                <input type="text" v-model="searchQuery" placeholder="Search..." @focus="showResultsPopup" @input="performSearch" ref="searchInput" />
+                <button @click="goSearchPage">Search</button>
+                <div v-if="showPopup && filteredResults.length" class="search-results-popup" @click.stop>
+                    <SearchResults :results="filteredResults" :searchType="searchType" />
                 </div>
             </div>
         </nav>
@@ -26,72 +26,140 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { mapGetters } from 'vuex'
-import logoUrl from '../assets/logo2.jpg'
-import nameUr1 from '../assets/name1.jpg'
-import { navMsg } from '../assets/data/header'
-import SearchResults from './SearchResults.vue'
+    import axios from 'axios';
+    import { mapGetters, mapActions } from 'vuex';
+    import logoUrl from '../assets/logo2.jpg';
+    import nameUr1 from '../assets/name1.jpg';
+    import { navMsg } from '../assets/data/header';
+    import SearchResults from './SearchResults.vue';
 
-export default {
-    components: {
-        SearchResults
-    },
-    data() {
-        return {
-            Images: {
-                logoUrl,
-                nameUr1
-            },
-            navMsg: [],
-            searchQuery: '',
-            searchResults: [],
-            searchType: 'artists'  // Ĭ����������Ϊ����
-        }
-    },
-    computed: {
-        ...mapGetters('configure', ['activeName'])
-    },
-    created() {
-        this.navMsg = navMsg
-    },
-    methods: {
-        goHome() {
-            this.$router.push({ path: '/' })
+    export default {
+        components: {
+            SearchResults
         },
-        async performSearch() {
-            if (this.searchQuery.trim() === '') return
-
-            const query = this.searchQuery
-            const type = this.searchType
-            let response
-
-            try {
-                response = await axios.get(`https://localhost:7223/api/search/${type}`, {
-                    params: {
-                        query: encodeURIComponent(query)
-                    }
-                })
-                console.log('API Response:', response.data)  // Log API response for debugging
-                this.searchResults = response.data // Directly use the response data
-            } catch (error) {
-                console.error('API Error:', error)
-                this.searchResults = []
+        data() {
+            return {
+                Images: {
+                    logoUrl,
+                    nameUr1
+                },
+                navMsg: navMsg,
+                searchQuery: '',
+                searchResults: [],
+                searchType: 'songs', // 初始设置
+                showPopup: false  // 控制弹出框显示
+            };
+        },
+        computed: {
+            ...mapGetters('configure', ['activeName']),
+            ...mapGetters('search', ['searchType']),
+            filteredResults() {
+                return this.searchResults.filter(result => result.type === this.searchType);
             }
         },
-        goPage(path, name) {
-            this.$store.commit('configure/setActiveName', name)
-            this.$router.push({ path })
-        }
-    }
-}
-</script>
+        created() {
+            // 确保 searchType 和 searchQuery 从路由中正确设置
+            this.searchQuery = this.$route.query.query || '';
+            this.searchType = this.$route.query.type || 'songs';
+            if (this.searchQuery) {
+                this.performSearch();
+            }
+        },
+        mounted() {
+            document.addEventListener('click', this.handleOutsideClick);
+        },
+        beforeUnmount() {
+            document.removeEventListener('click', this.handleOutsideClick);
+        },
+        watch: {
+            '$route.query': {
+                handler(newQuery) {
+                    this.searchQuery = newQuery.query || '';
+                    this.searchType = newQuery.type || 'artists';
+                    this.performSearch();
+                },
+                immediate: true
+            }
+        },
+        methods: {
+            ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
+            async performSearch() {
+                if (this.searchQuery.trim() === '') {
+                    this.searchResults = [];
+                    this.showPopup = false;
+                    return;
+                }
 
+                try {
+                    let results = [];
+
+                    if (this.searchType === 'artist') {
+                        const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
+                            params: { query: encodeURIComponent(this.searchQuery) }
+                        });
+                        results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
+                    } else if (this.searchType === 'song') {
+                        const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
+                            params: { query: encodeURIComponent(this.searchQuery) }
+                        });
+                        results = songResponse.data.map(song => ({ ...song, type: 'song' }));
+                    }
+
+                    this.updateSearchResults(results);
+                    this.searchResults = results;
+
+                    // 检查鼠标是否在搜索框内，如果不在则隐藏弹出框
+                    if (this.$refs.searchInput && this.$refs.searchInput.contains(document.activeElement)) {
+                        this.showPopup = this.searchResults.length > 0;
+                    } else {
+                        this.showPopup = false;
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    this.updateSearchResults([]);
+                    this.searchResults = [];
+                    this.showPopup = false;
+                }
+            },
+            handleSearchTypeChange() {
+                this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
+                this.performSearch(); // 更新搜索结果
+            },
+            goSearchPage() {
+                this.$router.push({
+                    path: '/searchResultPage',
+                    query: {
+                        query: this.searchQuery,
+                        type: this.searchType
+                    }
+                });
+            },
+            goHome() {
+                this.$router.push({ path: '/' });
+            },
+            goPage(path, name) {
+                this.$store.commit('configure/setActiveName', name);
+                this.$router.push({ path });
+            },
+            showResultsPopup() {
+                if (this.searchQuery.trim() !== '') {
+                    this.showPopup = true;
+                }
+            },
+            handleOutsideClick(event) {
+                const searchInput = this.$refs.searchInput;
+                if (!searchInput.contains(event.target)) {
+                    this.showPopup = false;
+                }
+            }
+        }
+    };
+</script>
 
 <style scoped>
     .header-container {
         display: flex;
-        flex-direction: column; /* Stack elements vertically */
+        flex-direction: column;
     }
 
     .the-header {
@@ -99,7 +167,7 @@ export default {
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        padding: 0px 30px;
+        padding: 0px 45px;
         box-sizing: border-box;
         background-color: #ffffff;
         box-shadow: 0 4px 8px #cacaca;
@@ -112,6 +180,7 @@ export default {
     .header-logo {
         display: flex;
         align-items: center;
+        cursor: pointer;
     }
 
     .navbar {
@@ -119,7 +188,7 @@ export default {
         padding: 0;
         margin: 0;
         display: flex;
-        gap: 20px;
+        gap: 60px;
     }
 
         .navbar li {
@@ -141,6 +210,7 @@ export default {
                 width: 0%;
                 height: 5px;
                 background-color: #284da0c1;
+                transition: width 0.3s ease;
             }
 
             .navbar li.active::after {
@@ -211,4 +281,3 @@ export default {
         overflow-y: auto;
     }
 </style>
-

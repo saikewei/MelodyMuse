@@ -2,9 +2,14 @@
     <div class="results-container">
         <div v-if="results.length" class="results-list">
             <ul>
-                <li v-for="result in results" :key="result.artistId" class="result-item">
-                    <span class="artist-name">{{ result.artistName }}</span> -
-                    <span class="artist-intro">{{ result.artistIntro }}</span>
+                <li v-for="result in results" :key="result.id" class="result-item">
+                    <!-- 根据类型显示不同的结果 -->
+                    <span v-if="result.type === 'artist'" class="artist-name">{{ result.artistName }}</span>
+                    <span v-if="result.type === 'song'" class="song-name">{{ result.songName }}</span>
+
+                    <!-- 根据类型显示不同的介绍或信息 -->
+                    <span v-if="result.type === 'artist'" class="artist-intro">{{ result.artistIntro }}</span>
+                    <span v-if="result.type === 'song'" class="album-name">{{ result.albumName }}</span>
                 </li>
             </ul>
         </div>
@@ -43,7 +48,7 @@
         align-items: center;
     }
 
-    .artist-name {
+    .artist-name, .song-name {
         font-weight: bold;
     }
 
