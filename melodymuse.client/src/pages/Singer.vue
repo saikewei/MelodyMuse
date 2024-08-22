@@ -78,7 +78,7 @@ export default {
   },
   data() {
     return {
-      alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
+      alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split(""),
       originalArtists: [
         { artistId: 1, artistName: "Adele", artistGenre: "女", artistFansNum: 1200 },
         { artistId: 2, artistName: "Beyoncé", artistGenre: "女", artistFansNum: 1500 },
@@ -88,7 +88,7 @@ export default {
         { artistId: 6, artistName: "Ed Sheeran", artistGenre: "男", artistFansNum: 1700 },
         { artistId: 7, artistName: "Eminem", artistGenre: "男", artistFansNum: 2200 },
         { artistId: 8, artistName: "Katy Perry", artistGenre: "女", artistFansNum: 1300 },
-        { artistId: 9, artistName: "Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
+        { artistId: 9, artistName: "&Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
         { artistId: 10, artistName: "Madonna", artistGenre: "女", artistFansNum: 1900 },
         { artistId: 11, artistName: "Michael Jackson", artistGenre: "男", artistFansNum: 2500 },
         { artistId: 12, artistName: "Taylor Swift", artistGenre: "女", artistFansNum: 2300 },
@@ -105,7 +105,7 @@ export default {
         { artistId: 6, artistName: "Ed Sheeran", artistGenre: "男", artistFansNum: 1700 },
         { artistId: 7, artistName: "Eminem", artistGenre: "男", artistFansNum: 2200 },
         { artistId: 8, artistName: "Katy Perry", artistGenre: "女", artistFansNum: 1300 },
-        { artistId: 9, artistName: "Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
+        { artistId: 9, artistName: "&Lady Gaga", artistGenre: "女", artistFansNum: 1600 },
         { artistId: 10, artistName: "Madonna", artistGenre: "女", artistFansNum: 1900 },     
       ], // 当前过滤的歌手数据
       activeLetter: 'all', // 默认激活“全部”字母
@@ -121,18 +121,24 @@ export default {
   methods: {
     //汉字转拼音首字母的函数
     getPinyinInitials(name) {
-  const pinyinInitial = convertToPinyin(name, '', true).charAt(0);
-  return pinyinInitial.toUpperCase();
-},
+        const pinyinInitial = convertToPinyin(name, '', true).charAt(0);
+        return pinyinInitial.toUpperCase();
+    },
+    
     // 应用字母和性别筛选的逻辑
     applyFilters() {
       // 从原始数据中进行筛选，防止数据丢失
       if(Array.isArray(this.originalArtists)){
         this.artists = this.originalArtists.filter(artist => {
-        const nameInitial = this.getPinyinInitials(artist.artistName);
-        const matchesLetter = this.activeLetter === 'all' || artist.artistName.startsWith(this.activeLetter) || nameInitial === this.activeLetter;
-        const matchesGender = this.activeGender === 'all' || artist.artistGenre === this.activeGender;
-        return matchesLetter && matchesGender;
+          const nameInitial = this.getPinyinInitials(artist.artistName);
+          const firstChar = artist.artistName.charAt(0);
+          const isNonAlphabetical = !/^[A-Za-z]$/.test(firstChar) && !/^[\u4e00-\u9fa5]$/.test(firstChar); // 判断首字母是否为非中文非英文字符
+          const matchesLetter = this.activeLetter === 'all' || 
+                          (this.activeLetter === '#' && isNonAlphabetical) || 
+                          artist.artistName.startsWith(this.activeLetter) || 
+                          nameInitial === this.activeLetter;
+          const matchesGender = this.activeGender === 'all' || artist.artistGenre === this.activeGender;
+          return matchesLetter && matchesGender;
       })}
       else{
         console.error('originalArtists is not an array');

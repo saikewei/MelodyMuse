@@ -30,14 +30,30 @@ export default {
   },
   data() {
     return {
-      followedSingers: [],
+      followedSingers: [
+        { artistId: 1, artistName: "Adele"},
+        { artistId: 2, artistName: "Beyoncé"},
+        { artistId: 3, artistName: "Bruno Mars"},
+        { artistId: 4, artistName: "Coldplay"},
+        { artistId: 5, artistName: "Drake"},
+        { artistId: 6, artistName: "Ed Sheeran" },
+        { artistId: 7, artistName: "Eminem"},
+        { artistId: 8, artistName: "Katy Perry"},
+        { artistId: 9, artistName: "Lady Gaga"},
+        { artistId: 10, artistName: "Madonna"},
+        { artistId: 11, artistName: "Michael Jackson" },
+        { artistId: 12, artistName: "Taylor Swift" },
+        { artistId: 13, artistName: "The Weeknd"},
+        { artistId: 14, artistName: "Ariana Grande" },
+        { artistId: 15, artistName: "Shakira" },
+      ],
     };
   },
   methods: {
     // 获取已关注的歌手信息
     async fetchFollowedSingers() {
       try {
-        const response = await axios.get(`https://localhost:7223/api/songlist/user/${this.userId}`);
+        const response = await axios.get(`https://localhost:7223//api/artist/user/${this.userId}/followed`);
         this.followedSingers = response.data;
       } catch (error) {
         console.error('获取已关注的歌手信息失败:', error);
