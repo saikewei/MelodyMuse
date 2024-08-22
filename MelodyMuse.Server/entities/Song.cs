@@ -27,8 +27,6 @@ public partial class Song
 
     public virtual ICollection<SongPlayCount> SongPlayCounts { get; set; } = new List<SongPlayCount>();
 
-    public virtual ICollection<UploadCreatorSong> UploadCreatorSongs { get; set; } = new List<UploadCreatorSong>();
-
     public virtual ICollection<Upload> Uploads { get; set; } = new List<Upload>();
 
     public virtual ICollection<UserCollectSong> UserCollectSongs { get; set; } = new List<UserCollectSong>();

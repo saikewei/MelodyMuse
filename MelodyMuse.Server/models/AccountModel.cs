@@ -25,5 +25,18 @@ namespace MelodyMuse.Server.models
         public string UserStatus { get; set; } = "1";
 
     }
+// 定义更新用户信息的数据块，所有属性都更新
+    public class UpdateUserModel
+    {
+        public string? Username { get; set; } = null;
+        public string? Password { get; set; } = null;
+        public string? UserEmail { get; set; } = null;
+        public string? UserPhone { get; set; } = null;
+        public string? UserSex { get; set; } = null;
+        public decimal? UserAge { get; set; } = null;
+        public DateTime? UserBirthday { get; set; } = null;
+        public string UserStatus { get; set; } = "1";
+
+    }
 
 }

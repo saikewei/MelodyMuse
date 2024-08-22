@@ -1,9 +1,11 @@
-﻿using MelodyMuse.Server.Models;
-using MelodyMuse.Server.Repository.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MelodyMuse.Server.Models;
+using MelodyMuse.Server.Repository.Interfaces;
 using Oracle.ManagedDataAccess.Client;
-using System;
-using TencentCloud.Ame.V20190916.Models;
+
+
 
 namespace MelodyMuse.Server.Repository
 {
@@ -14,6 +16,34 @@ namespace MelodyMuse.Server.Repository
         public SongRepository()
         {
             _context = new ModelContext();
+        }
+
+        // 获取待审核的歌曲
+        public async Task<IEnumerable<Song>> GetPendingApprovalSongsAsync()
+        {
+            return await _context.Songs.Where(song => song.Status == 0).ToListAsync();
+        }
+
+        // 审核通过歌曲
+        public async Task ApproveSongAsync(string songId)
+        {
+            var song = await _context.Songs.FirstOrDefaultAsync(s => s.SongId == songId);
+            if (song != null)
+            {
+                song.Status = 1; // 1 表示审核通过
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        // 审核不通过歌曲
+        public async Task RejectSongAsync(string songId)
+        {
+            var song = await _context.Songs.FirstOrDefaultAsync(s => s.SongId == songId);
+            if (song != null)
+            {
+                song.Status = 2; // 2 表示审核不通过
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<bool> CreateSongAsync(Song song)
@@ -40,17 +70,5 @@ namespace MelodyMuse.Server.Repository
 }
 
 
-/*
-// 创建歌曲实体对象
-var song = new Song
-{
-    SongId = songid,
-    SongName = songUploadDto.SongName,
-    Duration = songUploadDto.Duration,
-    SongGenre = songUploadDto.SongGenre,
-    Lyrics = songUploadDto.Lyrics,
-    SongDate = album.AlbumReleasedate,
-    ComposerId = album.ArtistId,
-    Status = 1,//表示已发布
-    Artists = artists // 设置歌曲的所有歌手
-};*/
+
+

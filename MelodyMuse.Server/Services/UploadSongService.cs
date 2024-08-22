@@ -15,9 +15,8 @@ namespace MelodyMuse.Server.Services
         private readonly IAlbumRepository _albumRepository;
         private readonly IArtistRepository _artistRepository;
         private readonly string _ftpServer = "101.126.23.58";
-        private readonly string _ftpUsername = "ftpuser";
-        private readonly string _ftpPassword = "tongjiORCL2024";
-
+        private readonly string _ftpUsername = "ftpuser"; 
+        private readonly string _ftpPassword = "tongjiORCL2024"; 
 
         public UploadSongService(ISongRepository songRepository, IAlbumRepository albumRepository, IArtistRepository artistRepository)
         {
@@ -100,7 +99,6 @@ namespace MelodyMuse.Server.Services
 
                 await ftp.Disconnect(token);
             }
-
 
 
 

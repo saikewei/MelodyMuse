@@ -2,21 +2,18 @@
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using FluentFTP;
-using System.Net.Http.Headers;
-using MelodyMuse.Server.Models;
-using System.Text;
-using TencentCloud.Tiia.V20190529.Models;
+
 
 namespace MelodyMuse.Server.Controllers
 {
-   
+
 
     [ApiController]
     [Route("api/player")]
     public class MusicPlayerController : Controller
     {
         private readonly IMusicPlayerService _musicService;
-       
+
         private readonly string _cacheDirectory;
         // 设置缓存目录的最大大小限制 (例如: 500MB)
         private readonly long _cacheSizeLimit = 500 * 1024 * 1024; // 500 MB
@@ -27,9 +24,9 @@ namespace MelodyMuse.Server.Controllers
 
         public MusicPlayerController(IMusicPlayerService musicService)
         {
-            
+
             _musicService = musicService;
-           
+
             // 使用相对路径设置缓存目录
             _cacheDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MusicCache");
 
@@ -54,7 +51,7 @@ namespace MelodyMuse.Server.Controllers
             response.EnableRangeProcessing = true;
 
             return response;
-            
+
         }
 
         [HttpGet("jpg")]
@@ -150,4 +147,3 @@ namespace MelodyMuse.Server.Controllers
         }
     }
 }
-

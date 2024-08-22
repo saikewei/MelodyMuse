@@ -13,15 +13,15 @@ namespace MelodyMuse.Server.Services
     {
         
         
-        private readonly IAlbumRepository _albumRepository;
-        private readonly string _ftpServer = "101.126.23.58";
-        private readonly string _ftpUsername = "ftpuser";
-        private readonly string _ftpPassword = "tongjiORCL2024";
+            private readonly IAlbumRepository _albumRepository;
+            private readonly string _ftpServer = "101.126.23.58";
+            private readonly string _ftpUsername = "ftpuser";
+            private readonly string _ftpPassword = "tongjiORCL2024";
 
 
         public CreateAlbumService(IAlbumRepository albumRepository)
         {
-            _albumRepository = albumRepository;
+                _albumRepository = albumRepository;
         }
 
         public async Task<bool> CreateAlbumAsync(AlbumCreateModel albumCreateDto)
@@ -58,11 +58,7 @@ namespace MelodyMuse.Server.Services
                 }
 
                 await ftp.Disconnect(token);
-                
             }
-
-
-
 
 
             // 创建专辑实体对象

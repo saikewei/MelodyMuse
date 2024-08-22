@@ -1,7 +1,6 @@
 ﻿using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
-using TencentCloud.Ame.V20190916.Models;
 
 /*
   MusicPlayer服务层的函数实现(调用下一层repository提供的接口)
@@ -31,7 +30,7 @@ namespace MelodyMuse.Server.Services
             // 提取歌手名称列表
             List<string?> singerNames = singers.Select(o => o.ArtistName).ToList();
             //获取歌曲所属专辑ID
-            var albumId=await _musicplayerrepository.GetAlbumIdBySongId(songId);
+            var albumId = await _musicplayerrepository.GetAlbumIdBySongId(songId);
 
 
             // 创建并填充SongMetaDataModel对象
@@ -45,7 +44,7 @@ namespace MelodyMuse.Server.Services
                 SongDuration = song.Duration,
                 ComposerId = song.ComposerId,
                 ComposerName = song.Composer != null ? song.Composer.ArtistName : null,
-                AlbumId=albumId
+                AlbumId = albumId
             };
 
             // 返回填充好的SongMetaDataModel对象
