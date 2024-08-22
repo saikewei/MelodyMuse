@@ -12,23 +12,21 @@ using FluentFTP;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 配置依赖注入
-builder.Services.AddSingleton<IAsyncFtpClient>(sp =>
-{
-
-    var ftpClient = new AsyncFtpClient("101.126.23.58", "ftpuser", "tongjiORCL2024");
-    ftpClient.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
-    
-    return ftpClient;
-});
-
-
 
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 
 // Register services
 //������ط���
