@@ -1,8 +1,14 @@
 <template>
     <div class="results-container">
         <div class="tabs">
-            <button @click="setCategory('artist')" :class="{ active: category === 'artist' }">歌手</button>
             <button @click="setCategory('song')" :class="{ active: category === 'song' }">单曲</button>
+            <button @click="setCategory('artist')" :class="{ active: category === 'artist' }">歌手</button>
+        </div>
+
+        <div v-if="filteredResults.length" class="search-summary">
+            搜索“{{ query }}”，找到
+            <span class="result-count">{{ resultCount }}</span>
+            {{ searchType === 'song' ? '首单曲' : '位歌手' }}
         </div>
 
         <el-table v-if="filteredResults.length" :data="filteredResults" style="width: 100%">
@@ -23,7 +29,7 @@
                              label="操作"
                              width="200">
                 <template #default="scope">
-                    <el-button @click="followArtist(scope.row)" type="primary">+ 关注</el-button>
+                    <el-button @click="followArtist(scope.row)" type="primary" class=" artistButton">+ 关注 </el-button>
                 </template>
             </el-table-column>
 
@@ -32,11 +38,15 @@
                              label="歌曲"
                              width="500">
                 <template #default="scope">
-                    <img :src="scope.row.playing ? playClickedIcon : playIcon"
-                         @click="togglePlayIcon(scope.row)"
-                         class="play-icon"
-                         alt="播放图标" />
-                    {{ scope.row.songName }}
+                    <el-tooltip content="播放歌曲" placement="bottom">
+                        <img :src="scope.row.playing ? playClickedIcon : scope.row.playHover ? playHoverIcon : playIcon"
+                             @mouseover="scope.row.playHover = true"
+                             @mouseleave="scope.row.playHover = false"
+                             @click="togglePlayIcon(scope.row)"
+                             class="play-icon"
+                             alt="播放歌曲" />
+                    </el-tooltip>
+                    <a :href="'/song/' + scope.row.songId" class="song-link">{{ scope.row.songName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'song'"
@@ -56,19 +66,22 @@
                              label="操作"
                              width="200">
                 <template #default="scope">
-                    <img :src="scope.row.liked ? likeClickedIcon : scope.row.likeHover ? likeHoverIcon : likeIcon"
-                         @mouseover="scope.row.likeHover = true"
-                         @mouseleave="scope.row.likeHover = false"
-                         @click="toggleLikeIcon(scope.row)"
-                         class="icon"
-                         alt="收藏歌曲" />
-
-                    <img :src="scope.row.added ? addClickedIcon : scope.row.addHover ? addHoverIcon : addIcon"
-                         @mouseover="scope.row.addHover = true"
-                         @mouseleave="scope.row.addHover = false"
-                         @click="toggleAddIcon(scope.row)"
-                         class="icon"
-                         alt="添加到播放列表" />
+                    <el-tooltip content="收藏歌曲" placement="bottom">
+                        <img :src="scope.row.liked ? likeClickedIcon : scope.row.likeHover ? likeHoverIcon : likeIcon"
+                             @mouseover="scope.row.likeHover = true"
+                             @mouseleave="scope.row.likeHover = false"
+                             @click="toggleLikeIcon(scope.row)"
+                             class="icon"
+                             alt="收藏歌曲" />
+                    </el-tooltip>
+                    <el-tooltip content="添加到播放列表" placement="bottom">
+                        <img :src="scope.row.added ? addClickedIcon : scope.row.addHover ? addHoverIcon : addIcon"
+                             @mouseover="scope.row.addHover = true"
+                             @mouseleave="scope.row.addHover = false"
+                             @click="toggleAddIcon(scope.row)"
+                             class="icon"
+                             alt="添加到播放列表" />
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -83,6 +96,7 @@
     import { mapGetters } from 'vuex';
     import playIcon from '../assets/pics/play.png';
     import playClickedIcon from '../assets/pics/play-click.png';
+    import playHoverIcon from '../assets/pics/play-cover.png';
     import likeIcon from '../assets/pics/like.png';
     import likeHoverIcon from '../assets/pics/like-cover.png';
     import likeClickedIcon from '../assets/pics/like-click.png';
@@ -103,20 +117,34 @@
         },
         data() {
             return {
+                query: '', // 初始查询值
                 playIcon,
                 playClickedIcon,
+                playHoverIcon,
                 likeIcon,
                 likeHoverIcon,
                 likeClickedIcon,
                 addIcon,
                 addHoverIcon,
-                addClickedIcon
+                addClickedIcon,
             };
+        },
+        created() {
+            this.query = this.$route.query.query || ''; // 从路由中获取查询参数
         },
         computed: {
             ...mapGetters('search', ['searchType']), // 从Vuex获取当前的搜索类型
             category() {
                 return this.searchType; // 根据Vuex中的搜索类型确定当前类别
+            },
+            resultCount() {
+                return this.results.length;
+            },
+            summary() {
+                if (this.query && this.resultCount > 0) {
+                    return `搜索“${this.query}”，找到${this.resultCount}${this.searchType === 'song' ? '首单曲' : '位歌手'}`;
+                }
+                return null;
             },
             filteredResults() {
                 // 根据类别筛选结果
@@ -126,6 +154,7 @@
                         {
                             songName: result.songName,
                             artist: result.artist,
+                            songId: result.songId,
                             duration: result.duration,
                             playing: false,
                             liked: false,
@@ -189,12 +218,35 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 100px;
         }
 
             .tabs button.active {
-                background-color: #C3D0F2;
+                background-color: rgba(64, 108, 194, 0.9);
+                color: white;
                 font-weight: bold;
             }
+
+            .tabs button:hover {
+                background-color: rgba(226,233,247,0.9);
+                color: black;
+                font-weight: normal;
+            }
+
+            .tabs button:active {
+                background-color: #385FAB;
+            }
+
+    .search-summary {
+        margin-bottom: 20px;
+        margin-right:1020px;
+        font-size: 15px;
+        color: #666;
+    }
+
+    .result-count {
+        color: #CC2C1F;
+    }
 
     .no-results {
         padding: 20px;
@@ -203,12 +255,35 @@
         color: #666;
     }
 
+    .artistButton {
+        background-color: rgba(64, 108, 194, 0.9);
+        color: white;
+    }
+
+        .artistButton:hover {
+            background-color: #95ADE0;
+        }
+
+        .artistButton:active {
+            background-color: #385FAB;
+        }
+
     .artist-link {
         color: #284da0c1;
         text-decoration: none;
     }
 
         .artist-link:hover {
+            text-decoration: underline;
+            background-color: transparent;
+        }
+
+    .song-link {
+        color: #284da0c1;
+        text-decoration: none;
+    }
+
+        .song-link:hover {
             text-decoration: underline;
             background-color: transparent;
         }

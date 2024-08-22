@@ -15,7 +15,7 @@
                     <option value="song">搜索单曲</option>
                     <option value="artist">搜索歌手</option>
                 </select>
-                <input type="text" v-model="searchQuery" placeholder="Search..." @focus="showResultsPopup" @input="performSearch" ref="searchInput" />
+                <input type="text" v-model="inputQuery" placeholder="Search..." @focus="showResultsPopup" @input="performSearch" ref="searchInput" />
                 <button @click="goSearchPage">Search</button>
                 <div v-if="showPopup && filteredResults.length" class="search-results-popup" @click.stop>
                     <SearchResults :results="filteredResults" :searchType="searchType" />
@@ -44,9 +44,11 @@
                     nameUr1
                 },
                 navMsg: navMsg,
-                searchQuery: '',
+                inputQuery: '', // 实时更新弹出框用
+                actualQuery: '', // 点击Search按钮时用
                 searchResults: [],
-                searchType: 'songs', // 初始设置
+                searchType: 'song', // 初始设置
+                actualType: 'song',
                 showPopup: false  // 控制弹出框显示
             };
         },
@@ -58,10 +60,10 @@
             }
         },
         created() {
-            // 确保 searchType 和 searchQuery 从路由中正确设置
-            this.searchQuery = this.$route.query.query || '';
-            this.searchType = this.$route.query.type || 'songs';
-            if (this.searchQuery) {
+            this.inputQuery = this.$route.query.query || '';
+            this.searchType = this.$route.query.type || 'song';
+            this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
+            if (this.inputQuery) {
                 this.performSearch();
             }
         },
@@ -84,7 +86,7 @@
         methods: {
             ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
             async performSearch() {
-                if (this.searchQuery.trim() === '') {
+                if (this.inputQuery.trim() === '') {
                     this.searchResults = [];
                     this.showPopup = false;
                     return;
@@ -95,17 +97,17 @@
 
                     if (this.searchType === 'artist') {
                         const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
-                            params: { query: encodeURIComponent(this.searchQuery) }
+                            params: { query: encodeURIComponent(this.inputQuery) }
                         });
                         results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
                     } else if (this.searchType === 'song') {
                         const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
-                            params: { query: encodeURIComponent(this.searchQuery) }
+                            params: { query: encodeURIComponent(this.inputQuery) }
                         });
                         results = songResponse.data.map(song => ({ ...song, type: 'song' }));
                     }
 
-                    this.updateSearchResults(results);
+                    //this.updateSearchResults(results);
                     this.searchResults = results;
 
                     // 检查鼠标是否在搜索框内，如果不在则隐藏弹出框
@@ -116,21 +118,24 @@
                     }
                 } catch (error) {
                     console.error('API Error:', error);
-                    this.updateSearchResults([]);
+                    //this.updateSearchResults([]);
                     this.searchResults = [];
                     this.showPopup = false;
                 }
             },
             handleSearchTypeChange() {
-                this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
+                //this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
                 this.performSearch(); // 更新搜索结果
             },
             goSearchPage() {
+                this.actualQuery = this.inputQuery;
+                this.actualType = this.searchType;
+                this.updateSearchType(this.actualType); // 更新 Vuex 中的搜索类型
                 this.$router.push({
                     path: '/searchResultPage',
                     query: {
-                        query: this.searchQuery,
-                        type: this.searchType
+                        query: this.actualQuery,
+                        type: this.actualType
                     }
                 });
             },
@@ -142,7 +147,7 @@
                 this.$router.push({ path });
             },
             showResultsPopup() {
-                if (this.searchQuery.trim() !== '') {
+                if (this.inputQuery.trim() !== '') {
                     this.showPopup = true;
                 }
             },
@@ -214,7 +219,8 @@
             }
 
             .navbar li.active::after {
-                width: 100%;
+                width: 120%;
+                left: -10%
             }
 
             .navbar li.active {
@@ -263,10 +269,16 @@
             margin-left: 10px;
             border-radius: 20px;
             border: none;
-            background-color: #284da0c1;
+            background-color: rgba(64, 108, 194, 0.9);
             color: white;
             cursor: pointer;
         }
+            .navbar-search button:hover {
+                background-color: #95ADE0;
+            }
+            .navbar-search button:active {
+                background-color: #385FAB;
+            }
 
     .search-results-popup {
         position: absolute;

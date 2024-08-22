@@ -1,7 +1,6 @@
 <template>
     <div class="search-result-page">
         <TheHeader @search="handleSearch" />
-        <h1>搜索结果</h1>
         <div v-if="loading">加载中...</div>
         <div v-else>
             <SearchResultList :results="searchResults" :searchType="searchType" @updateCategory="handleCategoryUpdate" />
@@ -25,11 +24,11 @@
         },
         data() {
             return {
-                loading: false, // 用于控制加载状态的标志
+                loading: false, // 控制加载状态
             };
         },
         computed: {
-            ...mapGetters('search', ['searchType', 'searchResults']) // 从Vuex中获取搜索类型和结果
+            ...mapGetters('search', ['searchType', 'searchResults']) // 从 Vuex 中获取搜索类型和结果
         },
         created() {
             this.performSearch(); // 页面加载时执行搜索
@@ -37,14 +36,16 @@
         watch: {
             '$route.query': {
                 handler() {
-                    this.updateSearchType(this.$route.query.type || 'songs'); // 根据URL参数更新搜索类型
-                    this.performSearch(); // 每当查询参数变化时执行搜索
+                    if (this.$route.query.query) {
+                        this.updateSearchType(this.$route.query.type || 'artist'); // 根据 URL 参数更新搜索类型
+                        this.performSearch(); // 查询参数变化时执行搜索
+                    }
                 },
-                immediate: true // 确保组件加载时立即执行handler
+                immediate: true // 确保组件加载时立即执行 handler
             }
         },
         methods: {
-            ...mapActions('search', ['updateSearchType', 'setSearchResults']), // Vuex actions，用于更新搜索类型和结果
+            ...mapActions('search', ['updateSearchType', 'updateSearchResults']), // Vuex actions，用于更新搜索类型和结果
             async handleSearch({ query, category }) {
                 this.updateSearchType(category); // 更新搜索类型
                 this.$router.push({
@@ -81,10 +82,10 @@
                             results = songResponse.data.map(song => ({ ...song, type: 'song' }));
                         }
 
-                        this.setSearchResults(results); // 设置搜索结果到Vuex store
+                        this.updateSearchResults(results); // 设置搜索结果到 Vuex store
                     } catch (error) {
                         console.error('API Error:', error);
-                        this.setSearchResults([]); // 出现错误时清空结果
+                        this.updateSearchResults([]); // 出现错误时清空结果
                     } finally {
                         this.loading = false;
                     }
