@@ -69,7 +69,7 @@
 import axios from 'axios';
 import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
-
+import { convertToPinyin } from 'tiny-pinyin';
 export default {
   name: "singer",
   components: {
@@ -121,10 +121,9 @@ export default {
   methods: {
     //汉字转拼音首字母的函数
     getPinyinInitials(name) {
-      const pinyin = require('pinyin'); // 需要安装pinyin库：npm install pinyin
-      const initials = pinyin(name, { style: pinyin.STYLE_FIRST_LETTER }).flat();
-      return initials[0] ? initials[0].toUpperCase() : '';
-    },
+  const pinyinInitial = convertToPinyin(name, '', true).charAt(0);
+  return pinyinInitial.toUpperCase();
+},
     // 应用字母和性别筛选的逻辑
     applyFilters() {
       // 从原始数据中进行筛选，防止数据丢失
