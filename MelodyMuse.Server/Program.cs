@@ -105,10 +105,9 @@ if (app.Environment.IsDevelopment())
 }
 
 
+app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
 
 app.UseHttpsRedirection();
-
-app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
 
 app.UseAuthorization();
 
