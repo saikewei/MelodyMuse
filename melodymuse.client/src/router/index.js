@@ -75,7 +75,7 @@ const routes = [
         component: Register
     },
     {
-        path: '/mediaplayer',
+        path: '/mediaplayer/:songId',
         name:'mediaplayer',
         component: mediaplayer
     }

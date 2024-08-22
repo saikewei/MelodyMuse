@@ -1,15 +1,15 @@
 <template>
     <div id="app">
-      <MusicPlayer />
+      <Player />
     </div>
 </template>
   
 <script>
-  import MusicPlayer from "../components/player.vue"
-
+  // mediaplayer.vue
+    import Player from '../components/player.vue';
   export default {
     components: {
-      MusicPlayer,
+      Player
     },
   };
 </script>
