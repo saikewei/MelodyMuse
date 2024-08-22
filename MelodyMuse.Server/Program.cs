@@ -104,7 +104,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
 
 app.UseAuthorization();
 
