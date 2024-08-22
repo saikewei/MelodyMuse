@@ -6,9 +6,9 @@
     </div>
     <div class="followed-artist-list">
       <ul>
-        <li v-for="singer in followedSingers" :key="singer.id" class="artist-item">
-          <a @click="goToArtistPage(singer.id)">
-            {{ singer.name }}
+        <li v-for="singer in followedSingers" :key="singer.artistId" class="artist-item">
+          <a @click="goToArtistPage(singer.artistId)">
+            {{ singer.artistName }}
           </a>
         </li>
       </ul>
@@ -23,7 +23,7 @@ import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
 
 export default {
-  name: "FollowedSingers",
+  name: "FollowedArtist",
   components: {
     TheHeader,
     TheFooter,
@@ -37,7 +37,7 @@ export default {
     // 获取已关注的歌手信息
     async fetchFollowedSingers() {
       try {
-        const response = await axios.get('https://localhost:7223/api/artist/all');
+        const response = await axios.get(`https://localhost:7223/api/songlist/user/${this.userId}`);
         this.followedSingers = response.data;
       } catch (error) {
         console.error('获取已关注的歌手信息失败:', error);
@@ -45,11 +45,12 @@ export default {
     },
     // 跳转到歌手详情页
     goToArtistPage(artistId) {
-      this.$router.push({ name: "SingerDetail", params: { id: artistId } });
+      this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
     },
   },
   mounted() {
     this.fetchFollowedSingers();
+    this.userId = localStorage.getItem('userId');
   },
 };
 </script>
