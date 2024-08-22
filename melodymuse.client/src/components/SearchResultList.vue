@@ -233,10 +233,6 @@
                 font-weight: normal;
             }
 
-            .tabs button:active {
-                background-color: #385FAB;
-            }
-
     .search-summary {
         margin-bottom: 20px;
         margin-right:1020px;

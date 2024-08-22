@@ -128,16 +128,18 @@
                 this.performSearch(); // 更新搜索结果
             },
             goSearchPage() {
-                this.actualQuery = this.inputQuery;
-                this.actualType = this.searchType;
-                this.updateSearchType(this.actualType); // 更新 Vuex 中的搜索类型
-                this.$router.push({
-                    path: '/searchResultPage',
-                    query: {
-                        query: this.actualQuery,
-                        type: this.actualType
-                    }
-                });
+                if (this.inputQuery != '') {
+                    this.actualQuery = this.inputQuery;
+                    this.actualType = this.searchType;
+                    this.updateSearchType(this.actualType); // 更新 Vuex 中的搜索类型
+                    this.$router.push({
+                        path: '/searchResultPage',
+                        query: {
+                            query: this.actualQuery,
+                            type: this.actualType
+                        }
+                    });
+                }
             },
             goHome() {
                 this.$router.push({ path: '/' });
