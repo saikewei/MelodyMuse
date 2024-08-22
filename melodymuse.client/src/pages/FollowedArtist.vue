@@ -55,6 +55,7 @@ export default {
       try {
         const response = await axios.get(`https://localhost:7223//api/artist/user/${this.userId}/followed`);
         this.followedSingers = response.data;
+        console.log('用户信息:', this.followedSingers);
       } catch (error) {
         console.error('获取已关注的歌手信息失败:', error);
       }
@@ -65,8 +66,9 @@ export default {
     },
   },
   mounted() {
+    this.userId = '001';//localStorage.getItem('userId');
     this.fetchFollowedSingers();
-    this.userId = localStorage.getItem('userId');
+    
   },
 };
 </script>
