@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a :href="'/artist/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a :href="'/artist/' + scope.row.artistName" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
@@ -46,13 +46,18 @@
                              class="play-icon"
                              alt="播放歌曲" />
                     </el-tooltip>
-                    <a :href="'/song/' + scope.row.songId" class="song-link">{{ scope.row.songName }}</a>
+                    <a :href="'/song/' + scope.row.songName" class="song-link">{{ scope.row.songName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'song'"
-                             prop="artist"
                              label="演唱"
                              width="250">
+                <template #default="scope">
+                    <span v-for="(artist, index) in scope.row.artist.split(', ')" :key="index">
+                        <a :href="'/artist/' + artist" class="artist-link">{{ artist }}</a>
+                        <span v-if="index < scope.row.artist.split(', ').length - 1">, </span>
+                    </span>
+                </template>
             </el-table-column>
             <el-table-column v-if="category === 'song'"
                              prop="duration"
@@ -147,13 +152,17 @@
                 return null;
             },
             filteredResults() {
-                // 根据类别筛选结果
                 return this.results.map(result => {
-                    return this.category === 'artist' ?
-                        { artistName: result.artistName, artistId: result.artistId, artistIntro: result.artistIntro } :
-                        {
+                    if (this.category === 'artist') {
+                        return {
+                            artistName: result.artistName,
+                            artistId: result.artistId,
+                            artistIntro: result.artistIntro
+                        };
+                    } else {
+                        return {
                             songName: result.songName,
-                            artist: result.artist,
+                            artist: result.artists.map(artist => artist.artistName).join(', '), // 将所有演唱者名字连接成一个字符串
                             songId: result.songId,
                             duration: result.duration,
                             playing: false,
@@ -162,6 +171,7 @@
                             likeHover: false,
                             addHover: false
                         };
+                    }
                 });
             }
         },
