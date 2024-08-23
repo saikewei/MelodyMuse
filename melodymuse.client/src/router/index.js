@@ -12,6 +12,8 @@ import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
+import RankSongs from "../pages/RankSongs.vue";
+import RankArtists from "../pages/RankArtists.vue";
 
 const routes = [
   {
@@ -79,6 +81,16 @@ const routes = [
     name: "usermanage", //?????????????????????
     component: UserManage, //?????????????????????
   },
+  {
+    path: "/ranksongs",
+    name: "ranksongs",
+    component: RankSongs,
+  },
+  {
+    path: "/rankartists",
+    name: "rankartists",
+    component: RankArtists,
+  }
 ];
 
 const router = createRouter({
