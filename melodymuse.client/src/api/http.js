@@ -17,11 +17,4 @@ apiClient.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-// 创建不需要 token 的 Axios 实例
-const apiClientWithoutToken = axios.create({
-  baseURL: 'http://localhost:7223',
-  timeout: 1000,
-});
-
-export default {apiClient,apiClientWithoutToken};
-
+export default apiClient;
