@@ -11,23 +11,23 @@ namespace MelodyMuse.Server.Controllers
     [ApiController]
 
     [Route("api/rank")]
-    public class RankingListController : ControllerBase
+    public class RankingController : ControllerBase
     {
         //维护一个到下层服务的接口
-        private readonly IRankingListService _RankingListService;
+        private readonly IRankingService _RankingService;
 
         //构造函数:初始化(传入相应的服务)接口
-        public  RankingListController(IRankingListService  RankingListService)
+        public  RankingController(IRankingService  RankingService)
         {
-            _RankingListService =  RankingListService;
+            _RankingService =  RankingService;
         }
 
 
-        [HttpGet("with-playcount")]
-         public async Task<IActionResult> GetSongsWithPlayCount()
+         [HttpGet("top-songs")]
+    public async Task<IActionResult> GetTopSongs()
     {
-        var songsWithPlayCount = await _RankingListService.GetSongsWithPlayCountAsync();
-        return Ok(songsWithPlayCount);
+        var topSongs = await _RankingService.GetTopSongsAsync();
+        return Ok(topSongs);
     }
     }
 

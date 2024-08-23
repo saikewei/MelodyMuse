@@ -25,9 +25,9 @@ builder.Services.AddCors(options =>
 
 // Register services
 //������ط���
-builder.Services.AddScoped<IRankingListService, RankingListService>();
-builder.Services.AddScoped<IRankingListRepository>(provider =>
-   new RankingListRepository());
+builder.Services.AddScoped<IRankingService, RankingService>();
+builder.Services.AddScoped<IRankingRepository>(provider =>
+   new RankingRepository());
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider =>
    new AccountRepository());

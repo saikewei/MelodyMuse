@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 namespace MelodyMuse.Server.Repository.Interfaces
 {
-    public interface IRankingListRepository
-    {
-        Task<List<SongPlayCountDto>> GetSongsWithPlayCountAsync();
-    }
+   public interface IRankingRepository
+{
+    Task<List<SongRankingDto>> GetTopSongsAsync();
+}
+
 }
