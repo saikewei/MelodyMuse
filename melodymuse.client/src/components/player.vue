@@ -39,36 +39,35 @@ import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 
-const router = useRouter(); // 获取 Vue Router 实例
+const router = useRouter(); 
 const route = useRoute(); 
 
 const songId=route.params.songId;
 
-const audioSrc = ref('test.mp3'); // 替换为实际音频文件路径
+
+const songInfo = await fetchSongInfo(songId);
+console.log(songInfo)
+
+const songName = songInfo.songName;
+
+const artistId = songInfo.composerId;
+
+const lyricsUrl = songInfo.lyricsUrl;
+
+const coverUrl = songInfo.coverUrl;
+
+
+const lyricsTxt = await fetchLyrics(songId,artistId);
+console.log(lyricsTxt)
+
+const lyrics = parseLyrics(lyricsTxt);
+console.log(lyrics)
+
+const audioSrc = await fetchSong(songId,artistId);
+
 
 const currentImage = ref('/th.jpg');
 
-fetchSongInfo(songId);
-
-// 解析歌词
-const parseLyrics = (lyricsText) => {
-  return lyricsText.split('\n').flatMap(line => {
-    const matches = line.matchAll(/\[(\d{2}:\d{2}\.\d{3})\]/g);
-    const results = [];
-    for (const match of matches) {
-      const time = match[1];
-      const minutes = parseInt(time.substring(0, 2), 10);
-      const seconds = parseFloat(time.substring(3));
-      const timestamp = minutes * 60 + seconds;
-      // 提取时间戳后面的文本
-      const text = line.replace(/\[.*?\]/g, '').trim();
-      results.push({ time: timestamp, text: text });
-    }
-    return results;
-  }).filter(Boolean);
-};
-
-const lyrics = '';
 
 const currentLine = ref(0);
 const audioElement = ref(null);
@@ -84,15 +83,92 @@ onMounted(() => {
   requestAnimationFrame(update);
 });
 
+async function fetchLyrics(songId,artistId){
+  try{
+    const formData = new FormData();
+    formData.append('songId', songId);
+    formData.append('artistId', artistId);
+  const response = await axios.get("https://localhost:7223/api/player/txt",{
+    params:{'songId' : songId,
+    'artistId' : artistId}
+  });
+
+  if(response.status === 200)
+  {
+  return response.data;
+  }
+  else{
+    return '[00:00.00] 获取歌词失败'
+  }
+
+}catch(error){
+  console.log(error)
+}
+}
+
+async function fetchSong(songId,artistId){
+  try{
+    const formData = new FormData();
+    formData.append('songId', songId);
+    formData.append('artistId', artistId);
+  const response = await axios.get("https://localhost:7223/api/player/mp3",{
+    params:{'songId' : songId,
+    'artistId' : artistId}
+  });
+  console.log(response)
+  if(response.status === 200)
+  {
+  return response.data;
+  }
+  else{
+    return null;
+  }
+
+}catch(error){
+  console.log(error)
+}
+}
+
+// 解析歌词
+function parseLyrics(lyricsText) {
+  return lyricsText.split('\n').flatMap(function (line) {
+    const results = [];
+
+    let index = 0;
+    while (index < line.length) {
+      // 查找左括号的位置
+      const leftBracketIndex = line.indexOf('[', index);
+      if (leftBracketIndex === -1) break; // 如果没有找到左括号，结束循环
+      
+      // 查找右括号的位置
+      const rightBracketIndex = line.indexOf(']', leftBracketIndex);
+      if (rightBracketIndex === -1) break; // 如果没有找到右括号，结束循环
+      
+      // 提取时间戳
+      const timeStr = line.substring(leftBracketIndex + 1, rightBracketIndex);
+      const minutes = parseInt(timeStr.substring(0, 2), 10);
+      const seconds = parseFloat(timeStr.substring(3));
+      const timestamp = minutes * 60 + seconds;
+      
+      // 提取时间戳后面的文本
+      const textStartIndex = rightBracketIndex + 1;
+      const text = line.substring(textStartIndex).trim();
+      
+      results.push({ time: timestamp, text: text });
+
+      // 更新索引
+      index = textStartIndex;
+    }
+
+    return results;
+  }).filter(Boolean);
+}
+
 async function fetchSongInfo(songId) {
   console.log(songId)
   try {
-    const response = await axios.get(`http://localhost:7223/api/player/${songId}`);
+    const response = await axios.get(`https://localhost:7223/api/player/${songId}`);
     const songInfo = response.data;
-
-
-    console.log('Song Info:', songInfo);
-
     return songInfo;
   } catch (error) {
     console.error('Error fetching song info:', error);
