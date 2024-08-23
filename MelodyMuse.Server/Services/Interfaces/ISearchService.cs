@@ -10,7 +10,8 @@ namespace MelodyMuse.Server.Services.Interfaces
     public interface ISearchService
     {
         Task<List<Artist>> SearchArtists(string query);
-        Task<List<Song>> SearchSongsByName(string query);
+        Task<List<SongModel>> SearchSongsByName(string query);
         Task<List<SongSearchModel>> SearchSongsByLyrics(string query);
+        Task<List<Artist>> GetArtistsBySongId(string songId);
     }
 }

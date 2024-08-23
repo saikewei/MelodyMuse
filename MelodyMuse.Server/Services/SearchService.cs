@@ -7,6 +7,7 @@ using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MelodyMuse.Server.Services
 {
@@ -25,13 +26,17 @@ namespace MelodyMuse.Server.Services
         {
             return await _searchRepository.SearchArtists(query);
         }
-        public async Task<List<Song>> SearchSongsByName(string query)
+        public async Task<List<SongModel>> SearchSongsByName(string query)
         {
             return await _searchRepository.SearchSongsByName(query);
         }
         public async Task<List<SongSearchModel>> SearchSongsByLyrics(string query)
         {
             return await _searchRepository.SearchSongsByLyrics(query);
+        }
+        public async Task<List<Artist>> GetArtistsBySongId(string songId)
+        {
+            return await _searchRepository.GetArtistsBySongId(songId);
         }
     }
 }

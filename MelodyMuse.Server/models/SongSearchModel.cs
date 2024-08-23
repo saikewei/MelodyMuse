@@ -1,5 +1,28 @@
-﻿namespace MelodyMuse.Server.models
+﻿using MelodyMuse.Server.Models;
+
+namespace MelodyMuse.Server.models
 {
+    public class SongModel
+    {
+        public string SongId { get; set; } = null!;
+
+        public string? SongName { get; set; }
+
+        public string? SongGenre { get; set; }
+
+        public decimal? Duration { get; set; }
+
+        public string? Lyrics { get; set; }
+
+        public DateTime? SongDate { get; set; }
+
+        public string? ComposerId { get; set; }
+
+        public byte? Status { get; set; }
+
+        public List<Artist>? Artists { get; set; }
+    }
+
     //搜索歌词用
     public class SongSearchModel
     {

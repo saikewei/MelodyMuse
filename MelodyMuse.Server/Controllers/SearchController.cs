@@ -71,6 +71,25 @@ namespace MelodyMuse.Server.Controllers
             return Ok(songs);
         }
 
+
+        //搜索歌曲//测试代码，songId返回歌手
+        [HttpGet]
+        [Route("artist_song")]
+        public async Task<IActionResult> GetArtistsBySongId([FromQuery] string songId)
+        {
+            try
+            {
+                var artists = await _searchService.GetArtistsBySongId(songId);
+                return Ok(artists);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //由于歌词移动，该接口已经废弃
+
         //搜索歌词
         [HttpGet]
         [Route("lyrics")]

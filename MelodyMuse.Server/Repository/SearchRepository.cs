@@ -1,4 +1,5 @@
-﻿using MelodyMuse.Server.models;
+﻿using Dapper;
+using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,19 +21,63 @@ namespace MelodyMuse.Server.Repository
         //查询歌手
         public async Task<List<Artist>> SearchArtists(string query)
         { 
-                return await _context.Artists
+               return await _context.Artists
                                 .Where(a => a.ArtistName.Contains(query))
                                 .ToListAsync();
         }
 
         //查询歌名
-        public async Task<List<Song>> SearchSongsByName(string query)
+        public async Task<List<SongModel>> SearchSongsByName(string query)
+        {
+            var songs = await _context.Songs
+                   .Where(a => a.SongName.Contains(query))
+                   .ToListAsync();
+
+            var songModelList = new List<SongModel>();
+
+            foreach (var song in songs)
+            {
+                // 获取每首歌的艺术家
+                var artists = await GetArtistsBySongId(song.SongId);
+
+                // 创建 SongWithArtists 对象并填充数据
+                var songModelArtists = new SongModel
+                {
+                    SongId = song.SongId,
+                    SongName = song.SongName,
+                    SongGenre = song.SongGenre,
+                    Duration = song.Duration,
+                    Lyrics = song.Lyrics,
+                    SongDate = song.SongDate,
+                    ComposerId = song.ComposerId,
+                    Status = song.Status,
+                    Artists = artists?.Select(a => new Artist
+                    {
+                        ArtistId = a.ArtistId,
+                        ArtistName = a.ArtistName,
+                        ArtistBirthday = a.ArtistBirthday,
+                        ArtistIntro = a.ArtistIntro,
+                        ArtistGenre = a.ArtistGenre,
+                        ArtistFansNum = a.ArtistFansNum
+                    }).ToList() // 如果 artists 为 null，结果也将为 null
+                };
+
+                // 将结果添加到列表中
+                songModelList.Add(songModelArtists);
+            }
+
+            return songModelList;
+        }
+
+        //辅助代码
+        public async Task<List<Artist>> GetArtistsBySongId(string songId)
         {
             return await _context.Songs
-                       .Where(a => a.SongName.Contains(query))
-                       .ToListAsync();
-
+                            .Where(s => s.SongId == songId)
+                            .SelectMany(s => s.Artists)
+                            .ToListAsync();
         }
+
         //查询歌词
         public async Task<List<SongSearchModel>> SearchSongsByLyrics(string query)
         {
