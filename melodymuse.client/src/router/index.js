@@ -12,6 +12,7 @@ import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
+import RankSongs from "../pages/RankSongs.vue";
 
 const routes = [
   {
@@ -79,6 +80,11 @@ const routes = [
     name: "usermanage", //?????????????????????
     component: UserManage, //?????????????????????
   },
+  {
+    path: "/ranksongs",
+    name: "ranksongs",
+    component: RankSongs,
+  }
 ];
 
 const router = createRouter({
