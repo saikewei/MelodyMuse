@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a :href="'/artist/' + scope.row.artistName" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a :href="'/artist/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
@@ -46,16 +46,16 @@
                              class="play-icon"
                              alt="播放歌曲" />
                     </el-tooltip>
-                    <a :href="'/song/' + scope.row.songName" class="song-link">{{ scope.row.songName }}</a>
+                    <a :href="'/mediaplayer/' + scope.row.songId" class="song-link">{{ scope.row.songName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'song'"
                              label="演唱"
                              width="250">
                 <template #default="scope">
-                    <span v-for="(artist, index) in scope.row.artist.split(', ')" :key="index">
-                        <a :href="'/artist/' + artist" class="artist-link">{{ artist }}</a>
-                        <span v-if="index < scope.row.artist.split(', ').length - 1">, </span>
+                    <span v-for="(artist, index) in scope.row.artist" :key="index">
+                        <a :href="'/SingerDetail/' + artist.artistId" class="artist-link">{{ artist.artistName}}</a>
+                        <span v-if="index < scope.row.artist.length - 1">, </span>
                     </span>
                 </template>
             </el-table-column>
@@ -162,7 +162,7 @@
                     } else {
                         return {
                             songName: result.songName,
-                            artist: result.artists.map(artist => artist.artistName).join(', '), // 将所有演唱者名字连接成一个字符串
+                            artist: result.artists, // 将所有演唱者名字连接成一个字符串
                             songId: result.songId,
                             duration: result.duration,
                             playing: false,
