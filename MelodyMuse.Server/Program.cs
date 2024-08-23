@@ -68,7 +68,9 @@ builder.Services.AddScoped<IUsersRepository>(provider =>
     new UsersRepository());
 
 
-
+//艺术家相关
+builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IArtistRepository>(provider => new ArtistRepository());
 //����JWT����
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>

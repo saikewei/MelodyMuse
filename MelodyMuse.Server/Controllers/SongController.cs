@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
+using MelodyMuse.Server.models;
 using System.Threading.Tasks;
 
 namespace MelodyMuse.Server.Controllers
@@ -40,6 +41,33 @@ namespace MelodyMuse.Server.Controllers
         {
             await _songService.RejectSongAsync(songId);
             return Ok(new { msg = "歌曲审核不通过" });
+        }
+
+        // 查询作词家所作的所有歌曲
+        [HttpGet("composer/{composerId}")]
+        public async Task<IActionResult> GetSongsByComposerId(string composerId)
+        {
+            var songs = await _songService.GetSongsByComposerIdAsync(composerId);
+
+            if (songs == null || songs.Count== 0)
+            {
+                return NotFound(new { message = "没有找到相关歌曲。" });
+            }
+
+            return Ok(songs);
+        }
+        
+        [HttpGet("{songId}/album")]
+        public async Task<IActionResult> GetAlbumBySongId(string songId)
+        {
+            var result = await _songService.GetAlbumBySongIdAsync(songId);
+
+            if (result == "Song not found")
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
         }
     }
 }

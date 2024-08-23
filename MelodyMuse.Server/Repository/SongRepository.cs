@@ -46,6 +46,20 @@ namespace MelodyMuse.Server.Repository
             }
         }
 
+        public async Task<List<Song>> GetSongsByComposerIdAsync(string composerId)
+        {
+            return await _context.Songs
+                .Where(song => song.ComposerId == composerId)
+                .ToListAsync();
+        }
+
+        public async Task<Song> GetSongByIdAsync(string songId)
+        {
+            return await _context.Songs
+                .Include(s => s.Albums)  // Eager load the related albums
+                .FirstOrDefaultAsync(s => s.SongId == songId);
+        }
+
         public async Task<bool> CreateSongAsync(Song song)
         {
             _context.Songs.Add(song);

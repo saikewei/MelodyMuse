@@ -14,6 +14,8 @@ import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
 import mediaplayer from "../pages/mediaplayer.vue";
 
+import SingerDetail from "../pages/SingerDetail.vue";
+import FollowedArtist from "../pages/FollowedArtist.vue";
 
 const routes = [
   {
@@ -82,9 +84,20 @@ const routes = [
     component: UserManage, //?????????????????????
   },
   {
-    path: '/mediaplayer/:songId',
-    name:'mediaplayer',
-    component: mediaplayer
+    path: "/mediaplayer/:songId",
+    name: "mediaplayer",
+    component: mediaplayer,
+  },
+  {
+    path: "/SingerDetail/:artistId",
+    name: "SingerDetail",
+    component: SingerDetail,
+  },
+
+  {
+    path: "/FollowedArtist",
+    name: "FollowedArtist",
+    component: FollowedArtist,
   },
 ];
 
