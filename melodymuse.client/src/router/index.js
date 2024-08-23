@@ -6,7 +6,7 @@ import SongList from "../pages/SongList.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 import Sign from "../pages/Sign.vue";
-import SearchResultPage from "../pages/SearchResultPage.vue"; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿?;
+import SearchResultPage from "../pages/SearchResultPage.vue"; // ?????????????????????;
 import UserManage from "../pages/UserManage.vue"; //?????????????????????
 import SongInfoEdit from "../pages/SongInfo.vue";
 import Check from "../pages/Check.vue";
@@ -17,6 +17,7 @@ import mediaplayer from "../pages/mediaplayer.vue";
 
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
+import ForgottenPassword from "../pages/ForgottenPassword.vue";
 
 const routes = [
   {
@@ -101,9 +102,14 @@ const routes = [
     component: FollowedArtist,
   },
   {
-    path: "/searchResultPage", // ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    path: "/searchResultPage", // ???????¡¤??????
     name: "search-result-page",
     component: SearchResultPage,
+  },
+  {
+    path: "/ForgottenPassword",
+    name: "ForgottenPassword",
+    component: ForgottenPassword,
   },
 ];
 

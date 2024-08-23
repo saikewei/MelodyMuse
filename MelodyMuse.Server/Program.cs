@@ -18,10 +18,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5173")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173") // 前端应用的URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials(); // 如果你需要发送带有凭据的请求，如Cookies等
+        });
 });
+
 
 // Register services
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -114,6 +119,9 @@ app.UseCors("AllowSpecificOrigin");
 // Enable JWT authentication
 app.UseAuthentication();
 app.UseAuthorization();
+
+// 使用 CORS 中间件
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

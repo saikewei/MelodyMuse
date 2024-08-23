@@ -12,6 +12,7 @@ namespace MelodyMuse.Server.Services.Interfaces
     {
         Task<GenerateTokenModel> LoginAsync(LoginModel loginModel);
         Task<bool> RegisterAsync(RegisterModel registerModel);
-        
+        Task<bool> CheckPhoneNumberExistsAsync(string phoneNumber); // 新增
+        Task<bool> ResetPasswordAsync(string phoneNumber, string Password);
     }
 }
