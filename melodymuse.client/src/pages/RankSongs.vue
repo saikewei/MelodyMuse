@@ -6,7 +6,7 @@
         <img class="ranking-image" :src="RankingImage" alt="Ranking Image" />
       </div>
       <h1 class="ranking-title">
-        <span>热歌榜</span><strong>Top50</strong>
+        <span>热歌榜</span><strong>Top100</strong>
       </h1>
 
       <button @click="goToPlayPage(topSong.songId)" class="play-all-button">
@@ -58,74 +58,86 @@ export default {
         {
           songId: '1',
           songName: 'Song of the Stars',
-          artist: 'Luna',
-          duration: '100'
+          artist: 'Lun',
+          duration: '100',
+          playCount: '100'
         },
         {
           songId: '9',
           songName: 'Whispering Winds',
           artist: 'Zephyr',
-          duration: '300'
+          duration: '300',
+          playCount: '20'
         },
         {
           songId: '3',
           songName: 'Ocean Waves',
           artist: 'Marina',
-          duration: '210'
+          duration: '210',
+          playCount: '120',
         },
         {
           songId: '4',
           songName: 'Mountain Echo',
           artist: 'Echo',
-          duration: '340'
+          duration: '340',
+          playCount: '130'
         },
         {
           songId: '5',
           songName: 'Silent Night',
           artist: 'Nocturne',
-          duration: '178'
+          duration: '178',
+          playCount: '100'
         },
         {
           songId: '6',
           songName: 'Sunrise Melody',
           artist: 'Aurora',
-          duration: '264'
+          duration: '264',
+          playCount: '100'
         },
         {
           songId: '3',
           songName: 'Ocean Waves',
           artist: 'Marina',
-          duration: '360'
+          duration: '360',
+          playCount: '140'
         },
         {
           songId: '4',
           songName: 'Mountain Echo',
           artist: 'Echo',
-          duration: '270'
+          duration: '270',
+          playCount: '100'
         },
         {
           songId: '5',
           songName: 'Silent Night',
           artist: 'Nocturne',
-          duration: '220'
+          duration: '220',
+          playCount: '100'
         },
         {
           songId: '3',
           songName: 'Ocean Waves',
           artist: 'Marina',
-          duration: '360'
+          duration: '360',
+          playCount: '100'
         },
         {
           songId: '4',
           songName: 'Mountain Echo',
           artist: 'Echo',
-          duration: '270'
+          duration: '270',
+          playCount: '100'
         },
         {
           songId: '5',
           songName: 'Silent Night',
           artist: 'Nocturne',
-          duration: '220'
+          duration: '220',
+          playCount: '100'
         },]
     };
   },
@@ -139,8 +151,8 @@ export default {
       axios.get('https://localhost:7223/api/rank/with-playcount')
         .then(response => {
           const sortedSongs = response.data.sort((a, b) => b.playCount - a.playCount);
-          const top50Songs = sortedSongs.slice(0, 50);
-          this.songs = top50Songs.map(song => ({
+          const top100Songs = sortedSongs.slice(0, 100);
+          this.songs = top100Songs.map(song => ({
             songId: song.songId,
             songName: song.songName,
             artist: song.artistName,
@@ -201,7 +213,9 @@ export default {
 
 .ranking-title span {
   font-weight: normal;
-  font-size: -0.2em;
+  font-size: -2em;
+  margin-left: 40px;
+  margin-right: 10px;
 }
 
 .ranking-title strong {
