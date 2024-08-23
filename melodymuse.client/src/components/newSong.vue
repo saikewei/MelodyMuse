@@ -132,7 +132,7 @@ export default {
     fetchArtists(query) {
       if (query !== '') {
         this.loadingArtists = true;
-        axios.get(`http://localhost:7223/search/${query}`)
+        axios.get(`https://localhost:7223/search/${query}`)
           .then(response => {
             this.artists = response.data.map(artist => ({
               id: artist.artistId,
@@ -151,7 +151,7 @@ export default {
       }
     },
     fetchAlbumsByArtistId(artistId) {
-      axios.get(`http://localhost:7223/albums/${artistId}`)
+      axios.get(`https://localhost:7223/albums/${artistId}`)
         .then(response => {
           this.albums = response.data.map(album => ({
             id: album.albumId,
@@ -190,7 +190,7 @@ export default {
           formData.append('SongFile', this.songForm.file);
           formData.append('AlbumId', this.selectedAlbumId);
           formData.append('ArtistIds', this.selectedArtist.id);
-          axios.post('http://localhost:7223/api/submit/uploadSong', formData)
+          axios.post('https://localhost:7223/api/submit/uploadSong', formData)
           .then(response => {
             if (response.status === 200) {
               ElMessage.success("成功上传歌曲");

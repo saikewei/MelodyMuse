@@ -14,8 +14,14 @@
         <el-menu-item index="/check-song">
           <span>歌曲审核</span>
         </el-menu-item>
-        <el-menu-item index="/edit-song-info">
+        <el-menu-item index="/song-info">
           <span>歌曲管理</span>
+        </el-menu-item>
+        <el-menu-item index="/uploadSong">
+          <span>上传歌曲</span>
+        </el-menu-item>
+        <el-menu-item index="/usermanage">
+          <span>用户管理</span>
         </el-menu-item>
       </el-menu>
 </div>

@@ -40,13 +40,33 @@ builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
 builder.Services.AddScoped<ISongEditRepository>(provider =>
     new SongEditRepository());
 
+//MusicSubmit services
+
+builder.Services.AddScoped<ICreateAlbumService, CreateAlbumService>();
+builder.Services.AddScoped<IUploadSongService, UploadSongService>();
+
+builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>(provider =>
+    new ArtistRepository());
+
+builder.Services.AddScoped<IAlbumService, AlbumService>();
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>(provider =>
+    new AlbumRepository());
+
+builder.Services.AddScoped<ISongRepository, SongRepository>(provider =>
+    new SongRepository());
+
 // 注册服务并提供连接字符串
 builder.Services.AddScoped<ISongRepository>(provider => new SongRepository());
-builder.Services.AddScoped<IUserRepository>(provider => new UserRepository());
 
 // 其他服务注册
 builder.Services.AddScoped<ISongService, SongService>();
-builder.Services.AddScoped<IUserService, UserService>();
+
+//用户服务
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUsersRepository>(provider =>
+    new UsersRepository());
+
 
 
 //����JWT����
@@ -77,6 +97,9 @@ builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 builder.Services.AddScoped<ISongEditService, SongEditService>();
 
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("AllowSpecificOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
