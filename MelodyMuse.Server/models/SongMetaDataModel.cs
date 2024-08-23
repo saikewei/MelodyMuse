@@ -18,13 +18,23 @@
         // 歌曲类型
         public string? SongGenre { get; set; }
 
+        // 作曲家ID
+        public string? ComposerId { get; set; }
+
         // 作曲家名称
         public string? ComposerName { get; set; }
 
         // 歌手名称列表
         public List<string?>? SingerNames { get; set; }
 
+        //所属专辑ID
+        public string? AlbumId { get; set; }
+
         // 歌曲链接
         public string? SongUrl { get; set; }
+        // 封面链接
+        public string? CoverUrl { get; set; }
+        // 歌词链接
+        public string? LyricUrl { get; set; }
     }
 }

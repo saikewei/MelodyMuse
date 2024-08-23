@@ -29,6 +29,9 @@ namespace MelodyMuse.Server.Services
             var singers = await _musicplayerrepository.GetSingersBySongId(songId);
             // 提取歌手名称列表
             List<string?> singerNames = singers.Select(o => o.ArtistName).ToList();
+            //获取歌曲所属专辑ID
+            var albumId = await _musicplayerrepository.GetAlbumIdBySongId(songId);
+
 
             // 创建并填充SongMetaDataModel对象
             var responseModel = new SongMetaDataModel
@@ -39,7 +42,9 @@ namespace MelodyMuse.Server.Services
                 SongGenre = song.SongGenre,
                 SongDate = song.SongDate,
                 SongDuration = song.Duration,
-                ComposerName = song.Composer != null ? song.Composer.ArtistName : null
+                ComposerId = song.ComposerId,
+                ComposerName = song.Composer != null ? song.Composer.ArtistName : null,
+                AlbumId = albumId
             };
 
             // 返回填充好的SongMetaDataModel对象
