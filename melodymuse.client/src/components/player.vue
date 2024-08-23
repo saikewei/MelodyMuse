@@ -35,53 +35,90 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter(); 
 const route = useRoute(); 
-
-const songId=route.params.songId;
-
-
-const songInfo = await fetchSongInfo(songId);
-console.log(songInfo)
-
-const songName = songInfo.songName;
-
-const artistId = songInfo.composerId;
-
-const lyricsUrl = songInfo.lyricsUrl;
-
-const coverUrl = songInfo.coverUrl;
-
-
-const lyricsTxt = await fetchLyrics(songId,artistId);
-console.log(lyricsTxt)
-
-const lyrics = parseLyrics(lyricsTxt);
-console.log(lyrics)
-
-const audioSrc = await fetchSong(songId,artistId);
-
-
-const currentImage = ref('/th.jpg');
-
-
+const audioSrc = ref('');
+const lyrics = ref([]);
+const albumId = ref('');
+const songName = ref('');
+const composerId = ref('');
+const currentImage = ref('');
 const currentLine = ref(0);
 const audioElement = ref(null);
-const progress = ref(0); // 当前播放位置
-const duration = ref(0); // 音频总长度
+const progress = ref(0);
+const duration = ref(0);
 const playing = ref(false);
+const isLoading = ref(true); // 新增状态，用于表示数据是否正在加载
 
-onMounted(() => {
-  const update = () => {
-    updateProgress({ target: audioElement.value });
+
+onMounted(async () => {
+  try {
+    // 并发获取歌曲信息
+    const [songInfo] = await Promise.all([
+      fetchSongInfo(route.params.songId)
+    ]);
+    console.log(songInfo)
+
+    // 使用歌曲信息中的数据
+    composerId.value = songInfo.composerId;
+    albumId.value = songInfo.albumId;
+
+
+    // 并发获取歌词和音频数据
+    const [lyrics_txt, audio , image] = await Promise.all([
+      fetchLyrics(route.params.songId, composerId.value),
+      fetchSong(route.params.songId, composerId.value),
+      fetch_img(albumId.value)
+    ]);
+
+    // 更新数据
+    songName.value = songInfo.songName;
+    lyrics.value = parseLyrics(lyrics_txt);
+    audioSrc.value = audio;
+    currentImage.value =  image;
+
+    // 设置加载状态为 false
+    isLoading.value = false;
+
+    // 开始更新进度条
+    const update = () => {
+      updateProgress({ target: audioElement.value });
+      requestAnimationFrame(update);
+    };
     requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
+  } catch (error) {
+    console.error('Error loading data:', error);
+    // 处理错误情况，例如显示错误消息
+    isLoading.value = false; // 数据加载失败后也设置为 false
+  }
 });
+
+
+async function fetch_img(albumId) {
+  try {
+    const response = await axios.get("https://localhost:7223/api/player/jpg", {
+      params: { 'albumId': albumId },
+      responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer
+    });
+
+    // 将响应的二进制数据转换为 Blob 对象
+    const blob = new Blob([response.data], { type: 'image/jpeg' });  // 假设图片是 JPEG 格式
+
+    // 创建一个指向 Blob 的 URL
+    const imageUrl = URL.createObjectURL(blob);
+
+    // 将 URL 赋值给 currentImage
+    return imageUrl;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
 
 async function fetchLyrics(songId,artistId){
   try{
@@ -106,28 +143,31 @@ async function fetchLyrics(songId,artistId){
 }
 }
 
-async function fetchSong(songId,artistId){
-  try{
-    const formData = new FormData();
-    formData.append('songId', songId);
-    formData.append('artistId', artistId);
-  const response = await axios.get("https://localhost:7223/api/player/mp3",{
-    params:{'songId' : songId,
-    'artistId' : artistId}
-  });
-  console.log(response)
-  if(response.status === 200)
-  {
-  return response.data;
-  }
-  else{
+async function fetchSong(songId, artistId) {
+  try {
+    const response = await axios.get("https://localhost:7223/api/player/mp3", {
+      params: { 'songId': songId, 'artistId': artistId },
+      responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
+    });
+
+    if (response.status === 200) {
+      // 将二进制数据转换为 Blob 对象
+      const blob = new Blob([response.data], { type: 'audio/mpeg' });  // 假设音频类型是 MP3
+
+      // 创建一个指向 Blob 的 URL
+      const audioUrl = URL.createObjectURL(blob);
+
+      // 返回音频的 URL
+      return audioUrl;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error);
     return null;
   }
+}
 
-}catch(error){
-  console.log(error)
-}
-}
 
 // 解析歌词
 function parseLyrics(lyricsText) {
