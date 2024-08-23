@@ -120,7 +120,7 @@ export default {
             Object.keys(this.albumForm).forEach((key) => {
               formData.append(key, this.albumForm[key]);
             });
-            const response = await axios.post('http://localhost:7223/api/submit/createAlbum', formData, {
+            const response = await axios.post('https://localhost:7223/api/submit/createAlbum', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
