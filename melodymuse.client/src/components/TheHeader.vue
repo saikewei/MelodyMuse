@@ -1,135 +1,297 @@
 <template>
-    <nav class="the-header">
-        <div class="header-logo">
-            <img :src="Images.logoUrl" alt="Home Icon" style="height: 40px; width: 40px;">
-            <img :src="Images.nameUr1" alt="Home Icon" style="height: 40px; width: 90px;">
-        </div>
-        <ul class="navbar">
-            <li :class="{ active: item.name === activeName }" v-for="item in navMsg" :key="item.path" @click="goPage(item.path, item.name)">
-                {{ item.name }}
-            </li>
-        </ul>
-        <div class="navbar-search">
-            <input type="text" v-model="searchQuery" @input="onSearch" placeholder="Search..." />
-        </div>
-    </nav>
+    <div class="header-container" @click="handleOutsideClick">
+        <nav class="the-header">
+            <div class="header-logo" @click="goHome">
+                <img :src="Images.logoUrl" alt="Home Icon" style="height: 40px; width: 40px;">
+                <img :src="Images.nameUr1" alt="Home Icon" style="height: 40px; width: 90px;">
+            </div>
+            <ul class="navbar">
+                <li :class="{ active: item.name === activeName }" v-for="item in navMsg" :key="item.path" @click="goPage(item.path, item.name)">
+                    {{ item.name }}
+                </li>
+            </ul>
+            <div class="navbar-search">
+                <select v-model="searchType" @change="handleSearchTypeChange">
+                    <option value="song">æœç´¢å•æ›²</option>
+                    <option value="artist">æœç´¢æ­Œæ‰‹</option>
+                </select>
+                <input type="text" v-model="inputQuery" placeholder="Search..." @focus="showResultsPopup" @input="performSearch" ref="searchInput" />
+                <button @click="goSearchPage">Search</button>
+                <div v-if="showPopup && filteredResults.length" class="search-results-popup" @click.stop>
+                    <SearchResults :results="filteredResults" :searchType="searchType" />
+                </div>
+            </div>
+        </nav>
+    </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
-    import logoUrl from '../assets/logo2.jpg'
-    import nameUr1 from '../assets/name1.jpg'
-    import { navMsg } from '../assets/data/header'
+    import axios from 'axios';
+    import { mapGetters, mapActions } from 'vuex';
+    import logoUrl from '../assets/logo2.jpg';
+    import nameUr1 from '../assets/name1.jpg';
+    import { navMsg } from '../assets/data/header';
+    import SearchResults from './SearchResults.vue';
 
     export default {
+        components: {
+            SearchResults
+        },
         data() {
             return {
                 Images: {
-                    logoUrl,nameUr1
+                    logoUrl,
+                    nameUr1
                 },
-                navMsg: [],
-                searchQuery: ''
-            }
+                navMsg: navMsg,
+                inputQuery: '', // å®æ—¶æ›´æ–°å¼¹å‡ºæ¡†ç”¨
+                actualQuery: '', // ç‚¹å‡»SearchæŒ‰é’®æ—¶ç”¨
+                searchResults: [],
+                searchType: 'song', // åˆå§‹è®¾ç½®
+                actualType: 'song',
+                showPopup: false  // æ§åˆ¶å¼¹å‡ºæ¡†æ˜¾ç¤º
+            };
         },
         computed: {
-            ...mapGetters('configure', ['activeName']) // Ö¸¶¨Ä£¿éÃû³Æ
+            ...mapGetters('configure', ['activeName']),
+            ...mapGetters('search', ['searchType']),
+            filteredResults() {
+                return this.searchResults.filter(result => result.type === this.searchType);
+            }
         },
         created() {
-            this.navMsg = navMsg
+            this.inputQuery = this.$route.query.query || '';
+            this.searchType = this.$route.query.type || 'song';
+            this.updateSearchType(this.searchType); // æ›´æ–° Vuex ä¸­çš„æœç´¢ç±»å‹
+            if (this.inputQuery) {
+                this.performSearch();
+            }
+        },
+        mounted() {
+            document.addEventListener('click', this.handleOutsideClick);
+        },
+        beforeUnmount() {
+            document.removeEventListener('click', this.handleOutsideClick);
+        },
+        watch: {
+            '$route.query': {
+                handler(newQuery) {
+                    this.searchQuery = newQuery.query || '';
+                    this.searchType = newQuery.type || 'artists';
+                    this.performSearch();
+                },
+                immediate: true
+            }
         },
         methods: {
-            goHome() {
-                this.$router.push({ path: '/' })
+            ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
+            async performSearch() {
+                if (this.inputQuery.trim() === '') {
+                    this.searchResults = [];
+                    this.showPopup = false;
+                    return;
+                }
+
+                try {
+                    let results = [];
+
+                    if (this.searchType === 'artist') {
+                        const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
+                            params: { query: encodeURIComponent(this.inputQuery) }
+                        });
+                        results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
+                    } else if (this.searchType === 'song') {
+                        const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
+                            params: { query: encodeURIComponent(this.inputQuery) }
+                        });
+                        results = songResponse.data.map(song => ({ ...song, type: 'song' }));
+                    }
+
+                    //this.updateSearchResults(results);
+                    this.searchResults = results;
+
+                    // æ£€æŸ¥é¼ æ ‡æ˜¯å¦åœ¨æœç´¢æ¡†å†…ï¼Œå¦‚æœä¸åœ¨åˆ™éšè—å¼¹å‡ºæ¡†
+                    if (this.$refs.searchInput && this.$refs.searchInput.contains(document.activeElement)) {
+                        this.showPopup = this.searchResults.length > 0;
+                    } else {
+                        this.showPopup = false;
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    //this.updateSearchResults([]);
+                    this.searchResults = [];
+                    this.showPopup = false;
+                }
             },
-            onSearch() {
-                this.$emit('search', this.searchQuery)
+            handleSearchTypeChange() {
+                //this.updateSearchType(this.searchType); // æ›´æ–° Vuex ä¸­çš„æœç´¢ç±»å‹
+                this.performSearch(); // æ›´æ–°æœç´¢ç»“æœ
+            },
+            goSearchPage() {
+                if (this.inputQuery != '') {
+                    this.actualQuery = this.inputQuery;
+                    this.actualType = this.searchType;
+                    this.updateSearchType(this.actualType); // æ›´æ–° Vuex ä¸­çš„æœç´¢ç±»å‹
+                    this.$router.push({
+                        path: '/searchResultPage',
+                        query: {
+                            query: this.actualQuery,
+                            type: this.actualType
+                        }
+                    });
+                }
+            },
+            goHome() {
+                this.$router.push({ path: '/' });
             },
             goPage(path, name) {
-                this.$store.commit('configure/setActiveName', name) // È·±£Ä£¿éºÍ mutation Ãû³ÆÕıÈ·
-                this.$router.push({ path })
+                this.$store.commit('configure/setActiveName', name);
+                this.$router.push({ path });
+            },
+            showResultsPopup() {
+                if (this.inputQuery.trim() !== '') {
+                    this.showPopup = true;
+                }
+            },
+            handleOutsideClick(event) {
+                const searchInput = this.$refs.searchInput;
+                if (!searchInput.contains(event.target)) {
+                    this.showPopup = false;
+                }
             }
         }
-    }
+    };
 </script>
 
-
 <style scoped>
-   .the-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0px 30px; /* Ôö¼ÓÄÚ±ß¾àÒÔ¸ÄÉÆÊÓ¾õĞ§¹û */
-    box-sizing: border-box;
-    background-color:#ffffff;
-    box-shadow: 0 4px 8px #cacaca; /* ¼õÉÙÒõÓ°µÄÇ¿¶È */
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000; /* È·±£Í·²¿ÔÚÆäËûÄÚÈİÉÏ·½ */
-}
+    .header-container {
+        display: flex;
+        flex-direction: column;
+    }
 
-.header-logo {
-    display: flex;
-    align-items: center;
-}
-
-
-.navbar {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 20px; /* Ôö¼Óµ¼º½ÏîÖ®¼äµÄ¼ä¾à */
-}
-
-.navbar li {
-    cursor: pointer;
-    padding: 20px 20px; /* Ôö¼ÓÄÚ±ß¾àÒÔÌáÉıµã»÷ÇøÓò */
-    position: relative;
-    display: inline-block; /* Ê¹¿í¶È½öÎªÄÚÈİ¿í¶È */
-    font-weight: 500;
-    color: #808080; /* ÎÄ×ÖÑÕÉ« */
-    line-height: 17px; /* µ÷ÕûÎªµ¼º½ÌõµÄ¸ß¶È */
-    transition: color 0.3s ease; /* Æ½»¬ÑÕÉ«¹ı¶ÉĞ§¹û */
-}
-
-/* ¸ß¹âĞ§¹û */
-    .navbar li::after {
-        content: '';
-        position: absolute;
-        bottom: 0; /* È·±£¶ÔÆëµ×²¿ */
+    .the-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0px 45px;
+        box-sizing: border-box;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px #cacaca;
+        position: fixed;
+        top: 0;
         left: 0;
-        width: 0%; /* Ä¬ÈÏÒş²Ø¸ß¹âÌõ */
-        height: 5px; /* ¸ß¹âÌõµÄ¸ß¶È */
-        background-color: #284da0c1; /* À¶É«¸ß¹âÌõ */
+        z-index: 1000;
     }
 
-/* ¼¤»î×´Ì¬µÄÑùÊ½ */
-.navbar li.active::after {
-    width: 100%; /* ¼¤»î×´Ì¬ÏÂ¸ß¹âÌõ¿í¶ÈÎªÎÄ±¾¿í¶È */
-}
-
-    .navbar li.active {
-        color: #284da0c1; 
+    .header-logo {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
     }
 
-/* ĞüÍ£×´Ì¬µÄÑùÊ½ */
-    .navbar li:hover {
-        color: #284da0c1;
+    .navbar {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 60px;
     }
 
-.navbar-search input {
-    padding: 8px;
-    border-radius: 20px; /* Ôö¼ÓÔ²½Ç */
-    border: 1.5px solid #cacaca; 
-    outline: none;
-    width: 300px; /* ÉèÖÃËÑË÷¿òµÄ¿í¶È */
-    height: 35px; /* µ÷ÕûËÑË÷¿òµÄ¸ß¶È */
-    transition: border-color 0.3s ease; /* Æ½»¬±ß¿òÑÕÉ«¹ı¶ÉĞ§¹û */
-}
+        .navbar li {
+            cursor: pointer;
+            padding: 20px 20px;
+            position: relative;
+            display: inline-block;
+            font-weight: 500;
+            color: #808080;
+            line-height: 17px;
+            transition: color 0.3s ease;
+        }
 
-    .navbar-search input:focus {
-        border-color: #284da0c1; /* ¾Û½¹Ê±±ß¿òÑÕÉ«±ä»¯ */
+            .navbar li::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0%;
+                height: 5px;
+                background-color: #284da0c1;
+                transition: width 0.3s ease;
+            }
+
+            .navbar li.active::after {
+                width: 120%;
+                left: -10%
+            }
+
+            .navbar li.active {
+                color: #284da0c1;
+            }
+
+            .navbar li:hover {
+                color: #284da0c1;
+            }
+
+    .navbar-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .navbar-search select {
+            padding: 8px;
+            margin-right: 10px;
+            border-radius: 20px;
+            border: 1.5px solid #cacaca;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+            .navbar-search select:focus {
+                border-color: #284da0c1;
+            }
+
+        .navbar-search input {
+            padding: 8px;
+            border-radius: 20px;
+            border: 1.5px solid #cacaca;
+            outline: none;
+            width: 300px;
+            height: 35px;
+            transition: border-color 0.3s ease;
+        }
+
+            .navbar-search input:focus {
+                border-color: #284da0c1;
+            }
+
+        .navbar-search button {
+            padding: 8px 16px;
+            margin-left: 10px;
+            border-radius: 20px;
+            border: none;
+            background-color: rgba(64, 108, 194, 0.9);
+            color: white;
+            cursor: pointer;
+        }
+            .navbar-search button:hover {
+                background-color: #95ADE0;
+            }
+            .navbar-search button:active {
+                background-color: #385FAB;
+            }
+
+    .search-results-popup {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        z-index: 1000;
+        max-height: 400px;
+        overflow-y: auto;
     }
 </style>

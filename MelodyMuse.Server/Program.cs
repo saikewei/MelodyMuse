@@ -24,10 +24,8 @@ builder.Services.AddCors(options =>
 });
 
 // Register services
-//������ط���
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IAccountRepository>(provider =>
-   new AccountRepository());
+builder.Services.AddScoped<IAccountRepository>(provider => new AccountRepository());
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
@@ -72,6 +70,11 @@ builder.Services.AddScoped<IUsersRepository>(provider =>
 builder.Services.AddScoped<IArtistService, ArtistService>();
 builder.Services.AddScoped<IArtistRepository>(provider => new ArtistRepository());
 //����JWT����
+builder.Services.AddScoped<IMusicPlayerRepository>(provider => new MusicPlayerRepository());
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ISearchRepository>(provider => new SearchRepository());
+
+// Configure JWT authentication
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>
 {
@@ -92,7 +95,6 @@ builder.Services.AddAuthentication(x =>
 });
 
 // MusicPlayer services
-//������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 //SongEdit services
@@ -105,7 +107,11 @@ app.UseCors("AllowSpecificOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-//����JWT����
+
+// Enable CORS before authentication and authorization middlewares
+app.UseCors("AllowSpecificOrigin");
+
+// Enable JWT authentication
 app.UseAuthentication();
 app.UseAuthorization();
 

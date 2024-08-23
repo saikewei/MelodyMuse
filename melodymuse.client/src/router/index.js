@@ -6,6 +6,7 @@ import SongList from "../pages/SongList.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 import Sign from "../pages/Sign.vue";
+import SearchResultPage from "../pages/SearchResultPage.vue"; // �����������������ҳ��;
 import UserManage from "../pages/UserManage.vue"; //?????????????????????
 import SongInfoEdit from "../pages/SongInfo.vue";
 import Check from "../pages/Check.vue";
@@ -98,6 +99,11 @@ const routes = [
     path: "/FollowedArtist",
     name: "FollowedArtist",
     component: FollowedArtist,
+  },
+  {
+    path: "/searchResultPage", // �����µ�·������
+    name: "search-result-page",
+    component: SearchResultPage,
   },
 ];
 
