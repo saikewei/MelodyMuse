@@ -4,7 +4,6 @@
     </header>
     <aside>
         <TheAside />
-
     </aside>
     <main>
         <newAlbum />
