@@ -1,9 +1,14 @@
 <template>
   <div>
     <TheHeader />
+    <div class="main-container">
+  <div class="sidebar">
+    <button @click="navigateTo('rankartists')">音乐人推荐榜</button>
+    <button @click="navigateTo('ranksongs')">热歌榜</button>
+  </div>
     <div class="ranking-container">
       <div>
-        <img class="ranking-image" :src="RankingImage" alt="Ranking Image" />
+        <img class="ranking-image1" :src="RankingImage" alt="Ranking Image" />
       </div>
       <h1 class="ranking-title">
         <span>音乐人推荐榜</span><strong>Top50</strong>
@@ -29,6 +34,7 @@
         </table>
       </div>
     </div>
+    </div>
     <TheFooter />
   </div>
 </template>
@@ -52,6 +58,10 @@ export default {
     };
   },
   methods: {
+    // 两个排行榜互相跳转
+    navigateTo(routeName) {
+    this.$router.push({ name: routeName });
+    },
     fetchArtists() {
       axios.get('https://localhost:7223/api/rank/ranking')
         .then(response => {
@@ -74,19 +84,49 @@ export default {
 </script>
 
 <style>
-.ranking-container {
-  width: 90%;
-  left:5%;
-  position: relative;
-  padding: 40px;
-  background-color: #d2deef;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 给整个容器添加阴影 */
+.main-container {
+  display: flex;
+  width:100%;
 }
 
-.ranking-image {
+.sidebar {
+  width: 150px;
+  background-color: #f4f4f4;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar button {
+  margin-bottom: 20px;
+  padding: 10px 0px;
+  background-color: white;
+  color: #193169;
+  border-color: #d2deef;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.sidebar button:hover {
+  background-color: #fff;
+}
+
+.ranking-container {
+  flex: 1;
+  padding: 40px;
+  background-color: #d2deef;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+}
+
+.ranking-image1 {
   position:absolute;
   top:14%;
-  left:26%;
+  left:28%;
   width: 100px;
   height: 100px;
   border-radius: 50%;
