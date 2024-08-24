@@ -102,7 +102,9 @@
       try {
         const artistResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}`);
         this.artist = artistResponse.data;
-        this.followersCount = artistResponse.data.artistFansNum;//获取当前艺术家的关注人数，，前端已测试成功
+        //获取粉丝人数
+        const fansCountResponse = await axios.get(`https://localhost:7223/api/artistnum/${this.artistId}/fans-count`);
+        this.followersCount = fansCountResponse.data.artistFansNum;//获取当前艺术家的关注人数，，前端已测试成功
       } catch (error) {
         console.error('获取艺术家信息信息失败:', error);
       }
@@ -160,7 +162,7 @@
       await this.updateFollowersCount();
 
     } catch (error) {
-      console.error('Failed to toggle follow:', error);
+      console.error('切换关注状态失败:', error);
       // 如果操作失败，恢复到原来的状态
       this.isFollowing = !this.isFollowing;
     }
