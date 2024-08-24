@@ -1,4 +1,4 @@
-using MelodyMuse.Server.Models;
+﻿using MelodyMuse.Server.Models;
 using MelodyMuse.Server.models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -16,5 +16,6 @@ namespace MelodyMuse.Server.Services.Interfaces
          Task<bool> IncrementArtistFansNumAsync(string artistId);
           Task<List<Artist>> GetAllArtistsAsync();
            Task<List<Artist>> GetArtistsByUserIdAsync(string userId);
+            Task<int> GetArtistFansCountAsync(string artistId);
     }
 }

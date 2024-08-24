@@ -103,8 +103,9 @@
         const artistResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}`);
         this.artist = artistResponse.data;
         //获取粉丝人数
-        const fansCountResponse = await axios.get(`https://localhost:7223/api/artistnum/${this.artistId}/fans-count`);
-        this.followersCount = fansCountResponse.data.artistFansNum;//获取当前艺术家的关注人数，，前端已测试成功
+        const fansCountResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}/fans-count`);
+        this.followersCount = fansCountResponse.data.fansCount;//获取当前艺术家的关注人数，，前端已测试成功
+        console.log('aaaaa：', this.followersCount);
       } catch (error) {
         console.error('获取艺术家信息信息失败:', error);
       }

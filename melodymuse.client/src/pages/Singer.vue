@@ -148,7 +148,7 @@ export default {
      //获取粉丝数量
     async fetchArtistFansCount(artistId) {
       try {
-        const response = await axios.get(`https://localhost:7223/api/artistnum/${artistId}/fans-count`);
+        const response = await axios.get(`https://localhost:7223/api/artist/${artistId}/fans-count`);
         return response.data.fansCount; 
       } catch (error) {
         console.error(`获取歌手 ${artistId} 粉丝数量失败:`, error);
