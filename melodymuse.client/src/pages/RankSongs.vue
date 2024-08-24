@@ -6,7 +6,7 @@
         <img class="ranking-image" :src="RankingImage" alt="Ranking Image" />
       </div>
       <h1 class="ranking-title">
-        <span>热歌榜</span><strong>Top100</strong>
+        <span>热歌榜</span><strong>Top50</strong>
       </h1>
 
       <button @click="goToPlayPage(topSong.songId)" class="play-all-button">
@@ -28,7 +28,7 @@
             <tr v-for="(song, index) in songs" :key="song.songId" @click="goToPlayPage(song.songId)">
               <td :class="{'top-three': index < 3}">{{ index + 1 }}</td>
               <td>{{ song.songName }}</td>
-              <td>{{ song.artist }}</td>
+              <td>{{ song.artistName }}</td>
               <td>{{ formatDuration(song.duration) }}</td>
             </tr>
           </tbody>
@@ -54,91 +54,7 @@ export default {
   data() {
     return {
       RankingImage,
-      songs: [
-        {
-          songId: '1',
-          songName: 'Song of the Stars',
-          artist: 'Lun',
-          duration: '100',
-          playCount: '100'
-        },
-        {
-          songId: '9',
-          songName: 'Whispering Winds',
-          artist: 'Zephyr',
-          duration: '300',
-          playCount: '20'
-        },
-        {
-          songId: '3',
-          songName: 'Ocean Waves',
-          artist: 'Marina',
-          duration: '210',
-          playCount: '120',
-        },
-        {
-          songId: '4',
-          songName: 'Mountain Echo',
-          artist: 'Echo',
-          duration: '340',
-          playCount: '130'
-        },
-        {
-          songId: '5',
-          songName: 'Silent Night',
-          artist: 'Nocturne',
-          duration: '178',
-          playCount: '100'
-        },
-        {
-          songId: '6',
-          songName: 'Sunrise Melody',
-          artist: 'Aurora',
-          duration: '264',
-          playCount: '100'
-        },
-        {
-          songId: '3',
-          songName: 'Ocean Waves',
-          artist: 'Marina',
-          duration: '360',
-          playCount: '140'
-        },
-        {
-          songId: '4',
-          songName: 'Mountain Echo',
-          artist: 'Echo',
-          duration: '270',
-          playCount: '100'
-        },
-        {
-          songId: '5',
-          songName: 'Silent Night',
-          artist: 'Nocturne',
-          duration: '220',
-          playCount: '100'
-        },
-        {
-          songId: '3',
-          songName: 'Ocean Waves',
-          artist: 'Marina',
-          duration: '360',
-          playCount: '100'
-        },
-        {
-          songId: '4',
-          songName: 'Mountain Echo',
-          artist: 'Echo',
-          duration: '270',
-          playCount: '100'
-        },
-        {
-          songId: '5',
-          songName: 'Silent Night',
-          artist: 'Nocturne',
-          duration: '220',
-          playCount: '100'
-        },]
+      songs: [],
     };
   },
   computed: {
@@ -148,17 +64,10 @@ export default {
   },
   methods: {
     fetchSongs() {
-      axios.get('https://localhost:7223/api/rank/with-playcount')
+      axios.get('https://localhost:7223/api/rank/top-songs')
         .then(response => {
-          const sortedSongs = response.data.sort((a, b) => b.playCount - a.playCount);
-          const top100Songs = sortedSongs.slice(0, 100);
-          this.songs = top100Songs.map(song => ({
-            songId: song.songId,
-            songName: song.songName,
-            artist: song.artistName,
-            duration: song.duration,
-            playCount: song.totalPlays,  
-          }));
+          console.log(response.data); // 检查 API 返回的数据
+          this.songs = response.data; // 直接将后端返回的排序好的数据赋值给 songs
         })
         .catch(error => {
           console.error('获取歌曲信息失败:', error);
@@ -194,7 +103,7 @@ export default {
 
 .ranking-image {
   position:absolute;
-  top:6%;
+  top:5%;
   left:30%;
   width: 100px;
   height: 100px;
