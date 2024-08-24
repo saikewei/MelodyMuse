@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '../api/http.js'
 
 export default {
   data() {
@@ -79,7 +79,7 @@ export default {
       
       
       try {
-        const response = await axios.post ('https://localhost:7223/api/account/register', {
+        const response = await api.apiClientWithoutToken.post ('/api/account/register', {
           userphone: this.phonenumber,
           username: this.username,
           password: this.password

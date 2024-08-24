@@ -66,10 +66,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
 import { convertToPinyin } from 'tiny-pinyin';
+import api from '../api/http.js'
 export default {
   name: "singer",
   components: {
@@ -147,7 +147,7 @@ export default {
     // 获取歌手信息
     async fetchArtists() {
       try {
-        const response = await axios.get('https://localhost:7223/api/artist/all');
+        const response = await api.apiClient.get('/api/artist/all');
         this.originalArtists = response.data;
         this.artists = response.data;
       } catch (error) {

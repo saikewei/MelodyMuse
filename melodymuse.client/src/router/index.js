@@ -31,7 +31,7 @@ const routes = [
     component: MyMusic,
   },
   {
-    path: "/edit-personal-info",
+    path: "/personal-info",
     name: "modify",
     component: modify,
   },
@@ -102,7 +102,7 @@ const routes = [
     component: FollowedArtist,
   },
   {
-    path: "/searchResultPage", // ???????¡¤??????
+    path: "/searchResultPage", // ???????ï¿½ï¿½??????
     name: "search-result-page",
     component: SearchResultPage,
   },

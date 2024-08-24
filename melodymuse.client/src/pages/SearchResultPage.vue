@@ -12,9 +12,10 @@
 <script>
     import TheFooter from "../components/TheFooter.vue";
     import TheHeader from "../components/TheHeader.vue";
-    import axios from 'axios';
     import SearchResultList from '../components/SearchResultList.vue';
     import { mapGetters, mapActions } from 'vuex';
+    import api from '../api/http.js'
+
 
     export default {
         components: {
@@ -71,12 +72,12 @@
                     try {
                         let results = [];
                         if (this.searchType === 'artist') {
-                            const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
+                            const artistResponse = await api.apiClient.get(`/api/search/artists`, {
                                 params: { query: encodeURIComponent(query) }
                             });
                             results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
                         } else if (this.searchType === 'song') {
-                            const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
+                            const songResponse = await api.apiClient.get(`/api/search/songs`, {
                                 params: { query: encodeURIComponent(query) }
                             });
                             results = songResponse.data.map(song => ({ ...song, type: 'song' }));

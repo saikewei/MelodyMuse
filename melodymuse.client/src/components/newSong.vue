@@ -89,7 +89,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { ElForm, ElFormItem, ElInput, ElUpload, ElButton, ElMessage, ElSelect, ElOption } from 'element-plus';
 
 import api from '../api/http.js'

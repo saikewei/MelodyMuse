@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
+import api from '../api/http.js'
 
 export default {
   name: "FollowedArtist",
@@ -37,7 +37,7 @@ export default {
     // 获取已关注的歌手信息
     async fetchFollowedSingers() {
       try {
-        const response = await axios.get(`https://localhost:7223/api/artist/user/${this.userId}/followed`);
+        const response = await api.apiClient.get(`/api/artist/user/${this.userId}/followed`);
         this.followedSingers = response.data;
         console.log('用户信息:', this.followedSingers);
       } catch (error) {

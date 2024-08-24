@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import api from '../api/http.js'
 export default {
   data() {
     return {
@@ -56,7 +56,7 @@ export default {
       }
 
       try {
-      const response = await axios.post('https://localhost:7223/api/account/login', {
+      const response = await api.apiClientWithoutToken.post('/api/account/login', {
         PhoneNumber: this.username,
         Password: this.password
       });

@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.Services.Interfaces;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 
 
 //命名空间:Controllers
@@ -27,6 +28,7 @@ namespace MelodyMuse.Server.Controllers
 
         //搜索歌手
         [HttpGet]
+        [Authorize]
         [Route("artists")]
         public async Task<IActionResult> SearchArtists([FromQuery] string? query)
         {
@@ -49,6 +51,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         //搜索歌曲
+        [Authorize]
         [HttpGet]
         [Route("songs")]
         public async Task<IActionResult> SearchSongsByName([FromQuery] string? query)
@@ -73,6 +76,7 @@ namespace MelodyMuse.Server.Controllers
 
 
         //搜索歌曲//测试代码，songId返回歌手
+        [Authorize]
         [HttpGet]
         [Route("artist_song")]
         public async Task<IActionResult> GetArtistsBySongId([FromQuery] string songId)
@@ -91,6 +95,7 @@ namespace MelodyMuse.Server.Controllers
         //由于歌词移动，该接口已经废弃
 
         //搜索歌词
+        [Authorize]
         [HttpGet]
         [Route("lyrics")]
         public async Task<IActionResult> SearchSongsByLyrics([FromQuery] string? query)

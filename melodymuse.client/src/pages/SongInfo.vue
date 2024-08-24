@@ -44,10 +44,10 @@
 <script>
 import { ElTable, ElTableColumn, ElButton } from "element-plus"
 import EditForm from "../components/SongInfoEditForm.vue"
-import axios from "axios";
 import { format } from 'date-fns';
 import TheHeader from "../components/SimpleHeader.vue";
 import TheAside from "../components/TheAside.vue";
+import api from '../api/http.js'
 
 export default {
   data() {
@@ -104,7 +104,7 @@ export default {
     },
     async fetchSongs() {
       try {
-        const response = await axios.get('https://localhost:7223/api/songedit');
+        const response = await api.apiClient.get('/api/songedit');
         this.songs = response.data;
         this.filteredSongs = this.songs;
       } catch (error) {

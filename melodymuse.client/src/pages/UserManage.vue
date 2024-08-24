@@ -34,15 +34,15 @@
 
 <script setup>
     import { ref, onMounted } from 'vue';
-    import axios from 'axios';
     import TheAside from '@/components/TheAside.vue';
     import SimpleHeader from '@/components/SimpleHeader.vue';
+    import api from '../api/http.js'
 
     const users = ref([]);
 
     const fetchUserIds = async () => {
         try {
-            const response = await axios.get('https://localhost:7223/api/users');
+            const response = await axiapi.apiClientos.get('/api/users');
             return response.data;
         } catch (error) {
             console.error('获取用户ID失败:', error);
@@ -52,7 +52,7 @@
 
     const fetchUserDetails = async (userId) => {
         try {
-            const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
+            const response = await api.apiClient.get(`/api/users/${userId}`);
             return response.data;
         } catch (error) {
             console.error(`获取用户ID ${userId} 的详细信息失败:`, error);
@@ -73,7 +73,7 @@
 
     const updateUserStatus = async (userId, newStatus) => {
         try {
-            const response = await axios.put(`https://localhost:7223/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
+            const response = await api.apiClient.put(`/api/users/${userId}/updateStatus?newStatus=${newStatus}`);
             console.log(response.data.msg);
             const user = users.value.find((u) => u.userId === userId);
             if (user) {

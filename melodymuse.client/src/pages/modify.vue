@@ -45,9 +45,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import axios from 'axios';
 import TheHeader from '@/components/SimpleHeader.vue';
 import TheAside from '@/components/TheAside.vue';
+import api from '../api/http.js'
+
 export default defineComponent({
   data() {
     return {
@@ -96,7 +97,7 @@ export default defineComponent({
 
     async fetchUserInfo(userId: string) {
       try {
-        const response = await axios.get(`https://localhost:7223/api/users/${userId}`);
+        const response = await api.apiClient.get(`/api/users/${userId}`);
         if (response.status === 200) {
                 // 打印从后端获取的用户信息
       console.log('用户信息:', response.data);
@@ -141,7 +142,7 @@ export default defineComponent({
     };
 
         console.log('Sending updated user info:', this.userInfo.userId); // 打印发送的数据
-        const response = await axios.put(`https://localhost:7223/api/users/${this.userInfo.userId}`, updatedInfo);
+        const response = await api.apiClient.put(`/api/users/${this.userInfo.userId}`, updatedInfo);
         if (response.status === 200) {
         this.$message.success('信息更新成功');
         console.log('ccccccccccccccccc:', this.userInfo); // 打印发送的数据

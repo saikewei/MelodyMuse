@@ -32,7 +32,7 @@
   </template>
   
   <script>
-import axios from 'axios'; // 添加这行代码
+import api from '../api/http.js'
 
 
 export default {
@@ -51,7 +51,7 @@ export default {
 
     async checkPhoneExists() {
   try {
-    const response = await axios.post(`https://localhost:7223/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phoneNumber)}`);
+    const response = await api.apiClient.post(`/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phoneNumber)}`);
     return response.status === 200;
   } catch (error) {
     console.error(error);
@@ -78,7 +78,7 @@ export default {
 
       try {
         // 此处是发送验证码的API
-        const response = await axios.post('https://localhost:7223/api/sms/sendsms', {
+        const response = await api.apiClient.post('/api/sms/sendsms', {
           phoneNumber: this.phoneNumber,
           event: this.event
         });
@@ -97,7 +97,7 @@ export default {
 
     async verifyCode() {
       try {
-        const response = await axios.post('https://localhost:7223/api/sms/verifycode', {
+        const response = await api.apiClient.post('/api/sms/verifycode', {
           phoneNumber: this.phoneNumber,
           event: this.event,
           verificationCode: this.verificationCode
@@ -143,7 +143,7 @@ export default {
       }
 
       try {
-        const response = await axios.post('https://localhost:7223/api/account/reset-password', {
+        const response = await api.apiClient.post('/api/account/reset-password', {
           phoneNumber: this.phoneNumber,
           Password: this.newPassword
         });

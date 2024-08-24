@@ -51,9 +51,9 @@
   
   <script>
   import profilePicture from '../assets/logo2.jpg';
-  import axios from 'axios';
   import TheHeader from '@/components/TheHeader.vue';
-  
+  import api from '../api/http.js'
+    
   export default {
     data() {
       return {
@@ -100,7 +100,7 @@
     //获取艺术家信息，前端已测试成功
     async fetchArtistData() {
       try {
-        const artistResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}`);
+        const artistResponse = await api.apiClient.get(`/api/artist/${this.artistId}`);
         this.artist = artistResponse.data;
         this.followersCount = artistResponse.data.artistFansNum;//获取当前艺术家的关注人数，，前端已测试成功
       } catch (error) {
@@ -110,10 +110,10 @@
     //获取歌单
     async fetchSongs() {
       try {
-        const songsResponse = await axios.get(`https://localhost:7223/api/artist/${this.artistId}/songs`);
+        const songsResponse = await api.apiClient.get(`/api/artist/${this.artistId}/songs`);
         this.songs = await Promise.all(
           songsResponse.data.map(async (song) => {
-            const albumResponse = await axios.get(`https://localhost:7223/api/songs/${song.songId}/album`);
+            const albumResponse = await api.apiClient.get(`/api/songs/${song.songId}/album`);
             return { ...song, albumName: albumResponse.data };
           })
         );
@@ -142,14 +142,14 @@
     try {
       if (this.isFollowing) {
         // 如果已经关注，执行取消关注操作
-        await axios.post(`https://localhost:7223/api/artist/unfollow`, {
+        await api.apiClient.post(`/api/artist/unfollow`, {
           userId: this.userId, artistId: this.artistId
         });
         this.isFollowing = false;
         this.followersCount -= 1;
       } else {
         // 如果未关注，执行关注操作
-        await axios.post(`https://localhost:7223/api/artist/follow`, {
+        await api.apiClient.post(`/api/artist/follow`, {
           userId: this.userId,
           artistId: this.artistId
         });
@@ -167,7 +167,7 @@
   },
 async updateFollowersCount() {
     try {
-      await axios.post(`https://localhost:7223/api/artist/follow/increment-fans` , null, {
+      await api.apiClient.post(`/api/artist/follow/increment-fans` , null, {
           params: { artistId: this.artistId}
         });
     } catch (error) {

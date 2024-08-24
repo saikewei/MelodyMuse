@@ -21,17 +21,18 @@
                     <SearchResults :results="filteredResults" :searchType="searchType" />
                 </div>
             </div>
+            <el-button @click="logOut">退出登录</el-button>
         </nav>
     </div>
 </template>
 
 <script>
-    import axios from 'axios';
     import { mapGetters, mapActions } from 'vuex';
     import logoUrl from '../assets/logo2.jpg';
     import nameUr1 from '../assets/name1.jpg';
     import { navMsg } from '../assets/data/header';
     import SearchResults from './SearchResults.vue';
+    import api from '../api/http.js'
 
     export default {
         components: {
@@ -96,12 +97,12 @@
                     let results = [];
 
                     if (this.searchType === 'artist') {
-                        const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
+                        const artistResponse = await api.apiClient.get(`/api/search/artists`, {
                             params: { query: encodeURIComponent(this.inputQuery) }
                         });
                         results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
                     } else if (this.searchType === 'song') {
-                        const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
+                        const songResponse = await api.apiClient.get(`/api/search/songs`, {
                             params: { query: encodeURIComponent(this.inputQuery) }
                         });
                         results = songResponse.data.map(song => ({ ...song, type: 'song' }));
@@ -158,6 +159,10 @@
                 if (!searchInput.contains(event.target)) {
                     this.showPopup = false;
                 }
+            },
+            logOut() {
+                localStorage.removeItem('token');
+                this.$router.push('/login');
             }
         }
     };

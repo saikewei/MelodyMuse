@@ -210,16 +210,8 @@ function parseLyrics(lyricsText) {
 async function fetchSongInfo(songId) {
   console.log(songId)
   try {
-    const token = localStorage.getItem('token');
-    if(!token){
-      router.push('/login')
-    }
     //const response = await axios.get(`https://localhost:7223/api/player/${songId}`);
     const response = await api.apiClient.get(`/api/player/${songId}`);
-    if(response.status === 401)
-    {
-      router.push('/login');
-    }
     const songInfo = response.data;
     return songInfo;
   } catch (error) {
