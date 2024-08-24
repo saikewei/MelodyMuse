@@ -10,7 +10,7 @@
       <div>
         <img class="ranking-image1" :src="RankingImage" alt="Ranking Image" />
       </div>
-      <h1 class="ranking-title">
+      <h1 class="ranking-title1">
         <span>音乐人推荐榜</span><strong>Top50</strong>
       </h1>
 
@@ -125,7 +125,7 @@ export default {
 
 .ranking-image1 {
   position:absolute;
-  top:14%;
+  top:6%;
   left:28%;
   width: 100px;
   height: 100px;
@@ -133,23 +133,23 @@ export default {
   margin-right: 20px;
 }
 
-.ranking-title {
+.ranking-title1 {
   text-align: center;
   font-size: 40px;
   margin-left: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 85px;
   color: #193169c1; 
   letter-spacing: 2px; /* 调整字间距，可以根据需要增大或减小 */
 }
 
-.ranking-title span {
+.ranking-title1 span {
   font-weight: normal;
   font-size: -2em;
   margin-left: 40px;
   margin-right: 10px;
 }
 
-.ranking-title strong {
+.ranking-title1 strong {
   font-weight: bold;
   font-size: 1.7em; /* 放大字体 */
   color: white; 

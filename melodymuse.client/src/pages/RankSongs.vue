@@ -10,7 +10,7 @@
       <div>
         <img class="ranking-image2" :src="RankingImage" alt="Ranking Image" />
       </div>
-      <h1 class="ranking-title">
+      <h1 class="ranking-title2">
         <span>热歌榜</span><strong>Top50</strong>
       </h1>
 
@@ -143,7 +143,7 @@ export default {
 
 .ranking-image2 {
   position:absolute;
-  top:12%;
+  top:6%;
   left:32%;
   width: 100px;
   height: 100px;
@@ -151,7 +151,7 @@ export default {
   margin-right: 20px;
 }
 
-.ranking-title {
+.ranking-title2 {
   text-align: center;
   font-size: 40px;
   margin-left: 10px;
@@ -160,14 +160,14 @@ export default {
   letter-spacing: 2px;
 }
 
-.ranking-title span {
+.ranking-title2 span {
   font-weight: normal;
   font-size: -2em;
   margin-left: 40px;
   margin-right: 10px;
 }
 
-.ranking-title strong {
+.ranking-title2 strong {
   font-weight: bold;
   font-size: 1.7em;
   color: white;
