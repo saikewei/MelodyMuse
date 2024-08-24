@@ -4,5 +4,6 @@ namespace MelodyMuse.Server.Services.Interfaces
     public interface IArtistService
     {
         Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name);
+         Task<int> GetArtistFansCountAsync(string artistId);
     }
 }

@@ -29,6 +29,13 @@ namespace MelodyMuse.Server.Controllers
         var topSongs = await _RankingService.GetTopSongsAsync();
         return Ok(topSongs);
     }
+[HttpGet("ranking")]
+        public async Task<IActionResult> GetArtistRanking()
+        {
+            var ranking = await _RankingService.GetArtistRankingAsync();
+            return Ok(ranking);
+        }
+
     }
 
 }

@@ -7,6 +7,7 @@ namespace MelodyMuse.Server.Services.Interfaces
  public interface IRankingService
 {
     Task<List<SongRankingDto>> GetTopSongsAsync();
+    Task<List<ArtistRankingDto>> GetArtistRankingAsync();
 }
 
 }

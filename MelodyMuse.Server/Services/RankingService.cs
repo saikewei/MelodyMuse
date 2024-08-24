@@ -22,6 +22,26 @@ public class RankingService : IRankingService
     {
         return await _rankingRepository.GetTopSongsAsync();
     }
+
+    public async Task<List<ArtistRankingDto>> GetArtistRankingAsync()
+        {
+            var artists = await _rankingRepository.GetArtistRankingDataAsync();
+
+            var rankedArtists = artists
+                .Select(a => new ArtistRankingDto
+                {
+                    ArtistId = a.ArtistId,
+                    ArtistName = a.ArtistName,
+                    TotalPlayCount = a.TotalPlayCount,
+                    FansCount = a.FansCount,
+                    RankScore = a.TotalPlayCount * 0.6m + a.FansCount * 0.4m
+                })
+                .OrderByDescending(a => a.RankScore)
+                .Take(50)
+                .ToList();
+
+            return rankedArtists;
+        }
 }
 
 

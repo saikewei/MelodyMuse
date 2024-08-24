@@ -36,5 +36,15 @@ namespace MelodyMuse.Server.Repository
             return result > 0;
         }
 
+         public async Task<int> GetArtistFansCountAsync(string artistId)
+        {
+            // 使用艺术家和用户之间的关系表来获取粉丝数
+            var artist = await _context.Artists
+                .Include(a => a.Users)
+                .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+
+            return artist?.Users.Count ?? 0;
+        }
+
     }
 }
