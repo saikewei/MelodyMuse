@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 创建一个 axios 实例
 const apiClient = axios.create({
-  baseURL: 'http://localhost:7223', // 替换为你的 API 基础 URL
+  baseURL: 'https://localhost:7223', // 替换为你的 API 基础 URL
   timeout: 1000,
 });
 
@@ -19,7 +19,7 @@ apiClient.interceptors.request.use(config => {
 
 // 创建不需要 token 的 Axios 实例
 const apiClientWithoutToken = axios.create({
-  baseURL: 'http://localhost:7223',
+  baseURL: 'https://localhost:7223',
   timeout: 1000,
 });
 
