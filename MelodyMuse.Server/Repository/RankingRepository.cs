@@ -38,6 +38,23 @@ namespace MelodyMuse.Server.Repository
             .Take(50)
             .ToListAsync();
     }
+    public async Task<List<ArtistRankingData>> GetArtistRankingDataAsync()
+        {
+            // 获取每个歌手的歌曲播放总数和粉丝总数
+            var artistData = await _context.Artists
+                .Select(a => new ArtistRankingData
+                {
+                    ArtistId = a.ArtistId,
+                    ArtistName = a.ArtistName,
+                    TotalPlayCount = a.Songs
+                        .SelectMany(s => s.SongPlayCounts)
+                        .Sum(spc => spc.Count) ?? 0,
+                    FansCount = a.Users.Count
+                })
+                .ToListAsync();
+
+            return artistData;
+        }
 }
 
 }

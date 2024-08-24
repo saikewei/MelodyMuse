@@ -17,5 +17,9 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.GetArtistsByNameAsync(name);
         }
+        public async Task<int> GetArtistFansCountAsync(string artistId)
+        {
+            return await _artistRepository.GetArtistFansCountAsync(artistId);
+        }
     }
 }
