@@ -3,6 +3,7 @@ using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization; // 如果是 ASP.NET Core
 using System.Collections.Generic;
 namespace MelodyMuse.Server.Controllers
 {
@@ -16,7 +17,7 @@ namespace MelodyMuse.Server.Controllers
         {
             _artistService = artistService;
         }
-
+         [Authorize]
         [HttpGet("{artistId}")]
         public async Task<IActionResult> GetArtistById(string artistId)
         {
@@ -29,7 +30,7 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok(artist);
         }
-
+         [Authorize]
         [HttpGet("{artistId}/songs")]
         public async Task<IActionResult> GetSongsByArtistId(string artistId)
         {
@@ -42,7 +43,7 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok(songs);
         }
-
+         [Authorize]
         // 用户关注艺术家
         [HttpPost("follow")]
         public async Task<IActionResult> FollowArtist([FromBody] FollowArtistRequest request)
@@ -60,7 +61,7 @@ namespace MelodyMuse.Server.Controllers
 
             return BadRequest(new { message = "关注歌手失败" });
         }
-
+         [Authorize]
         [HttpPost("unfollow")]
     public async Task<IActionResult> UnfollowArtist([FromBody] FollowArtistRequest model)
     {
@@ -75,6 +76,7 @@ namespace MelodyMuse.Server.Controllers
             return BadRequest(new { Message = "取消关注失败" });
         }
     }
+     [Authorize]
      [HttpPost("follow/increment-fans")]
     public async Task<IActionResult> IncrementFansNum([FromQuery]string artistId)
     {
@@ -89,18 +91,21 @@ namespace MelodyMuse.Server.Controllers
             return BadRequest(new { Message = "添加失败" });
         }
     }
+     [Authorize]
     [HttpGet("all")]
     public async Task<IActionResult> GetAllArtists()
     {
         var artists = await _artistService.GetAllArtistsAsync();
         return Ok(artists);
     }
+     [Authorize]
     [HttpGet("user/{userId}/followed")]
     public async Task<IActionResult> GetFollowedArtistsByUserId(string userId)
     {
         var artists = await _artistService.GetArtistsByUserIdAsync(userId);
         return Ok(artists);
     }
+     [Authorize]
      [HttpGet("{artistId}/fans-count")]
         public async Task<IActionResult> GetArtistFansCount(string artistId)
         {
