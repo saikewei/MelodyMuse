@@ -18,19 +18,33 @@
       </el-col>
     </div>
     <div class="player-controls">
-      <button class="play-pause-button" @click="togglePlaying">
-        <svg v-if="!playing" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </button>
+
       <input type="range" class="progress-slider" v-model="progress" :max="duration" @input="seek" />
-      <button class="prev-song-button" @click="prevSong">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 6L6 16M6 6l10 10"/></svg>
-      </button>
-      <button class="next-song-button" @click="nextSong">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 6L18 16M18 6l-10 10"/></svg>
-      </button>
+
+      <span class="progress-display">{{ formatTime(progress) }} / {{ formatTime(duration) }}</span>
+
       <audio ref="audioElement" :src="audioSrc" @timeupdate="updateProgress" @durationchange="updateDuration" :controls="false"></audio>
     </div>
+
+    <div class = "control-button-warpper">
+        <button class="prev-song-button" @click="prevSong" @mouseenter="prevSongSrc = '/prev-hover.png'" @mouseleave="prevSongSrc = '/prev.png'">
+          <img :src="prevSongSrc" alt="Previous Song" />
+        </button>
+
+        <button class="play-pause-button" @click="togglePlaying">
+          <img v-if="!playing" src="/play.jpg" alt="Play" />
+          <img v-else src="/pause.jpg" alt="Pause" />
+        </button>
+
+        <button class="next-song-button" @click="nextSong"  @mouseenter="nextSongSrc = '/next-hover.png'" @mouseleave="nextSongSrc = '/next.png'">
+          <img :src="nextSongSrc" alt="Next Song" />
+        </button>
+
+        <button class="play-mode-button" @click="togglePlayMode">
+          <img :src="playModeSrc" alt="Play Mode" />
+        </button>
+
+      </div>
   </div>
 </template>
 
@@ -42,27 +56,41 @@ import api from '../api/http.js'
 import { useRouter, useRoute } from 'vue-router';
 const router = useRouter(); 
 
+const prevSongSrc = ref('/prev.png');
+const nextSongSrc = ref('/next.png');
+const playModeSrc = ref('/circle.png');
+
 
 const route = useRoute(); 
-const audioSrc = ref('');
-const lyrics = ref([]);
-const albumId = ref('');
-const songName = ref('');
-const composerId = ref('');
-const currentImage = ref('');
-const currentLine = ref(0);
-const audioElement = ref(null);
-const progress = ref(0);
-const duration = ref(0);
-const playing = ref(false);
-const isLoading = ref(true); // 新增状态，用于表示数据是否正在加载
+var audioSrc = ref('');
+var lyrics = ref([]);
+var albumId = ref('');
+var songName = ref('');
+var composerId = ref('');
+var currentImage = ref('');
+var currentLine = ref(0);
+var audioElement = ref(null);
+var progress = ref(0);
+var duration = ref(0);
+var playing = ref(false);
+var isLoading = ref(true); // 新增状态，用于表示数据是否正在加载
+const songList = route.params.songList;
+const songListLength = songList.length;
+var songIndex = songList.indexOf(route.params.songId);
+var playmode = ref('sequence');
+
+
 
 
 onMounted(async () => {
+  await Promise.all([pull_song_data(route.params.songId)]);
+});
+
+async function pull_song_data(songId){
   try {
     // 并发获取歌曲信息
     const [songInfo] = await Promise.all([
-      fetchSongInfo(route.params.songId)
+      fetchSongInfo(songId)
     ]);
     console.log(songInfo)
 
@@ -73,8 +101,8 @@ onMounted(async () => {
 
     // 并发获取歌词和音频数据
     const [lyrics_txt, audio , image] = await Promise.all([
-      fetchLyrics(route.params.songId, composerId.value),
-      fetchSong(route.params.songId, composerId.value),
+      fetchLyrics(songId, composerId.value),
+      fetchSong(songId, composerId.value),
       fetch_img(albumId.value)
     ]);
 
@@ -98,12 +126,18 @@ onMounted(async () => {
     // 处理错误情况，例如显示错误消息
     isLoading.value = false; // 数据加载失败后也设置为 false
   }
-});
+}
 
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 async function fetch_img(albumId) {
   try {
-    const response = await api.apiClientWithoutToken.get("/api/player/jpg", {
+    const response = await api.apiClient.get("/api/player/jpg", {
       params: { 'albumId': albumId },
       responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer
     });
@@ -128,7 +162,7 @@ async function fetchLyrics(songId,artistId){
     const formData = new FormData();
     formData.append('songId', songId);
     formData.append('artistId', artistId);
-  const response = await api.apiClientWithoutToken.get("/api/player/txt",{
+  const response = await api.apiClient.get("/api/player/txt",{
     params:{'songId' : songId,
     'artistId' : artistId}
   });
@@ -148,7 +182,7 @@ async function fetchLyrics(songId,artistId){
 
 async function fetchSong(songId, artistId) {
   try {
-    const response = await api.apiClientWithoutToken.get("/api/player/mp3", {
+    const response = await api.apiClient.get("/api/player/mp3", {
       params: { 'songId': songId, 'artistId': artistId },
       responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
     });
@@ -257,11 +291,10 @@ function seek(value) {
 
 
 // 更新歌词显示
-// 更新歌词显示
 function updateLyricDisplay(currentTime) {
   let lineIndex = 0;
   for (let i = 0; i < lyrics.value.length; i++) {
-    if (lyrics.value[i].time >= currentTime) {
+    if (lyrics.value[i+1].time >= currentTime) {
       lineIndex = i;
       break;
     }
@@ -269,7 +302,21 @@ function updateLyricDisplay(currentTime) {
   currentLine.value = lineIndex;
 }
 
-
+function togglePlayMode(){
+  console.log(playmode.value)
+  if(playmode.value =='sequence'){
+    playmode.value = 'random';
+    playModeSrc.value = '/random.png';
+  }
+  else if(playmode.value =='random'){
+    playmode.value ='repeat';
+    playModeSrc.value = '/repeat.png';
+  }
+  else if(playmode.value =='repeat'){
+    playmode.value ='sequence';
+    playModeSrc.value = '/circle.png';
+  }
+}
 // 切换播放/暂停状态
 function togglePlaying() {
   if (playing.value) {
@@ -378,12 +425,58 @@ audio {
 
 .progress-slider {
   width: 100%;
-  margin: 0 20px;
+  margin: 0 30px;
 }
 
 svg {
   width: 24px;
   height: 24px;
   fill: currentColor;
+}
+
+.progress-display {
+  margin-left: 10px;
+  font-size: 0.8em;
+  color: #999;
+}
+
+.control-button-warpper {
+  display: flex; /* 使用 flexbox 布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.prev-song-button{
+  transform: scale(0.1); /* 缩小到原大小的一半 */
+  transition: transform 0.3s ease; /* 添加平滑过渡效果 */
+  width: 30px;
+  height: 10px;
+
+}
+
+.next-song-button{
+  transform: scale(0.1);
+  transition: transform 0.3s ease; /* 添加平滑过渡效果 */
+  width: 30px;
+  height: 10px;
+}
+
+.play-pause-button{
+  transform: scale(0.1);
+  transition: transform 0.3s ease; /* 添加平滑过渡效果 */
+  width: 30px;
+  height: 10px;
+}
+
+.play-mode-button{
+  transform: scale(0.1);
+  transition: transform 0.3s ease; /* 添加平滑过渡效果 */
+  width: 30px;
+  height: 10px;
+  margin-left: 300px; /* 增加右侧的外边距 */
+}
+
+.play-mode-button :hover{
+  transform: scale(0.9); 
 }
 </style>

@@ -86,7 +86,8 @@ const routes = [
     component: UserManage, //?????????????????????
   },
   {
-    path: "/mediaplayer/:songId",
+    path: "/mediaplayer/:songId/:songList",  //songList:[songId1,songId2,.....]
+
     name: "mediaplayer",
     component: mediaplayer,
   },
