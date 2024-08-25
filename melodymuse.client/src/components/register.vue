@@ -69,7 +69,7 @@ export default {
     return response.status === 200;
   } catch (error) {
     //console.error(error);
-    this.resetError = '检查手机号时发生错误，请稍后重试。';
+    this.registerError = '检查手机号时发生错误，请稍后重试。';
     return false;
   }
 }
@@ -80,14 +80,14 @@ export default {
     async sendCode() {
       // 验证手机号码格式
       if (!/^\d{11}$/.test(this.phonenumber)) {
-        this.resetError = '请输入11位有效的手机号码。';
+        this.registerError = '请输入11位有效的手机号码。';
         return;
       }
 
       //检查手机号是否存在
       const phoneExists = await this.checkPhoneExists();
       if (phoneExists) {
-        this.resetError = '手机号已经存在。';
+        this.registerError = '手机号已经存在。';
         return;
       }
 
@@ -103,11 +103,11 @@ export default {
           this.codeSent = true;  // 更新：验证码已发送
           this.registerError = '';
         } else {
-          this.resetError = response.data.msg || '发送验证码失败，请重试。';
+          this.registerError = response.data.msg || '发送验证码失败，请重试。';
         }
       } catch (error) {
         console.error(error);
-        this.resetError = '发送验证码时发生错误，请稍后重试。';
+        this.registerError = '发送验证码时发生错误，请稍后重试。';
       }
      
     },
@@ -122,7 +122,7 @@ export default {
         return response.status === 200;
       } catch (error) {
         console.error(error);
-        this.resetError = '验证验证码时发生错误，请稍后重试。';
+        this.registerError = '验证验证码时发生错误，请稍后重试。';
         return false;
       }
     },
@@ -142,7 +142,7 @@ export default {
       
       const codeValid = await this.verifyCode();
       if (!codeValid) {
-        this.resetError = '验证码无效或已过期。';
+        this.registerError = '验证码无效或已过期。';
         return;
       }
 
