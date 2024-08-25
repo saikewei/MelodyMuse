@@ -23,7 +23,7 @@ namespace MelodyMuse.Server.Controllers
 
         // 获取某用户的所有歌单及其包含的歌曲数量
         [Authorize]
-        [HttpGet("/getall")]
+        [HttpGet("getall")]
         public async Task<IActionResult> GetUserSonglists()
         {
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();

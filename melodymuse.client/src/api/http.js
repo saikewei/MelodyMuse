@@ -4,7 +4,7 @@ import router from "../router"; // 导入你的 Vue Router 实例
 // 创建一个 axios 实例
 const apiClient = axios.create({
   baseURL: "https://localhost:7223", // 替换为你的 API 基础 URL
-  timeout: 1000,
+  timeout: 10000,
 });
 
 // 请求拦截器
@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
 // 创建不需要 token 的 Axios 实例
 const apiClientWithoutToken = axios.create({
   baseURL: "https://localhost:7223",
-  timeout: 1000,
+  timeout: 10000,
 });
 
 export default { apiClient, apiClientWithoutToken };
