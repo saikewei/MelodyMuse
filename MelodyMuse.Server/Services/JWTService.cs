@@ -85,5 +85,32 @@ namespace MelodyMuse.Server.Services
                 return null;
             }
         }
+
+        public static string Token2Id(string token, string secretKey)
+        {
+            //创建JWTSecurityTokenHandler用来解析Token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            //拿到密钥
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
+            //配置参数
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
+            //验证Token合法性并解析出用户信息
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(userId == null)
+            {
+                throw new Exception("无法获取ID");
+            }
+
+            return userId;
+        }
     }
 }

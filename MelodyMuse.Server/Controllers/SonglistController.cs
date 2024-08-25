@@ -26,16 +26,23 @@ namespace MelodyMuse.Server.Controllers
         [HttpGet("getall")]
         public async Task<IActionResult> GetUserSonglists()
         {
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            //如果没有令牌，返回未授权错误码401
-            if (token == null)
+            string userId;
+            try
             {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！"+ex);
                 return Unauthorized();
             }
-            //解析 JWT 令牌 得到存储的信息 ParsedToken:id,name,phone
-            var parsedToken = TokenParser.ParseToken(token,JWTConfigure.serect_key);
-
-            string userId = parsedToken.UserID;
 
             var songlists = await _songlistService.GetUserSonglistsAsync(userId);
             if (songlists == null || !songlists.Any())
