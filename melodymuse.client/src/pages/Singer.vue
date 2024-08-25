@@ -125,7 +125,6 @@ export default {
         return pinyinInitial.toUpperCase();
     },
     
-
     // 应用字母和性别筛选的逻辑
     applyFilters() {
       // 从原始数据中进行筛选，防止数据丢失
@@ -145,30 +144,12 @@ export default {
         console.error('originalArtists is not an array');
       }
     },
-
-     //获取粉丝数量
-    async fetchArtistFansCount(artistId) {
-      try {
-        const response = await axios.get(`https://localhost:7223/api/artist/${artistId}/fans-count`);
-        return response.data.fansCount; 
-      } catch (error) {
-        console.error(`获取歌手 ${artistId} 粉丝数量失败:`, error);
-        return 0; // 如果出错，则默认粉丝数为0
-      }
-    },
-
     // 获取歌手信息
     async fetchArtists() {
       try {
         const response = await api.apiClient.get('/api/artist/all');
-        const artistsData = response.data;
-        // 获取每个歌手的粉丝数
-        const artistsWithFansCount = await Promise.all(artistsData.map(async (artist) => {
-          const fansCount = await this.fetchArtistFansCount(artist.artistId);
-          return { ...artist, artistFansNum: fansCount };
-        }));
-        this.originalArtists = artistsWithFansCount;
-        this.artists = artistsWithFansCount;
+        this.originalArtists = response.data;
+        this.artists = response.data;
       } catch (error) {
         console.error('获取歌手信息失败:', error);
       }

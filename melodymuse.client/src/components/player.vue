@@ -103,7 +103,7 @@ onMounted(async () => {
 
 async function fetch_img(albumId) {
   try {
-    const response = await api.apiClient.get("/api/player/jpg", {
+    const response = await api.apiClientWithoutToken.get("/api/player/jpg", {
       params: { 'albumId': albumId },
       responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer
     });
@@ -128,7 +128,7 @@ async function fetchLyrics(songId,artistId){
     const formData = new FormData();
     formData.append('songId', songId);
     formData.append('artistId', artistId);
-  const response = await api.apiClient.get("/api/player/txt",{
+  const response = await api.apiClientWithoutToken.get("/api/player/txt",{
     params:{'songId' : songId,
     'artistId' : artistId}
   });
@@ -148,7 +148,7 @@ async function fetchLyrics(songId,artistId){
 
 async function fetchSong(songId, artistId) {
   try {
-    const response = await api.apiClient.get("/api/player/mp3", {
+    const response = await api.apiClientWithoutToken.get("/api/player/mp3", {
       params: { 'songId': songId, 'artistId': artistId },
       responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
     });
