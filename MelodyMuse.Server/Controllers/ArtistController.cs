@@ -5,11 +5,9 @@ using MelodyMuse.Server.models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization; // 如果是 ASP.NET Core
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
 namespace MelodyMuse.Server.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/artist")]
     public class ArtistController : ControllerBase
     {
@@ -47,7 +45,6 @@ namespace MelodyMuse.Server.Controllers
         }
         [Authorize]
         // 用户关注艺术家
-        [Authorize]
         [HttpPost("follow")]
         public async Task<IActionResult> FollowArtist([FromBody] FollowArtistRequest request)
         {
@@ -115,7 +112,5 @@ namespace MelodyMuse.Server.Controllers
             var fansCount = await _artistService.GetArtistFansCountAsync(artistId);
             return Ok(new { ArtistId = artistId, FansCount = fansCount });
         }
-
-
     }
 }
