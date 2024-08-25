@@ -41,7 +41,7 @@
 
 <script>
 import RankingImage from '../assets/logo2.jpg';
-import axios from 'axios';
+import api from "../api/http.js";
 import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
 
@@ -63,7 +63,7 @@ export default {
     this.$router.push({ name: routeName });
     },
     fetchArtists() {
-      axios.get('https://localhost:7223/api/rank/ranking')
+      api.apiClient.get('/api/rank/ranking')
         .then(response => {
           // 假设数据已经根据rankScore排好序并选择前50名音乐人
           this.artists = response.data;

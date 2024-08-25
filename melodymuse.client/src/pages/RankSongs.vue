@@ -47,7 +47,7 @@
 
 <script>
 import RankingImage from '../assets/logo2.jpg';
-import axios from 'axios';
+import api from "../api/http.js";
 import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
 
@@ -74,7 +74,7 @@ export default {
     this.$router.push({ name: routeName });
   },
     fetchSongs() {
-      axios.get('https://localhost:7223/api/rank/top-songs')
+      api.apiClient.get('/api/rank/top-songs')
         .then(response => {
           console.log(response.data); // 检查 API 返回的数据
           this.songs = response.data; // 直接将后端返回的排序好的数据赋值给 songs
