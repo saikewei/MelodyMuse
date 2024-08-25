@@ -101,6 +101,13 @@ namespace MelodyMuse.Server.Controllers
         var artists = await _artistService.GetArtistsByUserIdAsync(userId);
         return Ok(artists);
     }
+     [HttpGet("{artistId}/fans-count")]
+        public async Task<IActionResult> GetArtistFansCount(string artistId)
+        {
+            var fansCount = await _artistService.GetArtistFansCountAsync(artistId);
+            return Ok(new { ArtistId = artistId, FansCount = fansCount });
+        }
+
 
     }
 }
