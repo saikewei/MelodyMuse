@@ -3,6 +3,7 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.Services;
+using Microsoft.AspNetCore.Authorization; // 如果是 ASP.NET Core
 
 //命名空间:Controllers
 namespace MelodyMuse.Server.Controllers
@@ -22,14 +23,15 @@ namespace MelodyMuse.Server.Controllers
             _RankingService =  RankingService;
         }
 
-
+        [Authorize] 
          [HttpGet("top-songs")]
     public async Task<IActionResult> GetTopSongs()
     {
         var topSongs = await _RankingService.GetTopSongsAsync();
         return Ok(topSongs);
     }
-[HttpGet("ranking")]
+            [Authorize] 
+        [HttpGet("ranking")]
         public async Task<IActionResult> GetArtistRanking()
         {
             var ranking = await _RankingService.GetArtistRankingAsync();
