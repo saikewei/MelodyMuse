@@ -25,10 +25,27 @@ namespace MelodyMuse.Server.Services
         {
             // 从仓库层获取歌曲信息
             var song = await _musicplayerrepository.GetSongBySongId(songId);
+            if (song == null)
+            {
+                throw new Exception($"Song with ID {songId} not found.");
+            }
+
             // 从仓库层获取歌手信息
             var singers = await _musicplayerrepository.GetSingersBySongId(songId);
+            if (singers == null || !singers.Any())
+            {
+                throw new Exception($"Singers for song with ID {songId} not found.");
+            }
+
             // 提取歌手名称列表
-            List<string?> singerNames = singers.Select(o => o.ArtistName).ToList();
+            var singerNames = singers.Select(o => o.ArtistName).Where(name => name != null).ToList();
+
+            // 获取歌曲所属专辑ID
+            var albumId = await _musicplayerrepository.GetAlbumIdBySongId(songId);
+            if (albumId == null)
+            {
+                throw new Exception($"Album for song with ID {songId} not found.");
+            }
 
             // 创建并填充SongMetaDataModel对象
             var responseModel = new SongMetaDataModel
@@ -39,7 +56,9 @@ namespace MelodyMuse.Server.Services
                 SongGenre = song.SongGenre,
                 SongDate = song.SongDate,
                 SongDuration = song.Duration,
-                ComposerName = song.Composer != null ? song.Composer.ArtistName : null
+                ComposerId = song.ComposerId,
+                ComposerName = song.Composer?.ArtistName,
+                AlbumId = albumId
             };
 
             // 返回填充好的SongMetaDataModel对象

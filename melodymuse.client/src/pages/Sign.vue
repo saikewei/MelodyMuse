@@ -5,8 +5,8 @@
       <component :is="msg">
     </component>
     <div class="title">
-          <div class="btn" @click="msg='login'">登录</div>
-          <div class="btn" @click="msg='register'">注册</div>
+        <div class="btn" @click="msg='login'">登录</div>
+        <div class="btn" @click="msg='register'">注册</div>
       </div>
   </div>
 </template>
@@ -35,23 +35,46 @@ export default {
     background-color:transparent;
 }
 
-.btn {   
+.btn-login {  
+    position:absolute;
+    top:69%; 
+    left:29%;
     background-color: transparent;
     border-radius:10px;
     display:inline-block;
     cursor:pointer;
-    color:#bb8bbe;
+    color:#6a8cdcc1;
     font-family:Arial;
     font-size:20px;
     padding:16px 31px;
     text-decoration:none;
     margin: 10px 20px;  
 }
-.btn:hover {
-    background-color:#f9f7f9;
+.btn-login:hover {
+    color:#284da0c1;
 }
-.btn:active {
-    position:relative;
-    top:1px;
+.btn-login:active {
+    color:#284da0c1;
+}
+.btn-register {   
+    position:absolute;
+    top:69%; 
+    left:28%;
+    background-color: transparent;
+    border-radius:10px;
+    display:inline-block;
+    cursor:pointer;
+    color:#6a8cdcc1;
+    font-family:Arial;
+    font-size:20px;
+    padding:16px 31px;
+    text-decoration:none;
+    margin: 10px 20px;  
+}
+.btn-register:hover {
+    color:#284da0c1;
+}
+.btn-register:active {
+    color:#284da0c1;
 }
 </style>

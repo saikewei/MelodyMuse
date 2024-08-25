@@ -3,6 +3,7 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -18,6 +19,7 @@ namespace MelodyMuse.Server.Controllers
             _songEditService = songEditService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IList<Song>>> GetAllSongs()
         {
@@ -25,6 +27,7 @@ namespace MelodyMuse.Server.Controllers
             return Ok(songs);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<SongUpdateModel>> GetSongById(string id)
         {
@@ -46,6 +49,7 @@ namespace MelodyMuse.Server.Controllers
             return Ok(songDto);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSong(string id, [FromBody] SongUpdateModel songDto)
         {
@@ -61,6 +65,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取海报
+        [Authorize]
         [HttpGet("{id}/poster")]
         public async Task<IActionResult> GetPoster(string id)
         {
@@ -72,6 +77,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 上传海报
+        [Authorize]
         [HttpPost("{id}/poster")]
         public async Task<IActionResult> UploadPoster(string id, IFormFile file)
         {

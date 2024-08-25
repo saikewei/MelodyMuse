@@ -61,6 +61,10 @@
 import axios from "axios";
 import { ElForm, ElFormItem, ElInput, ElDatePicker, ElUpload, ElButton, ElMessage } from 'element-plus';
 
+import api from '../api/http.js'
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter(); 
+
 export default {
   name: "UploadAlbum",
 
@@ -120,11 +124,19 @@ export default {
             Object.keys(this.albumForm).forEach((key) => {
               formData.append(key, this.albumForm[key]);
             });
-            const response = await axios.post('http://localhost:7223/api/submit/createAlbum', formData, {
+            const token = localStorage.getItem('token');
+            if(!token){
+              router.push('/login')
+            }
+            const response = await api.apiClient.post('/api/submit/createAlbum', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
             });
+            if(response.status === 401)
+            {
+              router.push('/login');
+            }
             console.log(response.data);
             ElMessage.success('专辑创建成功');
           } catch (error) {

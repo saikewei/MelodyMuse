@@ -14,5 +14,7 @@ namespace MelodyMuse.Server.Services.Interfaces
 
         // 审核不通过歌曲
         Task RejectSongAsync(string songId);
+         Task<List<Song>> GetSongsByComposerIdAsync(string composerId);
+         Task<string> GetAlbumBySongIdAsync(string songId);
     }
 }

@@ -9,5 +9,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
     {
         Task<Song> GetSongBySongId(string songId);
         Task<List<Artist>> GetSingersBySongId(string songId);
+
+        Task<string> GetAlbumIdBySongId(string songId);
     }
 }

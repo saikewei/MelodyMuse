@@ -34,10 +34,10 @@ namespace MelodyMuse.Server.Controllers
             //调用下层服务接口提供的函数完成相应的逻辑操作
             GenerateTokenModel UserInfo = await _accountService.LoginAsync(loginModel);
 
-            if (UserInfo!=null)
+            if (UserInfo != null)
             {
                 //根据用户信息生成JWT
-                var JWT = JWTGenerator.GenerateToken(UserInfo,JWTConfigure.serect_key);
+                var JWT = JWTGenerator.GenerateToken(UserInfo, JWTConfigure.serect_key);
                 var seccessResponse = new
                 {
                     msg = "登录成功！",
@@ -58,27 +58,73 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)//接收到的数据自动绑定到loginModel数据块上
         {
-            //调用下层服务接口提供的函数完成相应的逻辑操作
-            var result = await _accountService.RegisterAsync(registerModel);
-
-            if (result)
+            try
             {
-                var seccessResponse = new
+                //调用下层服务接口提供的函数完成相应的逻辑操作
+                var result = await _accountService.RegisterAsync(registerModel);
+
+                if (result)
                 {
-                    msg = "注册成功！"
+                    var seccessResponse = new
+                    {
+                        msg = "注册成功！"
+                    };
+                    return Ok(seccessResponse);
+                }
+                else { throw new Exception("未知错误"); }
+            }
+            catch (Exception ex)
+            {
+                var failResponse = new
+                {
+                    msg = ex.Message
                 };
-                return Ok(seccessResponse);
+                return Unauthorized(failResponse);
+            }
+        }
+
+        // 验证手机号是否已注册
+        [HttpPost("check-phone")]
+        public async Task<IActionResult> CheckPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                return BadRequest(new { msg = "手机号不能为空。" });
             }
 
-            var failResponse = new
+            bool isRegistered = await _accountService.CheckPhoneNumberExistsAsync(phoneNumber);
+
+            if (isRegistered)
             {
-                msg = "注册失败！"
-            };
-            return Unauthorized(failResponse);
+                return Ok(new { msg = "手机号已注册。" });
+            }
+            else
+            {
+                return NotFound(new { msg = "手机号未注册。" });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ChangePasswordModel model)
+        {
+            if (model == null || string.IsNullOrEmpty(model.phoneNumber) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest(new { msg = "Invalid request data." });
+            }
+
+            bool resetResult = await _accountService.ResetPasswordAsync(model.phoneNumber, model.Password);
+
+            if (resetResult)
+            {
+                return Ok(new { msg = "Password reset successful." });
+            }
+            else
+            {
+                return BadRequest(new { msg = "Failed to reset password." });
+            }
         }
 
 
-        
     }
 
 }

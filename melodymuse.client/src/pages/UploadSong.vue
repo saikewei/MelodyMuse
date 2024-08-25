@@ -1,6 +1,6 @@
 <template>
     <header>
-        <SimpleHeader />
+        <SimpleHeader current-page="上传歌曲"/>
     </header>
     <aside>
         <TheAside />

@@ -3,6 +3,7 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MelodyMuse.Server.Controllers
 {
@@ -32,6 +33,7 @@ namespace MelodyMuse.Server.Controllers
         /// <param name="albumCreateDto">包含专辑信息的数据传输对象</param>
         /// <returns>返回创建专辑的结果</returns>
         [HttpPost("createAlbum")]
+        [Authorize]
         public async Task<IActionResult> CreateAlbum([FromForm] AlbumCreateModel albumCreateDto)
         {
             // 检查albumCreateDto是否为null
@@ -65,6 +67,7 @@ namespace MelodyMuse.Server.Controllers
         /// <param name="songUploadDto">包含歌曲信息的数据传输对象</param>
         /// <returns>返回上传歌曲的结果</returns>
         [HttpPost("uploadSong")]
+        [Authorize]
         public async Task<IActionResult> UploadSong([FromForm] SongUploadModel songUploadDto)
         {
             // 检查songUploadDto是否为null
@@ -145,16 +148,5 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok("Batch creation successful");
         }
-
-
-
-
-
-
-
-
-
-
-
     }
 }
