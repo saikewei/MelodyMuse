@@ -39,6 +39,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         [HttpGet("mp3")]
+        [Authorize]
         public async Task<IActionResult> GetMp3File([FromQuery] string songId, [FromQuery] string artistId)
         {
             var localFilePathMp3 = Path.Combine(_cacheDirectory, $"{artistId}_{songId}.mp3");
@@ -56,6 +57,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         [HttpGet("jpg")]
+        [Authorize]
         public async Task<IActionResult> GetJpgFile([FromQuery] string albumId)
         {
             var localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
@@ -68,6 +70,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         [HttpGet("txt")]
+        [Authorize]
         public async Task<IActionResult> GetTxtFile([FromQuery] string songId, [FromQuery] string artistId)
         {
             var localFilePathTxt = Path.Combine(_cacheDirectory, $"{artistId}_{songId}.txt");
