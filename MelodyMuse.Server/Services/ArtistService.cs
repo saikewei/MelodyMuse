@@ -1,4 +1,4 @@
-using MelodyMuse.Server.models;
+﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
@@ -48,6 +48,10 @@ namespace MelodyMuse.Server.Services
          public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
         {
             return await _artistRepository.GetArtistsByUserIdAsync(userId);
+        }
+        public async Task<int> GetArtistFansCountAsync(string artistId)
+        {
+            return await _artistRepository.GetArtistFansCountAsync(artistId);
         }
     }
 }

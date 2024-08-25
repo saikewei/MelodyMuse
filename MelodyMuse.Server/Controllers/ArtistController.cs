@@ -3,11 +3,12 @@ using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization; // 如果是 ASP.NET Core
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 namespace MelodyMuse.Server.Controllers
 {
-[ApiController]
+    [ApiController]
     [Authorize]
     [Route("api/artist")]
     public class ArtistController : ControllerBase
@@ -18,7 +19,6 @@ namespace MelodyMuse.Server.Controllers
         {
             _artistService = artistService;
         }
-
         [Authorize]
         [HttpGet("{artistId}")]
         public async Task<IActionResult> GetArtistById(string artistId)
@@ -32,13 +32,12 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok(artist);
         }
-
         [Authorize]
         [HttpGet("{artistId}/songs")]
         public async Task<IActionResult> GetSongsByArtistId(string artistId)
         {
             var songs = await _artistService.GetSongsByArtistIdAsync(artistId);
-            
+
             if (songs == null || songs.Count == 0)
             {
                 return NotFound(new { message = "该歌手未发布歌曲" });
@@ -46,7 +45,7 @@ namespace MelodyMuse.Server.Controllers
 
             return Ok(songs);
         }
-
+        [Authorize]
         // 用户关注艺术家
         [Authorize]
         [HttpPost("follow")]
@@ -65,7 +64,6 @@ namespace MelodyMuse.Server.Controllers
 
             return BadRequest(new { message = "关注歌手失败" });
         }
-
         [Authorize]
         [HttpPost("unfollow")]
         public async Task<IActionResult> UnfollowArtist([FromBody] FollowArtistRequest model)
@@ -83,7 +81,7 @@ namespace MelodyMuse.Server.Controllers
         }
         [Authorize]
         [HttpPost("follow/increment-fans")]
-        public async Task<IActionResult> IncrementFansNum([FromQuery]string artistId)
+        public async Task<IActionResult> IncrementFansNum([FromQuery] string artistId)
         {
             var result = await _artistService.IncrementArtistFansNumAsync(artistId);
 
@@ -96,7 +94,6 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest(new { Message = "添加失败" });
             }
         }
-
         [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllArtists()
@@ -104,7 +101,6 @@ namespace MelodyMuse.Server.Controllers
             var artists = await _artistService.GetAllArtistsAsync();
             return Ok(artists);
         }
-
         [Authorize]
         [HttpGet("user/{userId}/followed")]
         public async Task<IActionResult> GetFollowedArtistsByUserId(string userId)
@@ -112,5 +108,14 @@ namespace MelodyMuse.Server.Controllers
             var artists = await _artistService.GetArtistsByUserIdAsync(userId);
             return Ok(artists);
         }
+        [Authorize]
+        [HttpGet("{artistId}/fans-count")]
+        public async Task<IActionResult> GetArtistFansCount(string artistId)
+        {
+            var fansCount = await _artistService.GetArtistFansCountAsync(artistId);
+            return Ok(new { ArtistId = artistId, FansCount = fansCount });
+        }
+
+
     }
 }
