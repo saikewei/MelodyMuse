@@ -13,15 +13,25 @@
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
               <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phonenumber">
+              <!-- 新增发送验证码按钮 -->
+              <div class="send-code-btn" @click="sendCode">验证码</div>
             </div>
+
+            <!-- 新增验证码输入框 -->
+            <div class="input-wrapper">
+              <input type="text" name="verificationCode" placeholder="请输入验证码" class="input-item" v-model="verificationCode">
+            </div>
+
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
               <input type="password" name="password" placeholder="密码" class="input-item" v-model="password">
             </div>
+
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
               <input type="password" name="confirmPassword" placeholder="确认密码" class="input-item" v-model="confirmPassword">
             </div>
+
             <div class="btn2" @click="register">Register</div> 
             
           </div>
@@ -46,11 +56,51 @@ export default {
       phonenumber: '',
       password: '',
       confirmPassword: '',
+      verificationCode: '',   // 新增：保存验证码的输入
+      codeSent: false,        // 新增：标记验证码是否已发送
       registerError: ''
     };
   },
   methods: {
+    // 发送验证码的逻辑
+    async sendCode() {
+      if (!/^\d{11}$/.test(this.phonenumber)) {
+        this.registerError = '请输入11位有效的手机号码。';
+        return;
+      }
+      
+      try {
+        const response = await axios.post('https://localhost:7223/api/account/check-phone', {//新增API端点：检查此手机号是否被注册
+          phonenumber: this.phonenumber
+        });
+
+        if (response.data.isRegistered) {
+          this.registerError = '该手机号码已注册。';
+        } else {
+          // 发送验证码
+          await axios.post('https://localhost:7223/api/account/send-code', {//发送验证码
+            phonenumber: this.phonenumber
+          });
+          this.codeSent = true;  // 更新：验证码已发送
+          this.registerError = '';
+        }
+      } catch (error) {
+        this.registerError = '发送验证码失败，请重试。';
+      }
+    },
+
     async register() {
+      // 检查是否已发送验证码
+      if (!this.codeSent) {
+        this.registerError = '请先发送验证码。';
+        return;
+      }
+
+      // 检查验证码输入
+      if (this.verificationCode.trim() === '') {
+        this.registerError = '请输入验证码。';
+        return;
+      }
 
    // 验证用户名是否为空
     if (this.username.trim() === '') {
@@ -79,7 +129,7 @@ export default {
       
       
       try {
-        const response = await axios.post ('https://localhost:7223/api/account/register', {
+        const response = await axios.post ('https://localhost:7223/api/account/register', {//注册
           userphone: this.phonenumber,
           username: this.username,
           password: this.password
@@ -131,10 +181,10 @@ html, body {
 }
 .registerbox {
   display: flex;
-  width: 52%;
-  height: 60%;
+  width: 55%;
+  height: 68%;
   position: absolute;
-  top:20%;
+  top:14%;
   left:24%;
   box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
   background-image: linear-gradient(to left, #c6d6f7c1, rgba(255, 255, 255, 0.902));
@@ -145,7 +195,7 @@ html, body {
   padding: 0 50px;
   position: absolute;
   left: 25%;
-  top: 10%;
+  top: -5%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -157,7 +207,7 @@ html, body {
   font-weight: bolder;
   text-align: center;
   line-height: 80px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 .form-wrapper {
   width: 100%;
@@ -169,6 +219,7 @@ html, body {
   margin-bottom: 12px;
 }
 .input-item {
+  flex: 1;
   display: block;
   width: calc(100% - 20px);
   margin-left: 10px;
@@ -203,6 +254,7 @@ html, body {
   color: rgba(209, 41, 41, 0.815);
   text-align: center;
   margin-top: 10px;
+  font-size: 14px;
 }
 .background {
   width: 500px;
@@ -242,5 +294,25 @@ input:-webkit-autofill {
 input:-webkit-autofill::first-line {
   font-size: 15px;
   font-weight: bold;
+}
+/* 发送验证码按钮样式 */
+.send-code-btn {
+  margin-left: 10px;
+  background-color: #6a8cdcc1;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+.send-code-btn:hover {
+  background-color: #284da0c1;
+}
+
+/* 确保验证码输入框与其他输入框样式一致 */
+.verification-code-input {
+  width: 100%;
 }
 </style>
