@@ -44,19 +44,20 @@
         <el-button @click="cancelHandler">取消</el-button>
       </div>
   </template>
-  
-  <script>
-    import {
-      defineComponent,
-      toRefs,
-      reactive,
-      getCurrentInstance,
-    }
-    from 'vue'
-    import axios from 'axios';
-    import { format } from 'date-fns';
 
-    export default defineComponent({
+<script>
+  import {
+    defineComponent,
+    toRefs,
+    reactive,
+    getCurrentInstance,
+  }
+  from 'vue'
+  import { format } from 'date-fns';
+
+  import api from '../api/http.js'
+
+  export default defineComponent({
   props: ["song_id"],
   emits: ["cancelEvent", "submitEvent"],
   setup(props, { emit }) {
@@ -82,7 +83,7 @@
         if (!valid) return;
         // 提交表单
         try {
-          const response = await axios.put(`https://localhost:7223/api/songedit/${props.song_id}`, state.formData);
+          const response = await api.apiClient.put(`/api/songedit/${props.song_id}`, state.formData);
           console.log('歌曲信息更新成功', response.data); 
           cancelHandler();
         } catch (error) {
@@ -98,7 +99,7 @@
 
     const getSongInfoById = async () => {
       try {
-        const response = await axios.get(`https://localhost:7223/api/songedit/${props.song_id}`);
+        const response = await api.apiClient.get(`/api/songedit/${props.song_id}`);
         state.formData.songName = response.data.songName;
         state.formData.songGenre = response.data.songGenre;
         state.formData.songDate = format(new Date(response.data.songDate), 'yyyy-MM-dd');

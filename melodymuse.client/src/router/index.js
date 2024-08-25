@@ -6,12 +6,18 @@ import SongList from "../pages/SongList.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 import Sign from "../pages/Sign.vue";
+import SearchResultPage from "../pages/SearchResultPage.vue"; // ?????????????????????;
 import UserManage from "../pages/UserManage.vue"; //?????????????????????
 import SongInfoEdit from "../pages/SongInfo.vue";
 import Check from "../pages/Check.vue";
 import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
+import mediaplayer from "../pages/mediaplayer.vue";
+
+import SingerDetail from "../pages/SingerDetail.vue";
+import FollowedArtist from "../pages/FollowedArtist.vue";
+import ForgottenPassword from "../pages/ForgottenPassword.vue";
 
 const routes = [
   {
@@ -25,7 +31,7 @@ const routes = [
     component: MyMusic,
   },
   {
-    path: "/edit-personal-info",
+    path: "/personal-info",
     name: "modify",
     component: modify,
   },
@@ -78,6 +84,32 @@ const routes = [
     path: "/usermanage",
     name: "usermanage", //?????????????????????
     component: UserManage, //?????????????????????
+  },
+  {
+    path: "/mediaplayer/:songId",
+    name: "mediaplayer",
+    component: mediaplayer,
+  },
+  {
+    path: "/SingerDetail/:artistId",
+    name: "SingerDetail",
+    component: SingerDetail,
+  },
+
+  {
+    path: "/FollowedArtist",
+    name: "FollowedArtist",
+    component: FollowedArtist,
+  },
+  {
+    path: "/searchResultPage", // ???????��??????
+    name: "search-result-page",
+    component: SearchResultPage,
+  },
+  {
+    path: "/ForgottenPassword",
+    name: "ForgottenPassword",
+    component: ForgottenPassword,
   },
 ];
 

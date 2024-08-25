@@ -18,16 +18,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:5173")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173") // 前端应用的URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials(); // 如果你需要发送带有凭据的请求，如Cookies等
+        });
 });
 
+
 // Register services
-//������ط���
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IAccountRepository>(provider =>
-   new AccountRepository());
+builder.Services.AddScoped<IAccountRepository>(provider => new AccountRepository());
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ISMSService, SMSService>();
 builder.Services.AddScoped<IVerificationCodeCacheService, VerificationCodeCacheService>();
@@ -68,8 +71,15 @@ builder.Services.AddScoped<IUsersRepository>(provider =>
     new UsersRepository());
 
 
-
+//艺术家相关
+builder.Services.AddScoped<IArtistService, ArtistService>();
+builder.Services.AddScoped<IArtistRepository>(provider => new ArtistRepository());
 //����JWT����
+builder.Services.AddScoped<IMusicPlayerRepository>(provider => new MusicPlayerRepository());
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ISearchRepository>(provider => new SearchRepository());
+
+// Configure JWT authentication
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>
 {
@@ -90,7 +100,6 @@ builder.Services.AddAuthentication(x =>
 });
 
 // MusicPlayer services
-//������ط���
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 //SongEdit services
@@ -103,9 +112,16 @@ app.UseCors("AllowSpecificOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-//����JWT����
+
+// Enable CORS before authentication and authorization middlewares
+app.UseCors("AllowSpecificOrigin");
+
+// Enable JWT authentication
 app.UseAuthentication();
 app.UseAuthorization();
+
+// 使用 CORS 中间件
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

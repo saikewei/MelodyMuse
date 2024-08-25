@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.models;
+using Microsoft.AspNetCore.Authorization;
 
 //命名空间:Controllers
 namespace MelodyMuse.Server.Controllers
@@ -25,6 +26,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         //获取所有用户id列表
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<string>>> GetAllUserIds()
         {
@@ -45,6 +47,7 @@ namespace MelodyMuse.Server.Controllers
 
         // GET: api/users/{userId}
         // 通过用户ID获取其信息
+        [Authorize]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUser(string userId)
         {
@@ -72,6 +75,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 更新用户资料
+        [Authorize]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] User updateUser)
         {
@@ -85,6 +89,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 更新用户状态
+        [Authorize]
         [HttpPut("{userId}/updateStatus")]
         public async Task<IActionResult> UpdateUserStatus(string userId, [FromQuery] string newStatus)
         {

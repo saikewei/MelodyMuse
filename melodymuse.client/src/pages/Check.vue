@@ -43,9 +43,9 @@
 </template>
 
 <script>
-import axios from 'axios'; // Import Axios or your preferred HTTP client library
 import TheHeader from '@/components/SimpleHeader.vue';
 import TheAside from '@/components/TheAside.vue';
+import api from '../api/http.js'
 
 export default {
 data() {
@@ -71,7 +71,7 @@ methods: {
   //获取音乐列表
   async fetchMusicList() {
     try {
-      const response = await axios.get('https://localhost:7223/api/songs/pending'); 
+      const response = await api.apiClient.get('/api/songs/pending'); 
       console.log(response.data); // 打印后端返回的数据
       this.musicList = response.data; // Update musicList with fetched data
     } catch (error) {
@@ -82,7 +82,7 @@ methods: {
   //搜索逻辑的实现
   async handleSearch() {
     try {
-      const response = await axios.get('https://localhost:7223/api/songs/pending', {
+      const response = await api.apiClient.get('/api/songs/pending', {
         params: {
           keyword: this.searchKeyword,
           timeRange: this.selectedTimeRange
@@ -101,7 +101,7 @@ methods: {
   }
 
   try {
-    const response = await axios.post(`https://localhost:7223/api/songs/${song.songId}/approve`);
+    const response = await api.apiClient.post(`/api/songs/${song.songId}/approve`);
     console.log('Approval response:', response.data); // 打印服务器返回的响应
     song.Status = 1; // 修改状态为通过
     await this.fetchMusicList(); // 重新获取列表
@@ -118,7 +118,7 @@ async rejectMusic(song) {
   }
 
   try {
-    const response = await axios.post(`https://localhost:7223/api/songs/${song.songId}/reject`);
+    const response = await api.apiClient.post(`/api/songs/${song.songId}/reject`);
     console.log('Rejection response:', response.data); // 打印服务器返回的响应
     song.Status = 2; // 修改状态为拒绝
     await this.fetchMusicList(); // 重新获取列表

@@ -89,8 +89,12 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { ElForm, ElFormItem, ElInput, ElUpload, ElButton, ElMessage, ElSelect, ElOption } from 'element-plus';
+
+import api from '../api/http.js'
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter(); 
+
 
 export default {
   name: 'SongUpload',
@@ -132,7 +136,7 @@ export default {
     fetchArtists(query) {
       if (query !== '') {
         this.loadingArtists = true;
-        axios.get(`http://localhost:7223/search/${query}`)
+        api.apiClientWithoutToken.get(`/search/${query}`)
           .then(response => {
             this.artists = response.data.map(artist => ({
               id: artist.artistId,
@@ -151,7 +155,7 @@ export default {
       }
     },
     fetchAlbumsByArtistId(artistId) {
-      axios.get(`http://localhost:7223/albums/${artistId}`)
+      api.apiClientWithoutToken.get(`/albums/${artistId}`)
         .then(response => {
           this.albums = response.data.map(album => ({
             id: album.albumId,
@@ -190,8 +194,16 @@ export default {
           formData.append('SongFile', this.songForm.file);
           formData.append('AlbumId', this.selectedAlbumId);
           formData.append('ArtistIds', this.selectedArtist.id);
-          axios.post('http://localhost:7223/api/submit/uploadSong', formData)
+          const token = localStorage.getItem('token');
+          if(!token){
+            router.push('/login')
+          }
+          api.apiClient.post('/api/submit/uploadSong', formData)
           .then(response => {
+            if(response.status === 401)
+            {
+                router.push('/login');
+            }
             if (response.status === 200) {
               ElMessage.success("成功上传歌曲");
               this.resetForm();

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
@@ -34,6 +35,24 @@ namespace MelodyMuse.Server.Services
         {
             // 调用 SongRepository 中的方法将歌曲状态更新为审核不通过
             await _songRepository.RejectSongAsync(songId);
+        }
+
+         public async Task<List<Song>> GetSongsByComposerIdAsync(string composerId)
+        {
+            return await _songRepository.GetSongsByComposerIdAsync(composerId);
+        }
+         public async Task<string> GetAlbumBySongIdAsync(string songId)
+        {
+            var song = await _songRepository.GetSongByIdAsync(songId);
+
+            if (song == null)
+            {
+                return "Song not found";
+            }
+
+            var album = song.Albums.FirstOrDefault();
+
+            return album != null ? $"Album: {album.AlbumName}" : "No album associated with this song";
         }
     }
 }

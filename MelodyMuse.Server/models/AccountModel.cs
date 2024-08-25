@@ -39,4 +39,15 @@ namespace MelodyMuse.Server.models
 
     }
 
+    public class PhoneNumberModel
+    {
+        public string PhoneNumber { get; set; }
+    }
+
+    public class ChangePasswordModel
+    {
+        public string? phoneNumber { get; set; }
+        public string? Password  { get; set; }
+    }
+
 }

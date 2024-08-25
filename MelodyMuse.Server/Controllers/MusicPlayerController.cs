@@ -2,6 +2,7 @@
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using FluentFTP;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -115,9 +116,9 @@ namespace MelodyMuse.Server.Controllers
             }
         }
 
-
         [HttpGet]
         [Route("{songId}")]
+        [Authorize]
         public async Task<IActionResult> GetMusicInfo(string songId)
         {
             try

@@ -8,7 +8,7 @@
         active-text-color="#20a0ff"
         @select="handleSelect"
       >
-        <el-menu-item index="/edit-personal-info">
+        <el-menu-item index="/personal-info">
           <span>个人信息</span>
         </el-menu-item>
         <el-menu-item index="/check-song">
