@@ -13,15 +13,25 @@
             <div class="input-wrapper">
               <!--<span class="iconfont icon-account"></span>-->
               <input type="tel" name="phonenumber" placeholder="手机号码" class="input-item" v-model="phonenumber">
+              <!-- 新增发送验证码按钮 -->
+              <div class="send-code-btn" @click="sendCode">验证码</div>
             </div>
+
+            <!-- 新增验证码输入框 -->
+            <div class="input-wrapper">
+              <input type="text" name="verificationCode" placeholder="请输入验证码" class="input-item" v-model="verificationCode">
+            </div>
+
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
               <input type="password" name="password" placeholder="密码" class="input-item" v-model="password">
             </div>
+
             <div class="input-wrapper">
               <!--<span class="iconfont icon-key"></span>-->
               <input type="password" name="confirmPassword" placeholder="确认密码" class="input-item" v-model="confirmPassword">
             </div>
+
             <div class="btn2" @click="register">Register</div> 
             
           </div>
@@ -46,11 +56,95 @@ export default {
       phonenumber: '',
       password: '',
       confirmPassword: '',
-      registerError: ''
+      verificationCode: '',   // 新增：保存验证码的输入
+      codeSent: false,        // 新增：标记验证码是否已发送
+      registerError: '',
+      event: '注册'  // 默认事件类型
     };
   },
   methods: {
+    async checkPhoneExists() {
+  try {
+    const response = await axios.post(`https://localhost:7223/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phonenumber)}`);
+    return response.status === 200;
+  } catch (error) {
+    //console.error(error);
+    this.registerError = '检查手机号时发生错误，请稍后重试。';
+    return false;
+  }
+}
+
+,
+
+    // 发送验证码的逻辑
+    async sendCode() {
+      // 验证手机号码格式
+      if (!/^\d{11}$/.test(this.phonenumber)) {
+        this.registerError = '请输入11位有效的手机号码。';
+        return;
+      }
+
+      //检查手机号是否存在
+      const phoneExists = await this.checkPhoneExists();
+      if (phoneExists) {
+        this.registerError = '手机号已经存在。';
+        return;
+      }
+
+      try {
+        // 此处是发送验证码的API
+        const response = await axios.post('https://localhost:7223/api/sms/sendsms', {
+          phoneNumber: this.phonenumber,
+          event: this.event
+        });
+
+        if (response.status === 200) {
+          alert('验证码已发送');
+          this.codeSent = true;  // 更新：验证码已发送
+          this.registerError = '';
+        } else {
+          this.registerError = response.data.msg || '发送验证码失败，请重试。';
+        }
+      } catch (error) {
+        console.error(error);
+        this.registerError = '发送验证码时发生错误，请稍后重试。';
+      }
+     
+    },
+    async verifyCode() {
+      try {
+        const response = await axios.post('https://localhost:7223/api/sms/verifycode', {
+          phoneNumber: this.phonenumber,
+          event: this.event,
+          verificationCode: this.verificationCode
+        });
+
+        return response.status === 200;
+      } catch (error) {
+        console.error(error);
+        this.registerError = '验证验证码时发生错误，请稍后重试。';
+        return false;
+      }
+    },
+
     async register() {
+      // 检查是否已发送验证码
+      if (!this.codeSent) {
+        this.registerError = '请先发送验证码。';
+        return;
+      }
+
+      // 检查验证码输入
+      if (this.verificationCode.trim() === '') {
+        this.registerError = '请输入验证码。';
+        return;
+      }
+      
+      const codeValid = await this.verifyCode();
+      if (!codeValid) {
+        this.registerError = '验证码无效或已过期。';
+        return;
+      }
 
    // 验证用户名是否为空
     if (this.username.trim() === '') {
@@ -131,10 +225,10 @@ html, body {
 }
 .registerbox {
   display: flex;
-  width: 52%;
-  height: 60%;
+  width: 55%;
+  height: 68%;
   position: absolute;
-  top:20%;
+  top:14%;
   left:24%;
   box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
   background-image: linear-gradient(to left, #c6d6f7c1, rgba(255, 255, 255, 0.902));
@@ -145,7 +239,7 @@ html, body {
   padding: 0 50px;
   position: absolute;
   left: 25%;
-  top: 10%;
+  top: -5%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -157,7 +251,7 @@ html, body {
   font-weight: bolder;
   text-align: center;
   line-height: 80px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 .form-wrapper {
   width: 100%;
@@ -169,6 +263,7 @@ html, body {
   margin-bottom: 12px;
 }
 .input-item {
+  flex: 1;
   display: block;
   width: calc(100% - 20px);
   margin-left: 10px;
@@ -203,6 +298,7 @@ html, body {
   color: rgba(209, 41, 41, 0.815);
   text-align: center;
   margin-top: 10px;
+  font-size: 14px;
 }
 .background {
   width: 500px;
@@ -242,5 +338,25 @@ input:-webkit-autofill {
 input:-webkit-autofill::first-line {
   font-size: 15px;
   font-weight: bold;
+}
+/* 发送验证码按钮样式 */
+.send-code-btn {
+  margin-left: 10px;
+  background-color: #6a8cdcc1;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+}
+.send-code-btn:hover {
+  background-color: #284da0c1;
+}
+
+/* 确保验证码输入框与其他输入框样式一致 */
+.verification-code-input {
+  width: 100%;
 }
 </style>

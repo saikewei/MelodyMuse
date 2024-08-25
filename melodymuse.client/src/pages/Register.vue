@@ -37,10 +37,7 @@ export default {
     font-size:20px;
     padding:16px 31px;
     text-decoration:none;
-    margin: 10px 20px;  
-}
-.btn-login:hover {
-    color:#284da0c1;
+    margin: 20px 20px 0;  
 }
 .btn-login:active {
     color:#284da0c1;
