@@ -22,11 +22,11 @@
     </div>
     <div class="player-controls">
 
-      <input type="range" class="progress-slider" v-model="progress" :max="duration" @input="seek" />
+      <input type="range" class="progress-slider" v-model.number="progress" :max="duration"  @input="seek" />
 
       <span class="progress-display">{{ formatTime(progress) }} / {{ formatTime(duration) }}</span>
 
-      <audio ref="audioElement" :src="audioSrc" @timeupdate="updateProgress" @durationchange="updateDuration" :controls="false"></audio>
+      <audio ref="audioElement" :src="audioSrc" @timeupdate="updateProgress" @durationchange="updateDuration" :controls="false" @ended="nextSong"></audio>
     </div>
 
     <div class = "control-button-warpper">
@@ -90,7 +90,6 @@ onMounted(async () => {
 });
 
 
-
 async function pull_song_data(songId){
   try {
     // 并发获取歌曲信息
@@ -132,6 +131,7 @@ async function pull_song_data(songId){
     isLoading.value = false; // 数据加载失败后也设置为 false
   }
 }
+
 
 
 function formatTime(seconds) {
@@ -288,9 +288,13 @@ function updateDuration(event) {
   duration.value = event.target.duration;
 }
 
+
+
 // 跳转到指定时间
-function seek(value) {
-  audioElement.value.currentTime = value;
+function seek(event) {
+  console.log(event.target.value)
+  var currentTime = event.target.value;
+  audioElement.value.currentTime = currentTime;
   updateProgress({ target: audioElement.value });
 }
 
