@@ -5,6 +5,9 @@
         <img :src="currentImage" alt="Album cover" class="album-image" />
       </el-col>
       <el-col :span="12" class="lyrics-container">
+        <div class = "songName">
+          <span class = "songName">{{ songName }}</span>
+        </div>
         <div class="lyrics-wrapper">
           <div
             v-for="(line, index) in lyrics"
@@ -74,7 +77,7 @@ var progress = ref(0);
 var duration = ref(0);
 var playing = ref(false);
 var isLoading = ref(true); // 新增状态，用于表示数据是否正在加载
-const songList = route.params.songList;
+const songList = route.params.songList.split(',');
 const songListLength = songList.length;
 var songIndex = songList.indexOf(route.params.songId);
 var playmode = ref('sequence');
@@ -85,6 +88,8 @@ var playmode = ref('sequence');
 onMounted(async () => {
   await Promise.all([pull_song_data(route.params.songId)]);
 });
+
+
 
 async function pull_song_data(songId){
   try {
@@ -327,15 +332,84 @@ function togglePlaying() {
   playing.value = !playing.value;
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function resetCurrentSong(){
+  currentLine.value = 0;
+  audioElement.value.currentTime = 0;
+  progress.value = 0;
+  duration.value = 0;
+}
+
 // 播放下一首歌曲
-function nextSong() {
-  // 这里你可以添加逻辑来切换到下一首歌曲
+async function nextSong() {
+  if(playing.value==true){
+    togglePlaying();
+  }
+
+  var oldSongId = songList[songIndex];
+  var songId ;
+
+  if(playmode.value == 'random'){
+    songIndex = getRandomInt(0, songListLength-1);
+    songId = songList[songIndex];
+  }
+  else if(playmode.value =='repeat'){
+    songId = oldSongId;
+  }
+  else if(playmode.value =='sequence'){
+    if(songIndex<songListLength-1){
+      songIndex++;
+    }
+    else if(songIndex==songListLength-1){
+      songIndex = 0;
+    }
+    songId = songList[songIndex];
+  }
+  if(songId == oldSongId){
+    resetCurrentSong();
+  }
+  else{
+    await pull_song_data(songId);
+  }
+  togglePlaying();
+
   console.log('Next song');
 }
 
 // 播放上一首歌曲
-function prevSong() {
-  // 这里你可以添加逻辑来切换到上一首歌曲
+async function prevSong() {
+  if(playing.value==true){
+    togglePlaying();
+  }
+  var oldSongId = songList[songIndex];
+  var songId ;
+
+  if(playmode.value == 'random'){
+    songIndex = getRandomInt(0, songListLength-1);
+    songId = songList[songIndex];
+  }
+  else if(playmode.value =='repeat'){
+    songId = oldSongId;
+  }
+  else if(playmode.value =='sequence'){
+    if(songIndex>0){
+      songIndex--;
+    }
+    else if(songIndex==0){
+      songIndex = songListLength-1;
+    }
+    songId = songList[songIndex];
+  }
+  if(songId == oldSongId){
+    resetCurrentSong();
+  }
+  else{
+    await pull_song_data(songId);
+  }
+  togglePlaying();
   console.log('Previous song');
 }
 </script>
@@ -478,5 +552,12 @@ svg {
 
 .play-mode-button :hover{
   transform: scale(0.9); 
+}
+
+.songName{
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #06dcfd;
+  margin-bottom: 100px;
 }
 </style>
