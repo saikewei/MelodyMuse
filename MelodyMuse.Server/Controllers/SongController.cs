@@ -54,7 +54,7 @@ namespace MelodyMuse.Server.Controllers
         {
             var songs = await _songService.GetSongsByComposerIdAsync(composerId);
 
-            if (songs == null || songs.Count== 0)
+            if (songs == null || songs.Count == 0)
             {
                 return NotFound(new { message = "没有找到相关歌曲。" });
             }
