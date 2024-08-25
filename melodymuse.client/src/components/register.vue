@@ -58,34 +58,72 @@ export default {
       confirmPassword: '',
       verificationCode: '',   // 新增：保存验证码的输入
       codeSent: false,        // 新增：标记验证码是否已发送
-      registerError: ''
+      registerError: '',
+      event: '注册'  // 默认事件类型
     };
   },
   methods: {
+    async checkPhoneExists() {
+  try {
+    const response = await axios.post(`https://localhost:7223/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phonenumber)}`);
+    return response.status === 200;
+  } catch (error) {
+    //console.error(error);
+    this.resetError = '检查手机号时发生错误，请稍后重试。';
+    return false;
+  }
+}
+
+,
+
     // 发送验证码的逻辑
     async sendCode() {
+      // 验证手机号码格式
       if (!/^\d{11}$/.test(this.phonenumber)) {
-        this.registerError = '请输入11位有效的手机号码。';
+        this.resetError = '请输入11位有效的手机号码。';
         return;
       }
-      
+
+      //检查手机号是否存在
+      const phoneExists = await this.checkPhoneExists();
+      if (phoneExists) {
+        this.resetError = '手机号已经存在。';
+        return;
+      }
+
       try {
-        const response = await axios.post('https://localhost:7223/api/account/check-phone', {//新增API端点：检查此手机号是否被注册
-          phonenumber: this.phonenumber
+        // 此处是发送验证码的API
+        const response = await axios.post('https://localhost:7223/api/sms/sendsms', {
+          phoneNumber: this.phonenumber,
+          event: this.event
         });
 
-        if (response.data.isRegistered) {
-          this.registerError = '该手机号码已注册。';
-        } else {
-          // 发送验证码
-          await axios.post('https://localhost:7223/api/account/send-code', {//发送验证码
-            phonenumber: this.phonenumber
-          });
+        if (response.status === 200) {
+          alert('验证码已发送');
           this.codeSent = true;  // 更新：验证码已发送
           this.registerError = '';
+        } else {
+          this.resetError = response.data.msg || '发送验证码失败，请重试。';
         }
       } catch (error) {
-        this.registerError = '发送验证码失败，请重试。';
+        console.error(error);
+        this.resetError = '发送验证码时发生错误，请稍后重试。';
+      }
+     
+    },
+    async verifyCode() {
+      try {
+        const response = await axios.post('https://localhost:7223/api/sms/verifycode', {
+          phoneNumber: this.phonenumber,
+          event: this.event,
+          verificationCode: this.verificationCode
+        });
+
+        return response.status === 200;
+      } catch (error) {
+        console.error(error);
+        this.resetError = '验证验证码时发生错误，请稍后重试。';
+        return false;
       }
     },
 
@@ -99,6 +137,12 @@ export default {
       // 检查验证码输入
       if (this.verificationCode.trim() === '') {
         this.registerError = '请输入验证码。';
+        return;
+      }
+      
+      const codeValid = await this.verifyCode();
+      if (!codeValid) {
+        this.resetError = '验证码无效或已过期。';
         return;
       }
 
