@@ -3,6 +3,9 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
+using MelodyMuse.Server.Services;
+using MelodyMuse.Server.Configure;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -19,9 +22,21 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某用户的所有歌单及其包含的歌曲数量
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserSonglists(string userId)
+        [Authorize]
+        [HttpGet("/getall")]
+        public async Task<IActionResult> GetUserSonglists()
         {
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            //如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+            //解析 JWT 令牌 得到存储的信息 ParsedToken:id,name,phone
+            var parsedToken = TokenParser.ParseToken(token,JWTConfigure.serect_key);
+
+            string userId = parsedToken.UserID;
+
             var songlists = await _songlistService.GetUserSonglistsAsync(userId);
             if (songlists == null || !songlists.Any())
             {
@@ -39,6 +54,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某歌单中的所有歌曲
+        [Authorize]
         [HttpGet("{songlistId}/songs")]
         public async Task<IActionResult> GetSongsInSonglist(string songlistId)
         {
