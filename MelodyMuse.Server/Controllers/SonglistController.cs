@@ -22,7 +22,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某用户的所有歌单及其包含的歌曲数量
-        //[Authorize]
+        [Authorize]
         [HttpGet("getall")]
         public async Task<IActionResult> GetUserSonglists()
         {
@@ -61,7 +61,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某歌单中的所有歌曲
-        //[Authorize]
+        [Authorize]
         [HttpGet("{songlistId}/songs")]
         public async Task<IActionResult> GetSongsInSonglist(string songlistId)
         {
@@ -74,27 +74,27 @@ namespace MelodyMuse.Server.Controllers
         }
 
         //增加歌单
-        //[Authorize]
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddSonglist([FromBody] CreateSonglistModel model)
         {
-            string userId = "001";
-            //try
-            //{
-            //    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            //    if (token == null)
-            //    {
-            //        return Unauthorized();
-            //    }
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
 
-            //    userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("token错误！" + ex);
-            //    return Unauthorized();
-            //}
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
 
             // 创建一个 Songlist 实体并填充需要的属性
             var songlist = new Songlist
@@ -111,7 +111,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         //删除歌单
-        //[Authorize]
+        [Authorize]
         [HttpDelete("{songlistId}/delete")]
         public async Task<IActionResult> DeleteSonglist(string songlistId)
         {
@@ -124,7 +124,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 向歌单中添加歌曲
-        //[Authorize]
+        [Authorize]
         [HttpPost("{songlistId}/songs/{songId}/add")]
         public async Task<IActionResult> AddSongToSonglist(string songlistId, string songId)
         {
@@ -137,7 +137,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 从歌单中删除歌曲
-        //[Authorize]
+        [Authorize]
         [HttpDelete("{songlistId}/songs/{songId}/delete")]
         public async Task<IActionResult> DeleteSongFromSonglist(string songlistId, string songId)
         {
