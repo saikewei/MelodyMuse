@@ -18,6 +18,8 @@ import mediaplayer from "../pages/mediaplayer.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
+import RankSongs from "../pages/RankSongs.vue";
+import RankArtists from "../pages/RankArtists.vue";
 
 const routes = [
   {
@@ -86,7 +88,7 @@ const routes = [
     component: UserManage, //?????????????????????
   },
   {
-    path: "/mediaplayer/:songId/:songList",  
+    path: "/mediaplayer/:songId/:songList",
     //eg:  /mediaplayer/1cd134c4-c/1cd134c4-c,6adb0c3a-c
     name: "mediaplayer",
     component: mediaplayer,
@@ -111,6 +113,16 @@ const routes = [
     path: "/ForgottenPassword",
     name: "ForgottenPassword",
     component: ForgottenPassword,
+  },
+  {
+    path: "/ranksongs",
+    name: "ranksongs",
+    component: RankSongs,
+  },
+  {
+    path: "/rankartists",
+    name: "rankartists",
+    component: RankArtists,
   },
 ];
 

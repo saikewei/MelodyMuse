@@ -33,9 +33,9 @@ namespace MelodyMuse.Server.Repository
                 .Where(song => song.Artists.Any(artist => artist.ArtistId == artistId))
                 .ToListAsync();
         }
-         public async Task<bool> FollowArtistAsync(string userId, string artistId)
+        public async Task<bool> FollowArtistAsync(string userId, string artistId)
         {
-              var sql = "INSERT INTO USER_FOLLOW_ARTIST (USER_ID, ARTIST_ID) VALUES (:userId, :artistId)";
+            var sql = "INSERT INTO USER_FOLLOW_ARTIST (USER_ID, ARTIST_ID) VALUES (:userId, :artistId)";
             var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("userId", userId), new OracleParameter("artistId", artistId));
             return result > 0;
             /*try
@@ -64,16 +64,16 @@ namespace MelodyMuse.Server.Repository
             {
                 return false;
             }*/
-            
-        }
-    
 
-         public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
-    {
-        var sql = "DELETE FROM USER_FOLLOW_ARTIST WHERE USER_ID = :userId AND ARTIST_ID = :artistId";
+        }
+
+
+        public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
+        {
+            var sql = "DELETE FROM USER_FOLLOW_ARTIST WHERE USER_ID = :userId AND ARTIST_ID = :artistId";
             var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("userId", userId), new OracleParameter("artistId", artistId));
             return result > 0;
-    }
+        }
 
         public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
         {
@@ -92,36 +92,78 @@ namespace MelodyMuse.Server.Repository
         }
 
         public async Task<bool> IncrementArtistFansNumAsync(string artistId)
-    {
-        try
         {
-            var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == artistId);
-            if (artist != null)
+            try
             {
-                artist.ArtistFansNum = (artist.ArtistFansNum ?? 0) + 1;
-                await _context.SaveChangesAsync();
-                return true;
+                var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == artistId);
+                if (artist != null)
+                {
+                    artist.ArtistFansNum = (artist.ArtistFansNum ?? 0) + 1;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch
+            {
+                return false;
+            }
         }
-        catch
+
+        public async Task<List<Artist>> GetAllArtistsAsync()
         {
-            return false;
+            return await _context.Artists.ToListAsync();
         }
-    }
 
-         public async Task<List<Artist>> GetAllArtistsAsync()
-    {
-        return await _context.Artists.ToListAsync();
-    }
+        public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
+        {
+            return await _context.Users
+                .Where(u => u.UserId == userId)
+                .SelectMany(u => u.Artists)
+                .ToListAsync();
+        }
 
-     public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
-    {
-        return await _context.Users
-            .Where(u => u.UserId == userId)
-            .SelectMany(u => u.Artists)
-            .ToListAsync();
-    }
+        public async Task<bool> IncrementArtistFansNumAsync(string artistId)
+        {
+            try
+            {
+                var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == artistId);
+                if (artist != null)
+                {
+                    artist.ArtistFansNum = (artist.ArtistFansNum ?? 0) + 1;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<Artist>> GetAllArtistsAsync()
+        {
+            return await _context.Artists.ToListAsync();
+        }
+
+        public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
+        {
+            return await _context.Users
+                .Where(u => u.UserId == userId)
+                .SelectMany(u => u.Artists)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetArtistFansCountAsync(string artistId)
+        {
+            // 使用艺术家和用户之间的关系表来获取粉丝数
+            var artist = await _context.Artists
+                .Include(a => a.Users)
+                .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+
+            return artist?.Users.Count ?? 0;
+        }
 
     }
 }
