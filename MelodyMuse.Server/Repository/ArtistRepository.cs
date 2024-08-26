@@ -123,38 +123,6 @@ namespace MelodyMuse.Server.Repository
                 .ToListAsync();
         }
 
-        public async Task<bool> IncrementArtistFansNumAsync(string artistId)
-        {
-            try
-            {
-                var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == artistId);
-                if (artist != null)
-                {
-                    artist.ArtistFansNum = (artist.ArtistFansNum ?? 0) + 1;
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<List<Artist>> GetAllArtistsAsync()
-        {
-            return await _context.Artists.ToListAsync();
-        }
-
-        public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
-        {
-            return await _context.Users
-                .Where(u => u.UserId == userId)
-                .SelectMany(u => u.Artists)
-                .ToListAsync();
-        }
-
         public async Task<int> GetArtistFansCountAsync(string artistId)
         {
             // 使用艺术家和用户之间的关系表来获取粉丝数
