@@ -115,14 +115,14 @@ namespace MelodyMuse.Server.Controllers
                     .GroupBy(song => song.SongGenre)
                     .OrderByDescending(g => g.Count())
                     .Select(g => g.Key)
-                    .Take(3) // 取前个最常听的流派
+                    .Take(3) // 取前3个最常听的流派
                     .ToList();
 
                 // 推荐随机歌曲中符合用户流派的歌曲
                 var genreBasedSongs = allSongs
                     .Where(song => preferredGenres.Contains(song.SongGenre))
                     .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                    .Take(10) // 取前5首
+                    .Take(10) // 取前10首
                     .ToList();
 
                 // 将符合流派的歌曲添加到 HashSet
