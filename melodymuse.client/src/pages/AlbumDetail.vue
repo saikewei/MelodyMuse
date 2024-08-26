@@ -59,25 +59,12 @@
         userId: '',
         albumId: '',
         album: {
-          albumName: '杜宣达',
-          albumReleasedate: '2002-09-13T03:47:21',
-          albumCompany: '蓝天乐律',
-          albumProducer: '杜宣达',
+          albumName: '',
+          albumReleasedate: '',
+          albumCompany: '',
+          albumProducer: '',
           songs: [
-          {
-            "songId": "0c35751f-0",
-            "songName": "缓缓",
-            "duration": 236,
-            "songDate": null,
-            "songGenre": null
-        },
-        {
-            "songId": "1b5ed95e-d",
-            "songName": "天若有情",
-            "duration": 205,
-            "songDate": null,
-            "songGenre": null
-        },
+         
         ],
         },
       };
