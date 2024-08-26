@@ -92,5 +92,23 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Users.ToListAsync();
         }
+         public async Task AddUserCollectSongAsync(UserCollectSong userCollectSong)
+        {
+            // 添加用户收藏的歌曲
+            await _context.UserCollectSongs.AddAsync(userCollectSong);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserCollectSong?> GetUserCollectSongAsync(string userId, string songId)
+        {
+            // 查询用户是否已经收藏了该歌曲
+            return await _context.UserCollectSongs
+                .FirstOrDefaultAsync(ucs => ucs.UserId == userId && ucs.SongId == songId);
+        }
+        public async Task RemoveUserCollectSongAsync(UserCollectSong userCollectSong)
+        {
+            _context.UserCollectSongs.Remove(userCollectSong);
+            await _context.SaveChangesAsync();
+        }
     }
 }

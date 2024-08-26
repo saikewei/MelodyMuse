@@ -20,4 +20,10 @@
 
         public string? UserStatus { get; set; }
     }
+    public class AddUserCollectSongDto
+{
+    public string UserId { get; set; }
+    public string SongId { get; set; }
+}
+
 }
