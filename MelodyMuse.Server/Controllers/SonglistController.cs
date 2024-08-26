@@ -115,7 +115,24 @@ namespace MelodyMuse.Server.Controllers
         [HttpDelete("{songlistId}/delete")]
         public async Task<IActionResult> DeleteSonglist(string songlistId)
         {
-            var result = await _songlistService.DeleteSonglistAsync(songlistId);
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+            var result = await _songlistService.DeleteSonglistAsync(songlistId, userId);
             if (!result)
             {
                 return NotFound();
@@ -128,7 +145,24 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("{songlistId}/songs/{songId}/add")]
         public async Task<IActionResult> AddSongToSonglist(string songlistId, string songId)
         {
-            var result = await _songlistService.AddSongToSonglistAsync(songlistId, songId);
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+            var result = await _songlistService.AddSongToSonglistAsync(songlistId, songId, userId);
             if (!result)
             {
                 return NotFound();
@@ -141,7 +175,24 @@ namespace MelodyMuse.Server.Controllers
         [HttpDelete("{songlistId}/songs/{songId}/delete")]
         public async Task<IActionResult> DeleteSongFromSonglist(string songlistId, string songId)
         {
-            var result = await _songlistService.DeleteSongFromSonglistAsync(songlistId, songId);
+            string userId="001";
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+            var result = await _songlistService.DeleteSongFromSonglistAsync(songlistId, songId, userId);
             if (!result)
             {
                 return NotFound();

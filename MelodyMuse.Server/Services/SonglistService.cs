@@ -26,18 +26,18 @@ public class SonglistService : ISonglistService
         return await _songlistRepository.AddSonglistAsync(songlist);
     }
 
-    public async Task<bool> DeleteSonglistAsync(string songlistId)
+    public async Task<bool> DeleteSonglistAsync(string songlistId, string userId)
     {
-        return await _songlistRepository.DeleteSonglistAsync(songlistId);
+        return await _songlistRepository.DeleteSonglistAsync(songlistId, userId);
     }
 
-    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId)
+    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId, string userId)
     {
-        return await _songlistRepository.AddSongToSonglistAsync(songlistId, songId);
+        return await _songlistRepository.AddSongToSonglistAsync(songlistId, songId, userId);
     }
 
-    public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId)
+    public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId)
     {
-        return await _songlistRepository.DeleteSongFromSonglistAsync(songlistId, songId);
+        return await _songlistRepository.DeleteSongFromSonglistAsync(songlistId, songId, userId);
     }
 }
