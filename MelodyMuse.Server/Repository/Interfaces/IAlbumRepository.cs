@@ -13,6 +13,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<IEnumerable<AlbumDto>> GetAllAlbumsByArtistIdAsync(string artistId); // 根据歌手ID获取专辑
 
         Task<List<string>> GetSongsByAlbumIdAsync(string albumId);//根据专辑ID获取所有与之关联的歌曲
-
+Task<Album> GetAlbumAsync(string albumId);
     }
 }
