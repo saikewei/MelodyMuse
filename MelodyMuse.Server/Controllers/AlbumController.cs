@@ -3,6 +3,7 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 //命名空间:Controllers
 namespace MelodyMuse.Server.Controllers
 {
@@ -19,7 +20,7 @@ namespace MelodyMuse.Server.Controllers
     {
         _albumService = albumService;
     }
-
+    [Authorize]
    [HttpGet("{albumId}")]
     public async Task<ActionResult<AlbumsDto>> GetAlbumById(string albumId)
     {
