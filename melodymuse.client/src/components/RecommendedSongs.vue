@@ -14,24 +14,25 @@
 </template>
 
 <script>
-    import api from '../api/http.js'; 
+    import api from '../api/http.js';
 
     export default {
         data() {
             return {
-                songs: []
+                songs: [], // 推荐歌曲列表
+                userId: null, // 用户ID
             };
         },
         async created() {
             try {
-                // 获取用户ID，假设你可以从Vuex store中获取
-                const userId = this.$store.getters['user/userId'];
+                // 获取用户ID
+                const userResponse = await api.apiClient.get('/api/users/getNow');
+                this.userId = userResponse.data.userId;
 
-                // 发起请求以获取推荐歌曲
-                const response = await api.apiClient.get(`/api/recommend/${userId}`);
-
-                // 设置歌曲数据
+                // 根据用户ID获取推荐歌曲
+                const response = await api.apiClient.get(`/api/recommend/${this.userId}`);
                 this.songs = response.data;
+
             } catch (error) {
                 console.error('Error fetching recommended songs:', error);
             }

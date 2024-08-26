@@ -31,7 +31,12 @@ namespace MelodyMuse.Server.Repository
         public async Task<List<Song>> GetAllSongs()
         {
             // 从数据库中获取所有歌曲
-            return await _context.Songs.ToListAsync();
+            var songs = await _context.Songs
+                .OrderBy(x => Guid.NewGuid()) // 随机排序
+                .Take(50) // 选择前 count 条记录
+                .ToListAsync();
+            return songs;
+            //return await _context.Songs.ToListAsync();
         }
     }
 }
