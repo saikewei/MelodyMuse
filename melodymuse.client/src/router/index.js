@@ -18,6 +18,7 @@ import mediaplayer from "../pages/mediaplayer.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
+import AlbumDetail from "../pages/AlbumDetail.vue";
 
 const routes = [
   {
@@ -112,6 +113,11 @@ const routes = [
     name: "ForgottenPassword",
     component: ForgottenPassword,
   },
+  {
+    path: "/AlbumDetail/:albumId",
+    name: "AlbumDetail",
+    component: AlbumDetail,
+  }
 ];
 
 const router = createRouter({

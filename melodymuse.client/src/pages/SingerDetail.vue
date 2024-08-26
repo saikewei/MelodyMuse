@@ -1,7 +1,8 @@
 <template>
+  <div>
+        <TheHeader />
   <div class="page-container">
     <div class="profile">
-      <TheHeader />
       <div class="header">
         <img class="profile-picture" :src="profilePicture" alt="Profile Picture" />
         <div class="profile-info">
@@ -47,11 +48,14 @@
       </div>
     </div>
   </div>
+    <TheFooter />
+  </div>
   </template>
   
   <script>
   import profilePicture from '../assets/logo2.jpg';
-  import TheHeader from '@/components/TheHeader.vue';
+  import TheFooter from "../components/TheFooter.vue";
+  import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js'
     
   export default {
@@ -68,14 +72,19 @@
         },
         followersCount: 0, // 数字格式，方便处理加减
         isFollowing: false,
-        songs:[]
-        /*songs: [
-          { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+        songs:[
+          /*{ songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+          { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
+          { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
+          { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
+          { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
+          { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
+          { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
           { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' },          
-          // 其他歌曲省略
-        ]*/
+          // 其他歌曲省略*/
+        ],
       };
     },
     computed: {
@@ -95,6 +104,7 @@
     },
     components: {
       TheHeader,
+      TheFooter,
     },
     methods: {
     //获取艺术家信息，前端已测试成功
@@ -197,8 +207,8 @@ async updateFollowersCount() {
   <style scoped>
 
 .page-container {
-  background: radial-gradient(circle, #f0f0f5, #d8d8fb); /* 从中心向外的渐变 */
-  min-height: 100vh;
+  background: linear-gradient(to top, #f0f0f5, #d8dff8); /* 从中心向外的渐变 */
+  min-height: 94vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -208,6 +218,7 @@ async updateFollowersCount() {
 .profile {
   width: 90%;
   max-width: 1200px; /* 设置最大宽度 */
+  max-height:680px;
   margin: 20px auto;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -223,8 +234,8 @@ async updateFollowersCount() {
   .profile-picture {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
-    margin-right: 20px;
+    border-radius: 8px;
+    margin-right: 30px;
   }
   
   .profile-info {
@@ -273,7 +284,7 @@ async updateFollowersCount() {
 }
   
   .songs-table {
-    max-height: 400px;
+    max-height: 320px;
     overflow-y: auto;
   }
   
