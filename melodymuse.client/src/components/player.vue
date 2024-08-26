@@ -50,14 +50,20 @@
         <button class="play-list-button" @click="showPlayListWindow" >播放列表</button>
         <playListWindow ref="playListWindowRef" :title="windowTitle" :content="windowContent" @close="onClose">
           <!--button @click="hidePlayListWindow">Close</button-->
-
+          <div class="sonPlayList">
+            <ul v-if="songInfoList.length > 0">
+              <li v-for="(songInfo, index) in songInfoList" :key="index" :class="{ highlighted: index === songIndex }" @click="playSong(index)">
+                {{ songInfo.songName }}   {{ formatTime(songInfo.duration) }}
+              </li>
+            </ul>
+          </div>
         </playListWindow>
       </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted ,watch} from 'vue';
 import api from '../api/http.js'
 import { useRouter, useRoute } from 'vue-router';
 import playListWindow from './playListWindow.vue';
@@ -68,18 +74,6 @@ var windowTitle = '播放列表';
 var windowContent = `${route.params.songList}`;
 
 const playListWindowRef = ref(null);
-
-const showPlayListWindow = () => {
-  playListWindowRef.value.show();
-};
-
-// const hidePlayListWindow = () =>{
-//   playListWindowRef.value.hide();
-// }
-
-const onClose = () => {
-  console.log('Floating window closed');
-};
 
 
 const router = useRouter(); 
@@ -98,10 +92,11 @@ var audioElement = ref(null);
 var progress = ref(0);
 var duration = ref(0);
 var playing = ref(false);
-var isLoading = ref(true); // 新增状态，用于表示数据是否正在加载
+var isLoading = ref(true); //当前页面需要的数据加载状态
 const songList = route.params.songList.split(',');
+var songInfoList = [];
 const songListLength = songList.length;
-var songIndex = songList.indexOf(route.params.songId);
+var songIndex = ref(songList.indexOf(route.params.songId));
 var playmode = ref('sequence');
 
 
@@ -111,6 +106,25 @@ onMounted(async () => {
   await Promise.all([pull_song_data(route.params.songId)]);
 });
 
+// const hidePlayListWindow = () =>{
+//   playListWindowRef.value.hide();
+// }
+const showPlayListWindow =async () => {
+  console.log(songList)
+  console.log(songInfoList)
+  if(songInfoList.length == 0){
+    songInfoList =  await fetch_songs_info(songList);
+  }
+  playListWindowRef.value.show();
+};
+
+const onClose = () => {
+  console.log('Floating window closed');
+};
+
+watch(songIndex.value, (newValue, oldValue) => {
+  console.log(`Highlight index changed from ${oldValue} to ${newValue}`);
+});
 
 async function pull_song_data(songId){
   try {
@@ -154,7 +168,18 @@ async function pull_song_data(songId){
   }
 }
 
-
+async function fetch_songs_info(songList){
+  var songInfoLists=[];
+  for(var i=0;i<songList.length;i++){
+    var songInfo = await fetchSongInfo(songList[i]);
+    var usedSongInfo ={
+      songName: songInfo.songName,
+      duration: songInfo.songDuration,
+    }
+    songInfoLists.push(usedSongInfo);
+  }
+  return songInfoLists;
+}
 
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
@@ -368,30 +393,44 @@ function resetCurrentSong(){
   progress.value = 0;
 }
 
+async function playSong(index){
+  togglePlaying();
+  var oldSongId = songList[songIndex.value];
+  songIndex.value = index;
+  var songId = songList[index];
+
+  if(oldSongId == songId){
+  }
+  else{
+    await pull_song_data(songId);
+  }
+  togglePlaying();
+}
+
 // 播放下一首歌曲
 async function nextSong() {
   if(playing.value==true){
     togglePlaying();
   }
 
-  var oldSongId = songList[songIndex];
+  var oldSongId = songList[songIndex.value];
   var songId ;
 
   if(playmode.value == 'random'){
-    songIndex = getRandomInt(0, songListLength-1);
-    songId = songList[songIndex];
+    songIndex.value = getRandomInt(0, songListLength-1);
+    songId = songList[songIndex.value];
   }
   else if(playmode.value =='repeat'){
     songId = oldSongId;
   }
   else if(playmode.value =='sequence'){
-    if(songIndex<songListLength-1){
-      songIndex++;
+    if(songIndex.value<songListLength-1){
+      songIndex.value++;
     }
-    else if(songIndex==songListLength-1){
-      songIndex = 0;
+    else if(songIndex.value==songListLength-1){
+      songIndex.value = 0;
     }
-    songId = songList[songIndex];
+    songId = songList[songIndex.value];
   }
   if(songId == oldSongId){
     resetCurrentSong();
@@ -409,24 +448,24 @@ async function prevSong() {
   if(playing.value==true){
     togglePlaying();
   }
-  var oldSongId = songList[songIndex];
+  var oldSongId = songList[songIndex.value];
   var songId ;
 
   if(playmode.value == 'random'){
-    songIndex = getRandomInt(0, songListLength-1);
-    songId = songList[songIndex];
+    songIndex.value = getRandomInt(0, songListLength-1);
+    songId = songList[songIndex.value];
   }
   else if(playmode.value =='repeat'){
     songId = oldSongId;
   }
   else if(playmode.value =='sequence'){
-    if(songIndex>0){
-      songIndex--;
+    if(songIndex.value>0){
+      songIndex.value--;
     }
-    else if(songIndex==0){
-      songIndex = songListLength-1;
+    else if(songIndex.value==0){
+      songIndex.value = songListLength-1;
     }
-    songId = songList[songIndex];
+    songId = songList[songIndex.value];
   }
   if(songId == oldSongId){
     resetCurrentSong();
@@ -592,5 +631,28 @@ svg {
   height: 20px;
   margin-top: 25px;
   margin-left: 50px; /* 增加右侧的外边距 */
+}
+
+.sonPlayList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  /* 去掉内边距 */
+  padding: 0;
+}
+
+.sonPlayList ul {
+  padding: 0;
+  margin: 0;
+}
+
+.sonPlayList li {
+  list-style: none; /* 去掉默认的列表样式 */
+  margin-bottom: 5px; /* 每个列表项之间的间距 */
+}
+
+.highlighted {
+  background-color: rgb(0, 255, 26); /* 你可以选择你喜欢的颜色 */
 }
 </style>
