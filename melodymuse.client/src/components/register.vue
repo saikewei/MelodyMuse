@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus';
 import api from '../api/http.js'
 
 export default {
@@ -86,7 +87,7 @@ export default {
         });
        
         if (response.status === 200) {
-          alert('注册成功!');
+          ElMessage.success('注册成功!');
           // Redirect to the login page
           this.$router.push('/login');
         } else {

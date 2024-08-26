@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using MelodyMuse.Server.Services;
 using MelodyMuse.Server.Configure;
+using System.Text;
+using System.Security.Cryptography;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -96,12 +98,34 @@ namespace MelodyMuse.Server.Controllers
                 return Unauthorized();
             }
 
+            string songlistId;
+            // 获取当前时间的字符串表示
+            string currentTimeString = DateTime.UtcNow.ToString("o"); // 使用ISO 8601格式
+
+            // 计算哈希值
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentTimeString));
+
+                // 将哈希值转换为16进制字符串
+                StringBuilder hashStringBuilder = new StringBuilder();
+                foreach (byte b in hashBytes)
+                {
+                    hashStringBuilder.Append(b.ToString("x2"));
+                }
+
+                string hashString = hashStringBuilder.ToString();
+
+                // 截取前10位作为用户ID
+                songlistId = hashString.Substring(0, 10);
+            }
+
             // 创建一个 Songlist 实体并填充需要的属性
             var songlist = new Songlist
             {
-                SonglistId = model.SonglistId,
+                SonglistId = songlistId,
                 SonglistName = model.SonglistName,
-                SonglistDate = model.SonglistDate,
+                SonglistDate = DateTime.Now,
                 SonglistIspublic = model.IsPublic,
                 UserId = userId
             };
