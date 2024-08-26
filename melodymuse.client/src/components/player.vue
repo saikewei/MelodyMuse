@@ -47,24 +47,46 @@
           <img :src="playModeSrc" alt="Play Mode" />
         </button>
 
+        <button class="play-list-button" @click="showPlayListWindow" >播放列表</button>
+        <playListWindow ref="playListWindowRef" :title="windowTitle" :content="windowContent" @close="onClose">
+          <!--button @click="hidePlayListWindow">Close</button-->
+
+        </playListWindow>
       </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-
-
 import api from '../api/http.js'
 import { useRouter, useRoute } from 'vue-router';
-const router = useRouter(); 
+import playListWindow from './playListWindow.vue';
 
+const route = useRoute(); 
+
+var windowTitle = '播放列表';
+var windowContent = `${route.params.songList}`;
+
+const playListWindowRef = ref(null);
+
+const showPlayListWindow = () => {
+  playListWindowRef.value.show();
+};
+
+// const hidePlayListWindow = () =>{
+//   playListWindowRef.value.hide();
+// }
+
+const onClose = () => {
+  console.log('Floating window closed');
+};
+
+
+const router = useRouter(); 
 const prevSongSrc = ref('/prev.png');
 const nextSongSrc = ref('/next.png');
 const playModeSrc = ref('/circle.png');
 
-
-const route = useRoute(); 
 var audioSrc = ref('');
 var lyrics = ref([]);
 var albumId = ref('');
@@ -562,5 +584,13 @@ svg {
   font-weight: bold;
   color: #06dcfd;
   margin-bottom: 100px;
+}
+
+.play-list-button{
+  transition: transform 0.3s ease; /* 添加平滑过渡效果 */
+  width: 70px;
+  height: 20px;
+  margin-top: 25px;
+  margin-left: 50px; /* 增加右侧的外边距 */
 }
 </style>
