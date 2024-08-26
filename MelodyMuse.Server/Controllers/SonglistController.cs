@@ -12,7 +12,7 @@ namespace MelodyMuse.Server.Controllers
 {
     [ApiController]
     [Route("api/songlist")]
-    public class SonglistController : ControllerBase
+    public class SonglistController : Controller
     {
         private readonly ISonglistService _songlistService;
 
@@ -22,7 +22,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某用户的所有歌单及其包含的歌曲数量
-        [Authorize]
+        //[Authorize]
         [HttpGet("getall")]
         public async Task<IActionResult> GetUserSonglists()
         {
@@ -40,7 +40,7 @@ namespace MelodyMuse.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("token错误！"+ex);
+                Console.WriteLine("token错误！" + ex);
                 return Unauthorized();
             }
 
@@ -61,7 +61,7 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 获取某歌单中的所有歌曲
-        [Authorize]
+        //[Authorize]
         [HttpGet("{songlistId}/songs")]
         public async Task<IActionResult> GetSongsInSonglist(string songlistId)
         {
@@ -72,6 +72,81 @@ namespace MelodyMuse.Server.Controllers
             }
             return Ok(songs);
         }
-    }
 
+        //增加歌单
+        //[Authorize]
+        [HttpPost("add")]
+        public async Task<IActionResult> AddSonglist([FromBody] CreateSonglistModel model)
+        {
+            string userId = "001";
+            //try
+            //{
+            //    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            //    if (token == null)
+            //    {
+            //        return Unauthorized();
+            //    }
+
+            //    userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("token错误！" + ex);
+            //    return Unauthorized();
+            //}
+
+            // 创建一个 Songlist 实体并填充需要的属性
+            var songlist = new Songlist
+            {
+                SonglistId = model.SonglistId,
+                SonglistName = model.SonglistName,
+                SonglistDate = model.SonglistDate,
+                SonglistIspublic = model.IsPublic,
+                UserId = userId
+            };
+
+            var newSonglistId = await _songlistService.AddSonglistAsync(songlist);
+            return CreatedAtAction(nameof(GetSongsInSonglist), new { songlistId = newSonglistId }, newSonglistId);
+        }
+
+        //删除歌单
+        //[Authorize]
+        [HttpDelete("{songlistId}/delete")]
+        public async Task<IActionResult> DeleteSonglist(string songlistId)
+        {
+            var result = await _songlistService.DeleteSonglistAsync(songlistId);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        // 向歌单中添加歌曲
+        //[Authorize]
+        [HttpPost("{songlistId}/songs/{songId}/add")]
+        public async Task<IActionResult> AddSongToSonglist(string songlistId, string songId)
+        {
+            var result = await _songlistService.AddSongToSonglistAsync(songlistId, songId);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        // 从歌单中删除歌曲
+        //[Authorize]
+        [HttpDelete("{songlistId}/songs/{songId}/delete")]
+        public async Task<IActionResult> DeleteSongFromSonglist(string songlistId, string songId)
+        {
+            var result = await _songlistService.DeleteSongFromSonglistAsync(songlistId, songId);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+    }
 }

@@ -6,4 +6,8 @@ public interface ISonglistRepository
 {
     Task<IEnumerable<(string SonglistId, string SonglistName, int SongCount)>> GetUserSonglistsWithSongCountAsync(string userId);
     Task<IEnumerable<Song>> GetSongsBySonglistIdAsync(string songlistId);
+    Task<string> AddSonglistAsync(Songlist songlist);
+    Task<bool> DeleteSonglistAsync(string songlistId);
+    Task<bool> AddSongToSonglistAsync(string songlistId, string songId);
+    Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId);
 }

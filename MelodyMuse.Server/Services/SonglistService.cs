@@ -1,4 +1,5 @@
-﻿using MelodyMuse.Server.Models;
+﻿using MelodyMuse.Server.models;
+using MelodyMuse.Server.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,5 +20,24 @@ public class SonglistService : ISonglistService
     public async Task<IEnumerable<Song>> GetSongsInSonglistAsync(string songlistId)
     {
         return await _songlistRepository.GetSongsBySonglistIdAsync(songlistId);
+    }
+    public async Task<string> AddSonglistAsync(Songlist songlist)
+    {
+        return await _songlistRepository.AddSonglistAsync(songlist);
+    }
+
+    public async Task<bool> DeleteSonglistAsync(string songlistId)
+    {
+        return await _songlistRepository.DeleteSonglistAsync(songlistId);
+    }
+
+    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId)
+    {
+        return await _songlistRepository.AddSongToSonglistAsync(songlistId, songId);
+    }
+
+    public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId)
+    {
+        return await _songlistRepository.DeleteSongFromSonglistAsync(songlistId, songId);
     }
 }

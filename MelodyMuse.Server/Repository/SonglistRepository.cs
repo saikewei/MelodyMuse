@@ -55,4 +55,64 @@ public class SonglistRepository : ISonglistRepository
             .SelectMany(sl => sl.Songs)
             .ToListAsync();
     }
+
+    public async Task<string> AddSonglistAsync(Songlist songlist)
+    {
+        _context.Songlists.Add(songlist);
+        await _context.SaveChangesAsync();
+        return songlist.SonglistId;
+    }
+
+    public async Task<bool> DeleteSonglistAsync(string songlistId)
+    {
+        // 获取对应的歌单，包括其相关的歌曲
+        var songlist = await _context.Songlists
+            .Include(s => s.Songs)
+            .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+
+        if (songlist == null)
+            return false;
+
+        // 清除该歌单内的所有歌曲
+        songlist.Songs.Clear();
+
+        // 删除歌单
+        _context.Songlists.Remove(songlist);
+
+        // 保存更改
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId)
+    {
+        var songlist = await _context.Songlists
+             .Include(s => s.Songs)
+             .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+
+        if (songlist == null) return false;
+
+        var song = await _context.Songs.FindAsync(songId);
+        if (song == null) return false;
+
+        songlist.Songs.Add(song);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId)
+    {
+        var songlist = await _context.Songlists
+            .Include(s => s.Songs)
+            .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+
+        if (songlist == null) return false;
+
+        var song = songlist.Songs.FirstOrDefault(s => s.SongId == songId);
+        if (song == null) return false;
+
+        songlist.Songs.Remove(song);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
