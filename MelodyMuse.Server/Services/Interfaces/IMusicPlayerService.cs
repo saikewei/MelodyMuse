@@ -9,5 +9,6 @@ namespace MelodyMuse.Server.Services.Interfaces
     public interface IMusicPlayerService
     {
         Task<SongMetaDataModel> GetSongBySongId(string songId);
-    }
+        Task<bool> IncreaseSongPlaysBySongIdandUserId(string songId, string userId);
+    } 
 }
