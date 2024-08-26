@@ -36,7 +36,16 @@ namespace MelodyMuse.Server.models
         public List<SongDto> Songs { get; set; }
     }
     
-
+    public class AlbumsDto
+    {
+        public string AlbumId { get; set; }
+        public string AlbumName { get; set; }
+        public DateTime? AlbumReleasedate { get; set; }
+        public string AlbumCompany { get; set; }
+        public string AlbumProducer { get; set; }
+        public string ArtistId { get; set; }
+        public List<SongsDto> Songs { get; set; }
+    }
     public class SongDto
     {
         public string SongId { get; set; }
@@ -47,6 +56,16 @@ namespace MelodyMuse.Server.models
         public string SongGenre { get; set; }
         public List<ArtistDto> Artists { get; set; }
     }
+        public class SongsDto
+    {
+        public string SongId { get; set; }
+        public string SongName { get; set; }
+        public decimal? Duration { get; set; }
+        public DateTime? SongDate { get; set; }
+        public string SongGenre { get; set; }
+
+    }
+
 
     public class ArtistDto
     {
