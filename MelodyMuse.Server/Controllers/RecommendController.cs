@@ -122,7 +122,7 @@ namespace MelodyMuse.Server.Controllers
                 var genreBasedSongs = allSongs
                     .Where(song => preferredGenres.Contains(song.SongGenre))
                     .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                    .Take(10) // 取前10首
+                    .Take(15) // 取前15首
                     .ToList();
 
                 // 将符合流派的歌曲添加到 HashSet
@@ -131,14 +131,14 @@ namespace MelodyMuse.Server.Controllers
                     recommendedSongsSet.Add(song);
                 }
 
-                // 如果流派推荐的歌曲不足10个，则补充推荐
-                if (recommendedSongsSet.Count < 10)
+                // 如果流派推荐的歌曲不足15个，则补充推荐
+                if (recommendedSongsSet.Count < 15)
                 {
                     // 从未播放的歌曲中补充推荐（包括其他流派）
                     var additionalSongs = allSongs
                         .Where(song => !recommendedSongsSet.Contains(song)) // 确保不重复
                         .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                        .Take(10 - recommendedSongsSet.Count) // 补充到20个
+                        .Take(15 - recommendedSongsSet.Count) // 补充到20个
                         .ToList();
 
                     // 将补充歌曲添加到 HashSet

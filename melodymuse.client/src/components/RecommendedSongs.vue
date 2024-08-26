@@ -5,8 +5,8 @@
             <div v-for="song in songs" :key="song.SongId" class="song-card">
                 <img :src="song.coverUrl" alt="Song Cover" class="song-cover" />
                 <div class="song-info">
-                    <h3>{{ song.SongName }}</h3>
-                    <p>{{ song.Artists.map(artist => artist.ArtistName).join(', ') }}</p>
+                    <h3>{{ song.songName }}</h3>
+                    <p>{{ song.artists.map(artist => artist.artistName).join(', ') }}</p>
                 </div>
             </div>
         </div>
