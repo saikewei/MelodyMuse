@@ -344,7 +344,6 @@ function resetCurrentSong(){
   currentLine.value = 0;
   audioElement.value.currentTime = 0;
   progress.value = 0;
-  duration.value = 0;
 }
 
 // 播放下一首歌曲
