@@ -14,7 +14,7 @@
 <style scoped>
     .the-footer {
         position: absolute; /* 或者 position: absolute; */
-        bottom: 20px; /* 与底部的距离 */
+        bottom: 50px; /* 与底部的距离 */
         left: 50%; /* 左侧距离为页面宽度的一半 */
         transform: translateX(-50%); /* 水平居中 */
         background-color: #f0f0f0; /* 背景色 */
