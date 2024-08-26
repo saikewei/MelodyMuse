@@ -59,6 +59,12 @@
           </div>
         </playListWindow>
       </div>
+
+      <div class="volume-slider">
+        <label for="volume">音量:</label>
+        <input type="range" id="volume" min="0" max="1" step="0.01" v-model="volume" @input="updateVolume">
+        <span>{{ Math.round(volume * 100) }}%</span>
+      </div>
   </div>
 </template>
 
@@ -75,7 +81,7 @@ var windowContent = `${route.params.songList}`;
 
 const playListWindowRef = ref(null);
 
-
+var volume = ref(0.5);
 const router = useRouter(); 
 const prevSongSrc = ref('/prev.png');
 const nextSongSrc = ref('/next.png');
@@ -105,6 +111,21 @@ var playmode = ref('sequence');
 onMounted(async () => {
   await Promise.all([pull_song_data(route.params.songId)]);
 });
+
+const updateVolume = (event) => {
+  // 更新音量值
+  const newVolume = event.target.value;
+  volume.value = newVolume;
+  // 更新音频播放器的音量
+  updateAudioPlayerVolume(newVolume);
+};
+
+// 更新音频播放器的音量
+const updateAudioPlayerVolume = (newVolume) => {
+  audioElement.value.volume = newVolume;
+  console.log(`Volume updated to: ${newVolume}`);
+};
+
 
 // const hidePlayListWindow = () =>{
 //   playListWindowRef.value.hide();
@@ -589,7 +610,6 @@ svg {
   transition: transform 0.3s ease; /* 添加平滑过渡效果 */
   width: 30px;
   height: 10px;
-
 }
 
 .next-song-button{
@@ -655,4 +675,12 @@ svg {
 .highlighted {
   background-color: rgb(0, 255, 26); /* 你可以选择你喜欢的颜色 */
 }
+
+.volume-slider {
+  position: absolute;
+  display: flex;
+  margin-top: 485px;
+}
+
+
 </style>
