@@ -75,7 +75,7 @@ namespace MelodyMuse.Server.Controllers
             }
         }
         //根据id进行歌手歌曲推荐
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         [Route("byart/{userId}")]
         public async Task<IActionResult> RecommendSongsbyArt(string userId)
