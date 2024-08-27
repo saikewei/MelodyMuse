@@ -127,7 +127,7 @@
         isLiked: false,
         },
          // 添加
-         playIcon,
+        playIcon,
         playClickedIcon,
         playHoverIcon,
         likeIcon,
@@ -196,19 +196,18 @@
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      }
-    },
+      },
     // 收藏与取消收藏专辑的方法
     async toggleLike() {
       try {
         if (this.isLiked) {
-          await api.apiClient.post(`/api/users/addalbum`, {
+          await api.apiClient.delete(`/api/users/removealbum`, {
             userId: this.userId, 
             albumId: this.albumId
           });
           this.isLiked = false;//取消收藏
         } else {
-          await api.apiClient.delete(`/api/users/removealbum`, {
+          await api.apiClient.post(`/api/users/addalbum`, {
             userId: this.userId,
             albumId: this.albumId
           });
@@ -219,7 +218,7 @@
         this.isLiked = !this.isLiked;
       }
     },
-
+  },
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
