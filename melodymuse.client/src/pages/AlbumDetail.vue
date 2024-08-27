@@ -139,9 +139,11 @@
       };
     },
     computed: {
+      //歌曲计数
       songCount() {
         return this.album.songs.length;
       },
+      //把发行日期转化为规范格式
       formattedReleaseDate() {
         const releaseDate = new Date(this.album.albumReleasedate);
         return releaseDate.toLocaleDateString();
@@ -172,10 +174,12 @@
           console.error('获取歌手信息失败:', error);
         }
       },
+      //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
         const firstSongId = this.album.songs[0].songId;
         this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
       },
+      //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
@@ -187,31 +191,34 @@
         song.liked = !song.liked;
       },
       
+      // 将毫秒转换为分钟和秒
       formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       }
     },
+    // 收藏与取消收藏专辑的方法
     async toggleLike() {
       try {
         if (this.isLiked) {
           await api.apiClient.post(`/api/album/unlike`, {
             userId: this.userId, albumId: this.albumId
           });
-          this.isLiked = false;
+          this.isLiked = false;//取消收藏
         } else {
           await api.apiClient.post(`/api/album/like`, {
             userId: this.userId,
             albumId: this.albumId
           });
-          this.isLiked = true;
+          this.isLiked = true;//收藏
         }
       } catch (error) {
-        console.error('Failed to toggle like:', error);
+        console.error('切换收藏状态失败:', error);
         this.isLiked = !this.isLiked;
       }
     },
+
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
