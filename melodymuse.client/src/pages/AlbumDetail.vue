@@ -100,19 +100,13 @@
         userId: '',
         albumId: '',
         album: {
-         /* albumName: '',
+          albumName: '',
           albumReleasedate: '',
           albumCompany: '',
           albumProducer: '',
-        */
-        
-          albumName: '杜宣达',
-          albumReleasedate: '2002-09-13T03:47:21',
-          albumCompany: '蓝天乐律',
-          albumProducer: '杜宣达',  //测试数据
           
           songs: [
-          ///*
+          /*
           {
             "songId": "0c35751f-0",
             "songName": "缓缓",
@@ -134,7 +128,7 @@
             "songDate": null,
             "songGenre": null
         },
-        //*/
+        */
         ],
         isLiked: false,
         },

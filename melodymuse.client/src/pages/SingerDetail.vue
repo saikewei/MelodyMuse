@@ -109,7 +109,7 @@
         isFollowing: false,
         songs:[
           
-          { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+        /*  { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
           { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
@@ -298,7 +298,7 @@ async updateFollowersCount() {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   },  
-  
+
   async created() {
     this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
