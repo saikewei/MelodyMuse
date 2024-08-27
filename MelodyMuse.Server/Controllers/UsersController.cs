@@ -168,6 +168,55 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, "系统出现错误");
             }
         }
+        [HttpPost("addalbum")]
+        public async Task<IActionResult> AddUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.AlbumId))
+            {
+                return BadRequest("请求数据为空");
+            }
+
+            try
+            {
+                await _usersService.AddUserCollectAlbumAsync(dto.UserId, dto.AlbumId);
+                return Ok("专辑已成功收藏.");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "系统出现错误");
+            }
+        }
+
+        [HttpDelete("removealbum")]
+        public async Task<IActionResult> RemoveUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.AlbumId))
+            {
+                return BadRequest("请求数据为空.");
+            }
+
+            try
+            {
+                await _usersService.RemoveUserCollectAlbumAsync(dto.UserId, dto.AlbumId);
+                return Ok("专辑已成功取消收藏");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "系统出现错误");
+            }
+        }
     }
 }
 
