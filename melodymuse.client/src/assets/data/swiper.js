@@ -5,13 +5,14 @@ import pic4 from '@/assets/pics/4.jpg';
 import pic5 from '@/assets/pics/5.jpg';
 
 const slides = [
-    { src: pic1, alt: 'Image 1' },
-    { src: pic2, alt: 'Image 2' },
-    { src: pic3, alt: 'Image 3' },
-    { src: pic4, alt: 'Image 4' },
-    { src: pic5, alt: 'Image 5' }
+    { src: pic1, alt: 'Image 1', link: 'song' },
+    { src: pic2, alt: 'Image 2', link: 'song' },
+    { src: pic3, alt: 'Image 3', link: 'song' },
+    { src: pic4, alt: 'Image 4', link: 'song' },
+    { src: pic5, alt: 'Image 5', link: 'song' }
 ];
 
 export {
     slides
 };
+

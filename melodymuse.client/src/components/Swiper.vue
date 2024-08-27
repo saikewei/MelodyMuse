@@ -2,7 +2,10 @@
     <div class="swiper">
         <div class="carousel-container" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
             <div class="carousel-item" v-for="(slide, index) in slides" :key="index">
-                <img :src="slide.src" :alt="slide.alt">
+                <a :href="slide.link">
+                    <!-- 添加链接 -->
+                    <img :src="slide.src" :alt="slide.alt">
+                </a>
             </div>
         </div>
         <div class="carousel-controls">
@@ -64,32 +67,32 @@
 <style scoped>
     .swiper {
         position: relative;
-        width: 90vw; /* 宽度设置为视口宽度的90% */
-        height: 70vh; /* 高度设置为视口高度的70% */
+        width: 90vw;
+        height: 70vh;
         overflow: hidden;
-        z-index: 1; /* 确保在其他元素上面 */
+        z-index: 1;
     }
 
     .carousel-container {
         display: flex;
         transition: transform 1.0s ease;
-        width: 100%; /* 容器宽度100% */
-        height: 100%; /* 容器高度100% */
+        width: 100%;
+        height: 100%;
     }
 
     .carousel-item {
-        flex: 0 0 100%; /* 每项占据100%宽度 */
-        height: 100%; /* 确保高度占满容器 */
+        flex: 0 0 100%;
+        height: 100%;
         display: flex;
-        align-items: center; /* 垂直居中 */
-        justify-content: center; /* 水平居中 */
+        align-items: center;
+        justify-content: center;
     }
 
-    .carousel img {
-        width: 100%; /* 图片宽度100% */
-        height: 100%; /* 图片高度100% */
-        object-fit: cover; /* 使图片填充整个容器，同时保持比例 */
-    }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
     .carousel-controls {
         position: absolute;
@@ -139,3 +142,4 @@
             background-color: #555;
         }
 </style>
+
