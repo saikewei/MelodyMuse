@@ -51,5 +51,37 @@ namespace MelodyMuse.Server.Services
             // 调用 IUserRepository 中的方法更新用户资料
             await _usersRepository.UpdateUserAsync(user);
         }
+       public async Task AddUserCollectSongAsync(string userId, string songId)
+        {
+
+            // 检查是否已经收藏了该歌曲
+            var existingCollect = await _usersRepository.GetUserCollectSongAsync(userId, songId);
+            if (existingCollect != null)
+            {
+                throw new InvalidOperationException("歌曲已经被收藏");
+            }
+
+            // 创建 UserCollectSong 实体
+            var userCollectSong = new UserCollectSong
+            {
+                UserId = userId,
+                SongId = songId,
+                CollectSongDate = DateTime.UtcNow
+            };
+
+            // 添加到仓储
+            await _usersRepository.AddUserCollectSongAsync(userCollectSong);
+        }
+        public async Task RemoveUserCollectSongAsync(string userId, string songId)
+        {
+            var existingCollect = await _usersRepository.GetUserCollectSongAsync(userId, songId);
+
+            if (existingCollect == null)
+            {
+                throw new ArgumentException("这首歌不在关注列表");
+            }
+
+            await _usersRepository.RemoveUserCollectSongAsync(existingCollect);
+        }
     }
 }

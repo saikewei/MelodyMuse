@@ -13,5 +13,7 @@ namespace MelodyMuse.Server.Services.Interfaces
         Task<User?> UpdateUserStatus(string userId, string newStatus);
         Task<List<string>> GetAllUserIds();
         Task UpdateUserAsync(User user);
+        Task AddUserCollectSongAsync(string userId, string songId);
+        Task RemoveUserCollectSongAsync(string userId, string songId); // 新增
     }
 }
