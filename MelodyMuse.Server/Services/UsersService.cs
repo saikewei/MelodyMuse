@@ -83,5 +83,35 @@ namespace MelodyMuse.Server.Services
 
             await _usersRepository.RemoveUserCollectSongAsync(existingCollect);
         }
+         public async Task AddUserCollectAlbumAsync(string userId, string albumId)
+        {
+
+            var existingCollect = await _usersRepository.GetUserCollectAlbumAsync(userId, albumId);
+            if (existingCollect != null)
+            {
+                throw new InvalidOperationException("专辑已经收藏过了");
+            }
+
+            var userCollectAlbum = new UserCollectAlbum
+            {
+                UserId = userId,
+                AlbumId = albumId,
+                CollectAlbumDate = DateTime.UtcNow
+            };
+
+            await _usersRepository.AddUserCollectAlbumAsync(userCollectAlbum);
+        }
+
+        public async Task RemoveUserCollectAlbumAsync(string userId, string albumId)
+        {
+            var existingCollect = await _usersRepository.GetUserCollectAlbumAsync(userId, albumId);
+
+            if (existingCollect == null)
+            {
+                throw new ArgumentException("专辑尚未被收藏");
+            }
+
+            await _usersRepository.RemoveUserCollectAlbumAsync(existingCollect);
+        }
     }
 }

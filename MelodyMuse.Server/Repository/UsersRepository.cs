@@ -110,5 +110,22 @@ namespace MelodyMuse.Server.Repository
             _context.UserCollectSongs.Remove(userCollectSong);
             await _context.SaveChangesAsync();
         }
+         public async Task AddUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum)
+        {
+            await _context.UserCollectAlbums.AddAsync(userCollectAlbum);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserCollectAlbum?> GetUserCollectAlbumAsync(string userId, string albumId)
+        {
+            return await _context.UserCollectAlbums
+                .FirstOrDefaultAsync(uca => uca.UserId == userId && uca.AlbumId == albumId);
+        }
+
+        public async Task RemoveUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum)
+        {
+            _context.UserCollectAlbums.Remove(userCollectAlbum);
+            await _context.SaveChangesAsync();
+        }
     }
 }
