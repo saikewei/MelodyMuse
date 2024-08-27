@@ -28,13 +28,38 @@
                   <th>歌曲</th>
                   <th>歌手</th>
                   <th>时长</th>
+                  <!-- 添加按钮 -->
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
-                  <td>{{ index + 1 }}. {{ song.songName }}</td>
+
+                  <td>
+                    <!-- 添加播放按钮 -->
+                    <el-tooltip content="播放歌曲" placement="bottom">
+                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                           @mouseover="song.playHover = true"
+                           @mouseleave="song.playHover = false"
+                           @click="togglePlayIcon(song)"
+                           class="play-icon"
+                           alt="播放歌曲" />
+                    </el-tooltip>
+                    {{ index + 1 }}. {{ song.songName }}</td>
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
+                  <!-- 添加收藏按钮 -->
+                  <td>
+                    <el-tooltip content="收藏歌曲" placement="bottom">
+                      <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                           @mouseover="song.likeHover = true"
+                           @mouseleave="song.likeHover = false"
+                           @click="toggleLikeIcon(song)"
+                           class="like-icon"
+                           alt="收藏歌曲" />
+                    </el-tooltip>
+                    
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -51,7 +76,15 @@
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js';
-  
+  import playIcon from '../assets/pics/play.png'; // 添加按钮图片路径↓
+  import playClickedIcon from '../assets/pics/play-click.png'; 
+  import playHoverIcon from '../assets/pics/play-cover.png'; 
+  import likeIcon from '../assets/pics/like.png'; 
+  import likeHoverIcon from '../assets/pics/like-cover.png'; 
+  import likeClickedIcon from '../assets/pics/like-click.png'; 
+  import addIcon from '../assets/pics/add.png'; 
+  import addHoverIcon from '../assets/pics/add-cover.png'; 
+  import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
   export default {
     data() {
       return {
@@ -59,14 +92,43 @@
         userId: '',
         albumId: '',
         album: {
+          
           albumName: '',
           albumReleasedate: '',
           albumCompany: '',
           albumProducer: '',
+        
+         /* albumName: '杜宣达',
+          albumReleasedate: '2002-09-13T03:47:21',
+          albumCompany: '蓝天乐律',
+          albumProducer: '杜宣达', */ //测试数据
           songs: [
-         
+          /*{
+            "songId": "0c35751f-0",
+            "songName": "缓缓",
+            "duration": 236,
+            "songDate": null,
+            "songGenre": null
+        },
+        {
+            "songId": "1b5ed95e-d",
+            "songName": "天若有情",
+            "duration": 205,
+            "songDate": null,
+            "songGenre": null
+        },*/
         ],
         },
+         // 添加
+         playIcon,
+        playClickedIcon,
+        playHoverIcon,
+        likeIcon,
+        likeHoverIcon,
+        likeClickedIcon,
+        addIcon,
+        addHoverIcon,
+        addClickedIcon,
       };
     },
     computed: {
@@ -110,6 +172,14 @@
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
+       // 播放收藏方法
+       togglePlayIcon(song) {
+        song.playing = !song.playing;
+      },
+      toggleLikeIcon(song) {
+        song.liked = !song.liked;
+      },
+      
       formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
@@ -208,5 +278,11 @@
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
+  .play-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
+  .like-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
   </style>
   
