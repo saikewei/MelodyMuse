@@ -16,6 +16,12 @@
               <span>歌曲 {{ songCount }}</span>
             </div>
             <button class="play-button" @click="playFirstSong">▷播放专辑</button>
+            <button 
+            class="like-button" 
+            :class="{ liked: isLiked }" 
+            @click="toggleLike">
+            {{ isLiked ? '已收藏' : '♡ 收藏' }} 
+          </button>
           </div>
         </div>
   
@@ -66,6 +72,7 @@
           songs: [
          
         ],
+        isLiked: false,
         },
       };
     },
@@ -114,6 +121,25 @@
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      }
+    },
+    async toggleLike() {
+      try {
+        if (this.isLiked) {
+          await api.apiClient.post(`/api/album/unlike`, {
+            userId: this.userId, albumId: this.albumId
+          });
+          this.isLiked = false;
+        } else {
+          await api.apiClient.post(`/api/album/like`, {
+            userId: this.userId,
+            albumId: this.albumId
+          });
+          this.isLiked = true;
+        }
+      } catch (error) {
+        console.error('Failed to toggle like:', error);
+        this.isLiked = !this.isLiked;
       }
     },
     async created() {
@@ -171,16 +197,33 @@
     margin-top: 10px;
   }
   
-  .play-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    background-color: #284da0c1;
-    color: white;
-    border-radius: 8px;
-    margin-right: 2px;
-  }
+  .play-button, .like-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.play-button {
+  background-color: #284da0c1; 
+  color: white;
+  border-radius: 8px;
+  margin-right: 2px;
+}
+
+.like-button {
+  background-color: #fff;
+  color: #284da0c1;
+  border: 1px solid #284da0c1;
+  border-radius: 8px;
+  margin-left: 2px;
+}
+
+.like-button.liked {
+  border: 1px solid darkgray;
+  background-color: darkgray;
+  color: white;
+}
   
   .songs {
     margin-top: 20px;
