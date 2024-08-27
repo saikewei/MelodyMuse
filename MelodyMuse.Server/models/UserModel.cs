@@ -25,5 +25,9 @@
     public string UserId { get; set; }
     public string SongId { get; set; }
 }
-
+public class AddUserCollectAlbumDto
+    {
+        public string UserId { get; set; } = null!;
+        public string AlbumId { get; set; } = null!;
+    }
 }
