@@ -202,12 +202,13 @@
     async toggleLike() {
       try {
         if (this.isLiked) {
-          await api.apiClient.post(`/api/album/unlike`, {
-            userId: this.userId, albumId: this.albumId
+          await api.apiClient.post(`/api/users/addalbum`, {
+            userId: this.userId, 
+            albumId: this.albumId
           });
           this.isLiked = false;//取消收藏
         } else {
-          await api.apiClient.post(`/api/album/like`, {
+          await api.apiClient.delete(`/api/users/removealbum`, {
             userId: this.userId,
             albumId: this.albumId
           });
