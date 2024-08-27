@@ -16,6 +16,12 @@
               <span>歌曲 {{ songCount }}</span>
             </div>
             <button class="play-button" @click="playFirstSong">▷播放专辑</button>
+            <button 
+            class="like-button" 
+            :class="{ liked: isLiked }" 
+            @click="toggleLike">
+            {{ isLiked ? '已收藏' : '♡ 收藏' }} 
+          </button>
           </div>
         </div>
   
@@ -28,13 +34,38 @@
                   <th>歌曲</th>
                   <th>歌手</th>
                   <th>时长</th>
+                  <!-- 添加按钮 -->
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
-                  <td>{{ index + 1 }}. {{ song.songName }}</td>
+
+                  <td>
+                    <!-- 添加播放按钮 -->
+                    <el-tooltip content="播放歌曲" placement="bottom">
+                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                           @mouseover="song.playHover = true"
+                           @mouseleave="song.playHover = false"
+                           @click="togglePlayIcon(song)"
+                           class="play-icon"
+                           alt="播放歌曲" />
+                    </el-tooltip>
+                    {{ index + 1 }}. {{ song.songName }}</td>
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
+                  <!-- 添加收藏按钮 -->
+                  <td>
+                    <el-tooltip content="收藏歌曲" placement="bottom">
+                      <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                           @mouseover="song.likeHover = true"
+                           @mouseleave="song.likeHover = false"
+                           @click="toggleLikeIcon(song)"
+                           class="like-icon"
+                           alt="收藏歌曲" />
+                    </el-tooltip>
+                    
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -51,7 +82,15 @@
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js';
-  
+  import playIcon from '../assets/pics/play.png'; // 添加按钮图片路径↓
+  import playClickedIcon from '../assets/pics/play-click.png'; 
+  import playHoverIcon from '../assets/pics/play-cover.png'; 
+  import likeIcon from '../assets/pics/like.png'; 
+  import likeHoverIcon from '../assets/pics/like-cover.png'; 
+  import likeClickedIcon from '../assets/pics/like-click.png'; 
+  import addIcon from '../assets/pics/add.png'; 
+  import addHoverIcon from '../assets/pics/add-cover.png'; 
+  import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
   export default {
     data() {
       return {
@@ -59,20 +98,52 @@
         userId: '',
         albumId: '',
         album: {
+          
           albumName: '',
           albumReleasedate: '',
           albumCompany: '',
           albumProducer: '',
+        
+         /* albumName: '杜宣达',
+          albumReleasedate: '2002-09-13T03:47:21',
+          albumCompany: '蓝天乐律',
+          albumProducer: '杜宣达', */ //测试数据
           songs: [
-         
-        ],
+          /*{
+            "songId": "0c35751f-0",
+            "songName": "缓缓",
+            "duration": 236,
+            "songDate": null,
+            "songGenre": null
         },
+        {
+            "songId": "1b5ed95e-d",
+            "songName": "天若有情",
+            "duration": 205,
+            "songDate": null,
+            "songGenre": null
+        },*/
+        ],
+        isLiked: false,
+        },
+         // 添加
+         playIcon,
+        playClickedIcon,
+        playHoverIcon,
+        likeIcon,
+        likeHoverIcon,
+        likeClickedIcon,
+        addIcon,
+        addHoverIcon,
+        addClickedIcon,
       };
     },
     computed: {
+      //歌曲计数
       songCount() {
         return this.album.songs.length;
       },
+      //把发行日期转化为规范格式
       formattedReleaseDate() {
         const releaseDate = new Date(this.album.albumReleasedate);
         return releaseDate.toLocaleDateString();
@@ -103,19 +174,51 @@
           console.error('获取歌手信息失败:', error);
         }
       },
+      //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
         const firstSongId = this.album.songs[0].songId;
         this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
       },
+      //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
+       // 播放收藏方法
+       togglePlayIcon(song) {
+        song.playing = !song.playing;
+      },
+      toggleLikeIcon(song) {
+        song.liked = !song.liked;
+      },
+      
+      // 将毫秒转换为分钟和秒
       formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       }
     },
+    // 收藏与取消收藏专辑的方法
+    async toggleLike() {
+      try {
+        if (this.isLiked) {
+          await api.apiClient.post(`/api/album/unlike`, {
+            userId: this.userId, albumId: this.albumId
+          });
+          this.isLiked = false;//取消收藏
+        } else {
+          await api.apiClient.post(`/api/album/like`, {
+            userId: this.userId,
+            albumId: this.albumId
+          });
+          this.isLiked = true;//收藏
+        }
+      } catch (error) {
+        console.error('切换收藏状态失败:', error);
+        this.isLiked = !this.isLiked;
+      }
+    },
+
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
@@ -171,16 +274,33 @@
     margin-top: 10px;
   }
   
-  .play-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    background-color: #284da0c1;
-    color: white;
-    border-radius: 8px;
-    margin-right: 2px;
-  }
+  .play-button, .like-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.play-button {
+  background-color: #284da0c1; 
+  color: white;
+  border-radius: 8px;
+  margin-right: 2px;
+}
+
+.like-button {
+  background-color: #fff;
+  color: #284da0c1;
+  border: 1px solid #284da0c1;
+  border-radius: 8px;
+  margin-left: 2px;
+}
+
+.like-button.liked {
+  border: 1px solid darkgray;
+  background-color: darkgray;
+  color: white;
+}
   
   .songs {
     margin-top: 20px;
@@ -208,5 +328,11 @@
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
+  .play-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
+  .like-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
   </style>
   
