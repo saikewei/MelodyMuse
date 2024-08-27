@@ -93,7 +93,8 @@ const routes = [
     component: mediaplayer,
   },
   {
-    path: "/SingerDetail/:artistId",
+    path: "/SingerDetail/",//调试用
+    //path: "/SingerDetail/:artistId",
     name: "SingerDetail",
     component: SingerDetail,
   },
@@ -114,8 +115,8 @@ const routes = [
     component: ForgottenPassword,
   },
   {
-    path: "/AlbumDetail/:albumId",
-    //path: "/AlbumDetail",//调试用
+    //path: "/AlbumDetail/:albumId",
+    path: "/AlbumDetail",//调试用
     name: "AlbumDetail",
     component: AlbumDetail,
   }

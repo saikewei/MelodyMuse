@@ -34,13 +34,39 @@
                 <th>歌曲</th>
                 <th>专辑</th>
                 <th>时长</th>
+                <!-- 添加按钮 -->
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(song, index) in songs" :key="index" @click="playSong(song.songId)">
-                <td>{{ index + 1 }}. {{ song.songName }}</td>
-                <td>{{ song.albumName }}</td>
+            
+                <td>
+                  <!-- 添加播放按钮 -->
+                  <el-tooltip content="播放歌曲" placement="bottom">
+                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                           @mouseover="song.playHover = true"
+                           @mouseleave="song.playHover = false"
+                           @click="togglePlayIcon(song)"
+                           class="play-icon"
+                           alt="播放歌曲" />
+                    </el-tooltip>
+                  {{ index + 1 }}. {{ song.songName }}</td>
+
+                <td>{{ song.albumNameName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
+              
+                  <!-- 添加收藏按钮 -->
+                  <td>
+                    <el-tooltip content="收藏歌曲" placement="bottom">
+                      <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                           @mouseover="song.likeHover = true"
+                           @mouseleave="song.likeHover = false"
+                           @click="toggleLikeIcon(song)"
+                           class="like-icon"
+                           alt="收藏歌曲" />
+                    </el-tooltip>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -57,7 +83,16 @@
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js'
-    
+  import playIcon from '../assets/pics/play.png'; // 添加按钮图片路径↓
+  import playClickedIcon from '../assets/pics/play-click.png'; 
+  import playHoverIcon from '../assets/pics/play-cover.png'; 
+  import likeIcon from '../assets/pics/like.png'; 
+  import likeHoverIcon from '../assets/pics/like-cover.png'; 
+  import likeClickedIcon from '../assets/pics/like-click.png'; 
+  import addIcon from '../assets/pics/add.png'; 
+  import addHoverIcon from '../assets/pics/add-cover.png'; 
+  import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+
   export default {
     data() {
       return {
@@ -68,12 +103,13 @@
           artistName:'',
           artistGenre: '',
           artistIntro: '',
-          artistBirthday: ''
+          artistBirthday: '',
         },
         followersCount: 0, // 数字格式，方便处理加减
         isFollowing: false,
         songs:[
-          /*{ songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+          
+          { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
           { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
@@ -84,7 +120,20 @@
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' },          
           // 其他歌曲省略*/
-        ],
+          ],
+        isLiked: false,
+  
+        audio: null, // 添加 audio 对象
+        currentPlayingSongId: null, // 当前正在播放的歌曲 ID
+        playIcon,
+        playClickedIcon,
+        playHoverIcon,
+        likeIcon,
+        likeHoverIcon,
+        likeClickedIcon,
+        addIcon,
+        addHoverIcon,
+        addClickedIcon,
       };
     },
     computed: {
@@ -147,6 +196,63 @@
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
 
+    //收藏方法
+    async toggleLikeIcon(song) {
+        try {
+          if (song.liked) {
+            // 如果已收藏，发送请求删除收藏
+            await api.apiClient.post(`/api/users/remove`, {
+              userId: this.userId,
+              songId: song.songId
+            });
+            song.liked = false;
+          } else {
+            // 如果未收藏，发送请求添加收藏
+            await api.apiClient.post(`/api/users/add`, {
+              userId: this.userId,
+              songId: song.songId
+            });
+            song.liked = true;
+          }
+        } catch (error) {
+          console.error('收藏失败,请重试', error);
+          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+        }
+      },
+
+      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+      togglePlayIcon(song){
+      try{
+        if (this.currentPlayingSongId === song.songId && !this.audio.paused) {
+          // 如果当前正在播放同一首歌，则暂停音乐
+          this.audio.pause();
+          song.playing = false; // 当前歌曲状态设为未播放
+          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
+        } else {
+          // 如果当前没有播放音乐或播放不同的音乐
+          if (this.audio) {
+            this.audio.pause(); // 暂停当前播放的音乐
+            // 
+            const previousSong = this.album.songs.find(s => s.songId === this.currentPlayingSongId);
+            if (previousSong) {
+              previousSong.playing = false;
+            }
+           }
+          const songUrl = `/api/player/file?songId=${song.songId}`;
+          this.audio = new Audio(song.songUrl); 
+          this.audio.play();
+          this.currentPlayingSongId = song.songId;
+        }
+        song.playing = !song.playing; // 切换播放状态
+      }catch (error) {
+          console.error('播放失败,请重试', error);
+          song.playing = false; 
+          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
+        }
+      },
+
+      
+
       //实现关注和取消关注
       async toggleFollow() {
     try {
@@ -184,6 +290,7 @@ async updateFollowersCount() {
       console.error('添加人数失败:', error);
     }
   },
+
     //处理歌曲时长，将秒数转换为 mm:ss 格式
     formatDuration(duration) {
       const minutes = Math.floor(duration / 60);
@@ -191,6 +298,7 @@ async updateFollowersCount() {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   },  
+  
   async created() {
     this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
@@ -302,5 +410,11 @@ async updateFollowersCount() {
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
+  .play-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
+  .like-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
   </style>
   

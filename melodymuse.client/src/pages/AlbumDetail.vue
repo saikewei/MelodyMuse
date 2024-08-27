@@ -1,7 +1,7 @@
 <template>
-    <div>
-    <TheHeader />
-    <div class="page-container">
+  <div>
+      <TheHeader />
+      <div class="page-container">
       <div class="profile">
         <div class="header">
           <img class="album-cover" :src="albumCover" alt="Album Cover" />
@@ -52,8 +52,10 @@
                            alt="播放歌曲" />
                     </el-tooltip>
                     {{ index + 1 }}. {{ song.songName }}</td>
+
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
+
                   <!-- 添加收藏按钮 -->
                   <td>
                     <el-tooltip content="收藏歌曲" placement="bottom">
@@ -64,18 +66,17 @@
                            class="like-icon"
                            alt="收藏歌曲" />
                     </el-tooltip>
-                    
                   </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-    <TheFooter />
-    </div>
-  </template>
+             </tr>
+           </tbody>
+         </table>
+       </div>
+     </div>
+   </div>
+ </div>
+      <TheFooter  />
+ </div>
+</template>
   
   <script>
   import albumCover from '../assets/logo2.jpg';
@@ -91,6 +92,7 @@
   import addIcon from '../assets/pics/add.png'; 
   import addHoverIcon from '../assets/pics/add-cover.png'; 
   import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+  
   export default {
     data() {
       return {
@@ -98,18 +100,20 @@
         userId: '',
         albumId: '',
         album: {
-          
-          albumName: '',
+         /* albumName: '',
           albumReleasedate: '',
           albumCompany: '',
           albumProducer: '',
+        */
         
-         /* albumName: '杜宣达',
+          albumName: '杜宣达',
           albumReleasedate: '2002-09-13T03:47:21',
           albumCompany: '蓝天乐律',
-          albumProducer: '杜宣达', */ //测试数据
+          albumProducer: '杜宣达',  //测试数据
+          
           songs: [
-          /*{
+          ///*
+          {
             "songId": "0c35751f-0",
             "songName": "缓缓",
             "duration": 236,
@@ -122,12 +126,21 @@
             "duration": 205,
             "songDate": null,
             "songGenre": null
-        },*/
+        },
+        {
+            "songId": "1b5ed95e-g",
+            "songName": "天情",
+            "duration": 215,
+            "songDate": null,
+            "songGenre": null
+        },
+        //*/
         ],
         isLiked: false,
-        },
-         // 添加
-         playIcon,
+      },
+        audio: null, // 添加 audio 对象
+        currentPlayingSongId: null, // 当前正在播放的歌曲 ID
+        playIcon,
         playClickedIcon,
         playHoverIcon,
         likeIcon,
@@ -172,22 +185,74 @@
           console.error('获取歌手信息失败:', error);
         }
       },
+
+      //当用户点击“播放专辑”，直接跳转到播放器页面，并开始播放专辑中的第一首歌曲
       playFirstSong() {
         const firstSongId = this.album.songs[0].songId;
         this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
       },
+      //用户点击某首歌，跳转播放器页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
-       // 播放收藏方法
-       togglePlayIcon(song) {
-        song.playing = !song.playing;
+
+      //收藏方法
+      async toggleLikeIcon(song) {
+        try {
+          if (song.liked) {
+            // 如果已收藏，发送请求删除收藏
+            await api.apiClient.post(`/api/users/remove`, {
+              userId: this.userId,
+              songId: song.songId
+            });
+            song.liked = false;
+          } else {
+            // 如果未收藏，发送请求添加收藏
+            await api.apiClient.post(`/api/users/add`, {
+              userId: this.userId,
+              songId: song.songId
+            });
+            song.liked = true;
+          }
+        } catch (error) {
+          console.error('收藏失败,请重试', error);
+          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+        }
       },
-      toggleLikeIcon(song) {
-        song.liked = !song.liked;
+
+      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+      togglePlayIcon(song){
+      try{
+        if (this.currentPlayingSongId === song.songId && !this.audio.paused) {
+          // 如果当前正在播放同一首歌，则暂停音乐
+          this.audio.pause();
+          song.playing = false; // 当前歌曲状态设为未播放
+          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
+        } else {
+          // 如果当前没有播放音乐或播放不同的音乐
+          if (this.audio) {
+            this.audio.pause(); // 暂停当前播放的音乐
+            // 
+            const previousSong = this.album.songs.find(s => s.songId === this.currentPlayingSongId);
+            if (previousSong) {
+              previousSong.playing = false;
+            }
+           }
+          const songUrl = `/api/player/file?songId=${song.songId}`;
+          this.audio = new Audio(song.songUrl); 
+          this.audio.play();
+          this.currentPlayingSongId = song.songId;
+        }
+        song.playing = !song.playing; // 切换播放状态
+      }catch (error) {
+          console.error('播放失败,请重试', error);
+          song.playing = false; 
+          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
+        }
       },
-      
-      formatDuration(duration) {
+     
+
+    formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
