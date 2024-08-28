@@ -43,7 +43,7 @@
         </div>
 
         <div class="pagination">
-            <button v-if="!showAllGenre" @click="showAllGenreSongs">查看更多流派推荐</button>
+            <button v-if="!showAllGenre" @click="showAllGenreSongs">查看更多推荐</button>
         </div>
 
         <!-- 常听歌手推荐歌曲 -->
@@ -90,7 +90,7 @@
 
         <!-- 分页控制 -->
         <div class="pagination">
-            <button v-if="!showAllArtist" @click="showAllArtistSongs">查看更多歌手推荐</button>
+            <button v-if="!showAllArtist" @click="showAllArtistSongs">查看更多推荐</button>
         </div>
     </div>
 </template>
