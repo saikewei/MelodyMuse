@@ -42,16 +42,18 @@
                 <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
 
                   <td>
-                    <!-- 添加播放按钮 -->
-                    <el-tooltip content="播放歌曲" placement="bottom">
-                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
-                           @mouseover="song.playHover = true"
-                           @mouseleave="song.playHover = false"
-                           @click="togglePlayIcon(song)"
-                           class="play-icon"
-                           alt="播放歌曲" />
-                    </el-tooltip>
-                    {{ index + 1 }}. {{ song.songName }}</td>
+                  <!-- 播放按钮 -->
+                  <el-tooltip content="播放歌曲" placement="bottom">
+                    <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                        @mouseover="song.playHover = true"
+                        @mouseleave="song.playHover = false"
+                        @click.stop="togglePlayIcon(song)"      
+                        
+                        class="play-icon"
+                        alt="播放歌曲" />
+                  </el-tooltip>
+                  {{ index + 1 }}. {{ song.songName }}
+                </td>
                <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                   <td>{{ song.artistName }}</td>
@@ -183,9 +185,27 @@
       },
       //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
-        const firstSongId = this.album.songs[0].songId;
-        this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
-      },
+    try {
+      // 获取第一首歌的 songId
+      const firstSong = this.album.songs[0];
+      const firstSongId = firstSong.songId;
+
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = this.album.songs.map(s => s.songId).join(',');
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: firstSongId, // 第一首歌的 songId
+          songList: songList
+        }
+      });
+
+    } catch (error) {
+      console.error('播放第一首歌曲失败:', error);
+    }
+  },
       //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
@@ -218,35 +238,27 @@
       },
 
       // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-      togglePlayIcon(song){
-      try{
-        if (this.currentPlayingSongId === song.songId && !this.audio.paused) {
-          // 如果当前正在播放同一首歌，则暂停音乐
-          this.audio.pause();
-          song.playing = false; // 当前歌曲状态设为未播放
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        } else {
-          // 如果当前没有播放音乐或播放不同的音乐
-          if (this.audio) {
-            this.audio.pause(); // 暂停当前播放的音乐
-            // 
-            const previousSong = this.album.songs.find(s => s.songId === this.currentPlayingSongId);
-            if (previousSong) {
-              previousSong.playing = false;
-            }
-           }
-          const songUrl = `/api/player/file?songId=${song.songId}`;
-          this.audio = new Audio(song.songUrl); 
-          this.audio.play();
-          this.currentPlayingSongId = song.songId;
-        }
-        song.playing = !song.playing; // 切换播放状态
-      }catch (error) {
-          console.error('播放失败,请重试', error);
-          song.playing = false; 
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        }
-      },
+      togglePlayIcon(song) {
+    try {
+      // 获取当前歌曲的 ID
+      const songId = song.songId;
+
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = this.album.songs.map(s => s.songId).join(',');
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      this.$router.push({ 
+        name: 'mediaplayer', 
+        params: { 
+          songId: songId, 
+          songList: songList 
+        } 
+      });
+
+    } catch (error) {
+      console.error('跳转播放页面失败:', error);
+    }
+  },
       
       // 将毫秒转换为分钟和秒
       formatDuration(duration) {

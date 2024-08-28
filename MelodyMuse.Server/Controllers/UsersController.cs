@@ -120,6 +120,7 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, errorResponse);
             }
         }
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
@@ -146,6 +147,7 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, "收藏时系统出现错误");
             }
         }
+        [Authorize]
          [HttpDelete("remove")]
         public async Task<IActionResult> RemoveUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
@@ -168,6 +170,7 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, "系统出现错误");
             }
         }
+        [Authorize]
         [HttpPost("addalbum")]
         public async Task<IActionResult> AddUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
         {
@@ -194,7 +197,7 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, "系统出现错误");
             }
         }
-
+        [Authorize]
         [HttpDelete("removealbum")]
         public async Task<IActionResult> RemoveUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
         {
