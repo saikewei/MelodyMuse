@@ -11,4 +11,5 @@ public interface ISonglistService
     Task<bool> DeleteSonglistAsync(string songlistId, string userId);
     Task<bool> AddSongToSonglistAsync(string songlistId, string songId, string userId);
     Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId);
+    Task<bool> UpdateSonglistAsync(string songlistId, string userId, CreateSonglistModel model);
 }

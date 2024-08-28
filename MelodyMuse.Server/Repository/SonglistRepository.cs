@@ -115,4 +115,15 @@ public class SonglistRepository : ISonglistRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<Songlist> GetSonglistByIdAsync(string songlistId)
+    {
+        return await _context.Songlists.FindAsync(songlistId);
+    }
+
+    public async Task UpdateSonglistAsync(Songlist songlist)
+    {
+        _context.Songlists.Update(songlist);
+        await _context.SaveChangesAsync();
+    }
 }

@@ -40,4 +40,21 @@ public class SonglistService : ISonglistService
     {
         return await _songlistRepository.DeleteSongFromSonglistAsync(songlistId, songId, userId);
     }
+    public async Task<bool> UpdateSonglistAsync(string songlistId, string userId, CreateSonglistModel model)
+    {
+        var songlist = await _songlistRepository.GetSonglistByIdAsync(songlistId);
+
+        if (songlist == null || songlist.UserId != userId)
+        {
+            return false;
+        }
+
+        // 更新歌单信息
+        songlist.SonglistName = model.SonglistName;
+        songlist.SonglistIspublic = model.IsPublic;
+
+        await _songlistRepository.UpdateSonglistAsync(songlist);
+
+        return true;
+    }
 }

@@ -199,7 +199,7 @@ namespace MelodyMuse.Server.Controllers
         [HttpDelete("{songlistId}/songs/{songId}/delete")]
         public async Task<IActionResult> DeleteSongFromSonglist(string songlistId, string songId)
         {
-            string userId="001";
+            string userId;
             try
             {
                 var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -217,6 +217,36 @@ namespace MelodyMuse.Server.Controllers
                 return Unauthorized();
             }
             var result = await _songlistService.DeleteSongFromSonglistAsync(songlistId, songId, userId);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+        // 修改歌单信息
+        [Authorize]
+        [HttpPut("{songlistId}/update")]
+        public async Task<IActionResult> UpdateSonglist(string songlistId, [FromBody] CreateSonglistModel model)
+        {
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+
+            var result = await _songlistService.UpdateSonglistAsync(songlistId, userId, model);
             if (!result)
             {
                 return NotFound();
