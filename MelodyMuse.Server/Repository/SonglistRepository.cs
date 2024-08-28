@@ -84,23 +84,37 @@ public class SonglistRepository : ISonglistRepository
         return true;
     }
 
-    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId, string userId)
+    public async Task<int> AddSongToSonglistAsync(string songlistId, string songId, string userId)
     {
         var songlist = await _context.Songlists
-             .Include(s => s.Songs)
-             .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+            .Include(s => s.Songs)
+            .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
 
-        if (songlist == null || songlist.UserId != userId) return false;
+        if (songlist == null || songlist.UserId != userId)
+        {
+            // 歌单不存在或用户不是创建者，返回 NotFound
+            return 404;
+        }
 
         var song = await _context.Songs.FindAsync(songId);
-        if (song == null) return false;
+        if (song == null)
+        {
+            // 歌曲不存在，返回 NotFound
+            return 404;
+        }
+
+        if (songlist.Songs.Any(s => s.SongId == songId))
+        {
+            // 如果歌曲已经在该歌单中，返回 Conflict (409)
+            return 409;
+        }
 
         songlist.Songs.Add(song);
         await _context.SaveChangesAsync();
-        return true;
+        return 201; // 成功添加，返回 Created 状态码
     }
 
-    public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId)
+        public async Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId)
     {
         var songlist = await _context.Songlists
             .Include(s => s.Songs)

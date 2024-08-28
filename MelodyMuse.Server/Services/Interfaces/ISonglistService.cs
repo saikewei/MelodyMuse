@@ -9,7 +9,7 @@ public interface ISonglistService
     Task<IEnumerable<Song>> GetSongsInSonglistAsync(string songlistId);
     Task<string> AddSonglistAsync(Songlist songlist);
     Task<bool> DeleteSonglistAsync(string songlistId, string userId);
-    Task<bool> AddSongToSonglistAsync(string songlistId, string songId, string userId);
+    Task<int> AddSongToSonglistAsync(string songlistId, string songId, string userId);
     Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId);
     Task<bool> UpdateSonglistAsync(string songlistId, string userId, CreateSonglistModel model);
 }

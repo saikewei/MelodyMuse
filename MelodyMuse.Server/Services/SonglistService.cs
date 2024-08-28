@@ -31,7 +31,7 @@ public class SonglistService : ISonglistService
         return await _songlistRepository.DeleteSonglistAsync(songlistId, userId);
     }
 
-    public async Task<bool> AddSongToSonglistAsync(string songlistId, string songId, string userId)
+    public async Task<int> AddSongToSonglistAsync(string songlistId, string songId, string userId)
     {
         return await _songlistRepository.AddSongToSonglistAsync(songlistId, songId, userId);
     }
