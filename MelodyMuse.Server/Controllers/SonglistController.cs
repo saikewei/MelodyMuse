@@ -201,27 +201,27 @@ namespace MelodyMuse.Server.Controllers
         }
 
         // 从歌单中删除歌曲
-        //[Authorize]
+        [Authorize]
         [HttpDelete("{songlistId}/songs/{songId}/delete")]
         public async Task<IActionResult> DeleteSongFromSonglist(string songlistId, string songId)
         {
-            string userId = "001";
-            //try
-            //{
-            //    var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            //    if (token == null)
-            //    {
-            //        return Unauthorized();
-            //    }
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
 
-            //    userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("token错误！" + ex);
-            //    return Unauthorized();
-            //}
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
             var result = await _songlistService.DeleteSongFromSonglistAsync(songlistId, songId, userId);
             if (!result)
             {
