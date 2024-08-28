@@ -3,7 +3,7 @@
 
       <!-- 编辑歌单按钮 -->
     <div class="header-section">
-      <el-button type="primary" @click="openEditDialog">创建歌单</el-button>
+      <el-button type="primary" @click="openCreateDialog">创建歌单</el-button>
     </div>
 
     <!-- 分隔线 -->
@@ -18,9 +18,10 @@
               <p>{{ playlist.description }}</p>
             </div>
             <div class="playlist-footer">
-                <el-button type="primary">顺序播放</el-button>
-                <el-button type="primary" @click="viewDetails(playlist)">歌单详情</el-button>
-                <el-button type="danger" @click="confirmDelete(playlist.songlistId)">删除歌单</el-button>
+                <el-button type="success">播放</el-button>
+                <el-button type="primary" @click="openEditDialog(playlist)">编辑</el-button>
+                <el-button type="primary" @click="viewDetails(playlist)">详情</el-button>
+                <el-button type="danger" @click="confirmDelete(playlist.songlistId)">删除</el-button>
             </div>
           </el-card>
         </el-col>
@@ -96,10 +97,16 @@ const viewDetails = (playlist: Playlist) => {
   // 你可以在这里实现查看歌单详细信息的逻辑
 }
 
-const openEditDialog = () => {
-  currentPlaylist.value = {} // 重置当前歌单
-  dialogVisible.value = true
-}
+const openCreateDialog = () => {
+  currentPlaylist.value = {}; // 重置当前歌单
+  dialogVisible.value = true;
+};
+
+const openEditDialog = (playlist: Playlist) => {
+  currentPlaylist.value = { ...playlist }; // 填充当前歌单数据
+  dialogVisible.value = true;
+};
+
 
 const confirmDelete = async (songlistId: number) => {
   try {
@@ -134,13 +141,16 @@ const savePlaylist = async () => {
           SonglistName: currentPlaylist.value.songlistName,
           IsPublic: currentPlaylist.value.isPublic?'1':'0'
         }
+        console.log(payload)
         if (currentPlaylist.value.songlistId) {
-          await api.apiClient.put(`/api/songlist/update/${currentPlaylist.value.songlistId}`, payload)
+          // 编辑模式
+          await api.apiClient.put(`/api/songlist/${currentPlaylist.value.songlistId}/update`, payload);
+          ElMessage.success('歌单编辑成功');
         } else {
-          console.log(payload)
-          await api.apiClient.post('/api/songlist/add', payload)
+          // 创建模式
+          await api.apiClient.post('/api/songlist/add', payload);
+          ElMessage.success('歌单创建成功');
         }
-        ElMessage.success('歌单创建成功')
         fetchSongList() // 刷新歌单列表
         dialogVisible.value = false
       } catch (error) {
