@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using TencentCloud.Ame.V20190916.Models;
 using TencentCloud.Tcr.V20190924.Models;
 
 
@@ -27,13 +28,15 @@ namespace MelodyMuse.Server.Controllers
         private readonly IRecommendService _recommendService;
         private readonly ISearchService _searchService;
         private readonly IUsersService _usersService;
+        private readonly IArtistService _artistService;
 
         // 构造函数: 初始化(传入相应的服务)接口
-        public RecommendController(IRecommendService recommendService, IUsersService usersService, ISearchService searchService)
+        public RecommendController(IRecommendService recommendService, IUsersService usersService, ISearchService searchService, IArtistService artistService)
         {
             _recommendService = recommendService;
             _usersService = usersService;
             _searchService = searchService;
+            _artistService = artistService;
         }
 
         //根据id获取播放数据
@@ -71,8 +74,132 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound(errorResponse);
             }
         }
-        //根据id进行歌曲推荐
+        //根据id进行歌手歌曲推荐
         [Authorize]
+        [HttpGet]
+        [Route("byart/{userId}")]
+        public async Task<IActionResult> RecommendSongsbyArt(string userId)
+        {
+            try
+            {
+                // 获取用户信息
+                var user = await _usersService.GetUserById(userId);
+                if (user == null)
+                {
+                    return NotFound(new { msg = "用户不存在" });
+                }
+
+                // 获取用户播放数据
+                var userPlayCounts = await _recommendService.GetSongPlayCountById(userId);
+                if (userPlayCounts == null || !userPlayCounts.Any())
+                {
+                    return NotFound(new { msg = "没有播放数据" });
+                }
+
+                // 提取所有歌曲的ID
+                var songIds = userPlayCounts.Select(pc => pc.SongId).Distinct();
+
+                var artistPlayCounts = new Dictionary<string, decimal>();
+
+                // 根据歌曲ID获取艺术家ID
+                foreach (var songId in songIds)
+                {
+                    var artists = await _searchService.GetArtistsBySongId(songId);
+                    decimal playCount = userPlayCounts.First(pc => pc.SongId == songId).Count.GetValueOrDefault();
+
+                    // 对每个艺术家进行处理
+                    foreach (var artist in artists)
+                    {
+                        if (playCount > 0)
+                        {
+                            if (artistPlayCounts.ContainsKey(artist.ArtistId))
+                            {
+                                artistPlayCounts[artist.ArtistId] += playCount;
+                            }
+                            else
+                            {
+                                artistPlayCounts[artist.ArtistId] = playCount;
+                            }
+                        }
+                    }
+                }
+                var topArtistIds = artistPlayCounts
+                    .OrderByDescending(apc => apc.Value)
+                    .Take(2)
+                    .Select(apc => apc.Key)
+                    .ToList();
+
+                // 如果不满两个艺术家，随机补充
+                var random = new Random();
+                while (topArtistIds.Count < 2)
+                {
+                    var randomArtistId = random.Next(5, 121).ToString();
+                    if (!topArtistIds.Contains(randomArtistId))
+                    {
+                        topArtistIds.Add(randomArtistId);
+                    }
+                }
+
+                // 根据最受欢迎的艺术家ID获取其歌曲
+                var recommendedSongs = new List<Song>();
+                foreach (var artistId in topArtistIds)
+                {
+                    var songsByArtist = await _artistService.GetSongsByArtistIdAsync(artistId);
+                    if (songsByArtist != null && songsByArtist.Any())
+                    {
+                        recommendedSongs.AddRange(songsByArtist);
+                    }
+                }
+                //以下为获取歌曲的歌手
+                var songModelList = new List<SongModel>();
+
+                foreach (var song in recommendedSongs)
+                {
+                    // 获取每首歌的艺术家
+                    var artists = await _searchService.GetArtistsBySongId(song.SongId);
+
+                    // 创建 SongWithArtists 对象并填充数据
+                    var songModelArtists = new SongModel
+                    {
+                        SongId = song.SongId,
+                        SongName = song.SongName,
+                        SongGenre = song.SongGenre,
+                        Duration = song.Duration,
+                        Lyrics = song.Lyrics,
+                        SongDate = song.SongDate,
+                        ComposerId = song.ComposerId,
+                        Status = song.Status,
+                        Artists = artists?.Select(a => new Models.Artist
+                        {
+                            ArtistId = a.ArtistId,
+                            ArtistName = a.ArtistName,
+                            ArtistBirthday = a.ArtistBirthday,
+                            ArtistIntro = a.ArtistIntro,
+                            ArtistGenre = a.ArtistGenre,
+                            ArtistFansNum = a.ArtistFansNum
+                        }).ToList() // 如果 artists 为 null，结果也将为 null
+                    };
+
+                    // 将结果添加到列表中
+                    songModelList.Add(songModelArtists);
+                }
+                return Ok(songModelList);
+
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    msg = "查询失败: " + ex.Message
+                };
+                return StatusCode(500, errorResponse); // 返回500内部服务器错误
+            }
+        }
+
+
+
+        //根据id进行歌曲推荐
+        //[Authorize]
         [HttpGet]
         [Route("{userId}")]
         public async Task<IActionResult> RecommendSongs(string userId)
@@ -201,7 +328,7 @@ namespace MelodyMuse.Server.Controllers
                         SongDate = song.SongDate,
                         ComposerId = song.ComposerId,
                         Status = song.Status,
-                        Artists = artists?.Select(a => new Artist
+                        Artists = artists?.Select(a => new Models.Artist
                         {
                             ArtistId = a.ArtistId,
                             ArtistName = a.ArtistName,

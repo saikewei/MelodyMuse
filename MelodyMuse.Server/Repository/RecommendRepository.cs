@@ -5,7 +5,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MelodyMuse.Server.Repository
 {
-    public class RecommendRepository: IRecommendRepository
+    public class RecommendRepository : IRecommendRepository
     {
         private readonly ModelContext _context;
 
