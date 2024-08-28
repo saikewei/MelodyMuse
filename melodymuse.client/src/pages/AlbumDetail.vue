@@ -256,9 +256,11 @@
       try {
         if (this.isLiked) {
           await api.apiClient.delete(`/api/users/removealbum`, {
-            userId: this.userId, 
-            albumId: this.albumId
-          });
+            data: {
+          userId: this.userId,
+          albumId: this.albumId
+        }
+      });
           this.isLiked = false;//取消收藏
         } else {
           await api.apiClient.post(`/api/users/addalbum`, {
