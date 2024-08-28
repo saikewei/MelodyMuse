@@ -47,11 +47,12 @@
                       <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
                            @mouseover="song.playHover = true"
                            @mouseleave="song.playHover = false"
-                           @click="togglePlayIcon(song)"
+                           @click="togglePlayIcon(song)" 
                            class="play-icon"
                            alt="播放歌曲" />
                     </el-tooltip>
                   {{ index + 1 }}. {{ song.songName }}</td>
+                 <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                 <td>{{ song.albumNameName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
@@ -217,7 +218,7 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('收藏失败,请重试', error);
+          console.error('操作失败,请重试', error);
           song.liked = !song.liked; // 收藏失败，恢复到之前的状态
         }
       },
@@ -252,7 +253,6 @@
           this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
         }
       },
-
       
 
       //实现关注和取消关注
