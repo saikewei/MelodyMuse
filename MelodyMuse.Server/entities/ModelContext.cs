@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace MelodyMuse.Server.Models;
+namespace MelodyMuse.Server.models;
 
 public partial class ModelContext : DbContext
 {
@@ -18,6 +18,8 @@ public partial class ModelContext : DbContext
     public virtual DbSet<Album> Albums { get; set; }
 
     public virtual DbSet<Artist> Artists { get; set; }
+
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Playlist> Playlists { get; set; }
 
@@ -121,6 +123,39 @@ public partial class ModelContext : DbContext
                 .HasConstraintName("FK_USERID");
         });
 
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.HasKey(e => e.FeedbackId).HasName("SYS_C008034");
+
+            entity.ToTable("FEEDBACK");
+
+            entity.Property(e => e.FeedbackId)
+                .HasColumnType("NUMBER")
+                .HasColumnName("FEEDBACK_ID");
+            entity.Property(e => e.ProcessingStatus)
+                .HasColumnType("NUMBER")
+                .HasColumnName("PROCESSING_STATUS");
+            entity.Property(e => e.Reply)
+                .HasMaxLength(2000)
+                .IsUnicode(false)
+                .HasColumnName("REPLY");
+            entity.Property(e => e.Substance)
+                .HasMaxLength(2000)
+                .IsUnicode(false)
+                .HasColumnName("SUBSTANCE");
+            entity.Property(e => e.Time)
+                .HasColumnType("DATE")
+                .HasColumnName("TIME");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("USER_ID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_USER");
+        });
+
         modelBuilder.Entity<Playlist>(entity =>
         {
             entity.HasKey(e => new { e.UserId, e.SongId }).HasName("SYS_C007563");
@@ -205,7 +240,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("SONG_GENRE");
             entity.Property(e => e.SongName)
-                .HasMaxLength(20)
+                .HasMaxLength(40)
                 .IsUnicode(false)
                 .HasColumnName("SONG_NAME");
             entity.Property(e => e.Status)

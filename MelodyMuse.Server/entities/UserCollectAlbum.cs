@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MelodyMuse.Server.Models;
+namespace MelodyMuse.Server.models;
 
 public partial class UserCollectAlbum
 {

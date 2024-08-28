@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MelodyMuse.Server.Models;
+namespace MelodyMuse.Server.models;
 
 public partial class User
 {
@@ -24,6 +24,8 @@ public partial class User
     public string? UserStatus { get; set; }
 
     public virtual ICollection<Artist> Artists { get; set; } = new List<Artist>();
+
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
 
