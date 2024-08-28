@@ -276,6 +276,7 @@
       } catch (error) {
         console.error('切换收藏状态失败:', error);
         this.isLiked = !this.isLiked;
+        this.$forceUpdate(); // 强制更新视图
       }
     },
   },
