@@ -201,9 +201,11 @@
         try {
           if (song.liked) {
             // 如果已收藏，发送请求删除收藏
-            await api.apiClient.post(`/api/users/remove`, {
+            await api.apiClient.delete(`/api/users/remove`, {
+              data:{
               userId: this.userId,
               songId: song.songId
+              }
             });
             song.liked = false;
           } else {

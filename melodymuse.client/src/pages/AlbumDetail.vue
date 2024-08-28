@@ -52,6 +52,7 @@
                            alt="播放歌曲" />
                     </el-tooltip>
                     {{ index + 1 }}. {{ song.songName }}</td>
+               <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
@@ -195,9 +196,11 @@
         try {
           if (song.liked) {
             // 如果已收藏，发送请求删除收藏
-            await api.apiClient.post(`/api/users/remove`, {
+            await api.apiClient.delete(`/api/users/remove`, {
+              data: {
               userId: this.userId,
               songId: song.songId
+              }
             });
             song.liked = false;
           } else {
@@ -209,7 +212,7 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('收藏失败,请重试', error);
+          console.error('操作失败,请重试', error);
           song.liked = !song.liked; // 收藏失败，恢复到之前的状态
         }
       },
