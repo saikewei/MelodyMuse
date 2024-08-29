@@ -207,10 +207,10 @@
     }
   },
       //用户点击歌单任意歌曲，通过songId切换到播放页面
-      playSong(songId) {
+      /*playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
-
+      */
       //收藏方法
       async toggleLikeIcon(song) {
         try {

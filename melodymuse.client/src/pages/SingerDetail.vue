@@ -54,7 +54,7 @@
                   {{ index + 1 }}. {{ song.songName }}</td>
                  <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
-                <td>{{ song.albumNameName }}</td>
+                <td>{{ song.albumName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
               
                   <!-- 添加收藏按钮 -->
@@ -208,11 +208,11 @@
     }
   },
 
-      //用户点击歌单任意歌曲，通过songId切换到播放页面
+    /*  //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
-
+    */
     //收藏方法
     async toggleLikeIcon(song) {
         try {
