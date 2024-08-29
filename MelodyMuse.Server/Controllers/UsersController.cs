@@ -120,6 +120,130 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, errorResponse);
             }
         }
+        [Authorize]
+        [HttpPost("add")]
+        public async Task<IActionResult> AddUserCollectSong([FromBody] AddUserCollectSongDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.SongId))
+            {
+                return BadRequest("请求数据为空");
+            }
+
+            try
+            {
+                await _usersService.AddUserCollectSongAsync(dto.UserId, dto.SongId);
+                return Ok("歌曲成功收藏");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "收藏时系统出现错误");
+            }
+        }
+        [Authorize]
+         [HttpDelete("remove")]
+        public async Task<IActionResult> RemoveUserCollectSong([FromBody] AddUserCollectSongDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.SongId))
+            {
+                return BadRequest("请求数据为空");
+            }
+
+            try
+            {
+                await _usersService.RemoveUserCollectSongAsync(dto.UserId, dto.SongId);
+                return Ok("歌曲成功取消收藏");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "系统出现错误");
+            }
+        }
+        [Authorize]
+        [HttpPost("addalbum")]
+        public async Task<IActionResult> AddUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.AlbumId))
+            {
+                return BadRequest("请求数据为空");
+            }
+
+            try
+            {
+                await _usersService.AddUserCollectAlbumAsync(dto.UserId, dto.AlbumId);
+                return Ok("专辑已成功收藏.");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "系统出现错误");
+            }
+        }
+        [Authorize]
+        [HttpDelete("removealbum")]
+        public async Task<IActionResult> RemoveUserCollectAlbum([FromBody] AddUserCollectAlbumDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.AlbumId))
+            {
+                return BadRequest("请求数据为空.");
+            }
+
+            try
+            {
+                await _usersService.RemoveUserCollectAlbumAsync(dto.UserId, dto.AlbumId);
+                return Ok("专辑已成功取消收藏");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "系统出现错误");
+            }
+        }
+        [Authorize]
+         [HttpGet("user/{userId}/albums")]
+        public async Task<ActionResult<List<Album>>> GetUserCollectedAlbums(string userId)
+        {
+            var albums = await _usersService.GetUserCollectedAlbumsAsync(userId);
+
+            if (albums == null || albums.Count == 0)
+            {
+                return NotFound("本用户没有收藏的专辑");
+            }
+
+            return Ok(albums);
+        }
+        [Authorize]
+         [HttpGet("collectsong/{userId}")]
+        public async Task<ActionResult<List<Song>>> GetCollectedSongsByUserId(string userId)
+        {
+            var songs = await _usersService.GetCollectedSongsByUserId(userId);
+            if (songs == null || songs.Count == 0)
+            {
+                return NotFound("No songs found for this user.");
+            }
+            return Ok(songs);
+        }
     }
 }
 

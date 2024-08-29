@@ -14,6 +14,13 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<List<User>> GetAllUsers();
         // 更新用户资料
         Task UpdateUserAsync(User user);
-
+        Task AddUserCollectSongAsync(UserCollectSong userCollectSong);
+        Task<UserCollectSong?> GetUserCollectSongAsync(string userId, string songId);
+        Task RemoveUserCollectSongAsync(UserCollectSong userCollectSong); // 新增
+                Task AddUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum);
+        Task<UserCollectAlbum?> GetUserCollectAlbumAsync(string userId, string albumId);
+        Task RemoveUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum);
+        Task<List<Album>> GetUserCollectedAlbumsAsync(string userId);
+        Task<List<Song>> GetCollectedSongsByUserId(string userId);
     }
 }

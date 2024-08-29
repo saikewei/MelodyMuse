@@ -122,6 +122,13 @@ namespace MelodyMuse.Server.Repository
 
             return albumDtos;
         }
+         public async Task<Album> GetAlbumAsync(string albumId)
+    {
+        return await _context.Albums
+            .Include(a => a.Artist) // 包含关联的 Artist
+            .Include(a => a.Songs) // 包含关联的 Songs
+            .FirstOrDefaultAsync(a => a.AlbumId == albumId);
+    }
 
     }
 

@@ -19,6 +19,7 @@ import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
 import Test from "@/pages/test.vue";
+import AlbumDetail from "../pages/AlbumDetail.vue";
 
 const routes = [
   {
@@ -87,11 +88,13 @@ const routes = [
     component: UserManage, //?????????????????????
   },
   {
-    path: "/mediaplayer/:songId",
+    path: "/mediaplayer/:songId/:songList",
+    //eg:  /mediaplayer/1cd134c4-c/1cd134c4-c,6adb0c3a-c
     name: "mediaplayer",
     component: mediaplayer,
   },
   {
+    //path: "/SingerDetail/",//调试用
     path: "/SingerDetail/:artistId",
     name: "SingerDetail",
     component: SingerDetail,
@@ -116,6 +119,12 @@ const routes = [
     path: "/test",
     name: "test",
     component: Test,
+  },
+  {
+    path: "/AlbumDetail/:albumId",
+    //path: "/AlbumDetail",//调试用
+    name: "AlbumDetail",
+    component: AlbumDetail,
   },
 ];
 
