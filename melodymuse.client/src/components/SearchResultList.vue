@@ -94,7 +94,7 @@
         <div v-else class="no-results">
             抱歉，没有找到相关结果
         </div>
-        <el-dialog v-model="dialogAddVisible" width="500px" >
+        <el-dialog v-model="dialogAddVisible" width="500px" v-if="dialogAddVisible">
             <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose"/>
         </el-dialog>
     </div>

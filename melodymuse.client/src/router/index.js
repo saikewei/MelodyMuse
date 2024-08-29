@@ -20,6 +20,7 @@ import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
 import Test from "@/pages/test.vue";
 import AlbumDetail from "../pages/AlbumDetail.vue";
+import SonglistDetail from "@/pages/SonglistDetail.vue";
 
 const routes = [
   {
@@ -125,6 +126,12 @@ const routes = [
     //path: "/AlbumDetail",//调试用
     name: "AlbumDetail",
     component: AlbumDetail,
+  },
+  {
+    path: "/SonglistDetail",
+    //path: "/AlbumDetail",//调试用
+    name: "SonglistDetail",
+    component: SonglistDetail,
   },
 ];
 
