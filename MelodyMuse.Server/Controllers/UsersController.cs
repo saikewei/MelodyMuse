@@ -220,6 +220,30 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, "系统出现错误");
             }
         }
+        [Authorize]
+         [HttpGet("user/{userId}/albums")]
+        public async Task<ActionResult<List<Album>>> GetUserCollectedAlbums(string userId)
+        {
+            var albums = await _usersService.GetUserCollectedAlbumsAsync(userId);
+
+            if (albums == null || albums.Count == 0)
+            {
+                return NotFound("本用户没有收藏的专辑");
+            }
+
+            return Ok(albums);
+        }
+        [Authorize]
+         [HttpGet("collectsong/{userId}")]
+        public async Task<ActionResult<List<Song>>> GetCollectedSongsByUserId(string userId)
+        {
+            var songs = await _usersService.GetCollectedSongsByUserId(userId);
+            if (songs == null || songs.Count == 0)
+            {
+                return NotFound("No songs found for this user.");
+            }
+            return Ok(songs);
+        }
     }
 }
 

@@ -17,5 +17,7 @@ namespace MelodyMuse.Server.Services.Interfaces
         Task RemoveUserCollectSongAsync(string userId, string songId); // 新增
                 Task AddUserCollectAlbumAsync(string userId, string albumId);
         Task RemoveUserCollectAlbumAsync(string userId, string albumId);
+        Task<List<Album>> GetUserCollectedAlbumsAsync(string userId);
+        Task<List<Song>> GetCollectedSongsByUserId(string userId);
     }
 }
