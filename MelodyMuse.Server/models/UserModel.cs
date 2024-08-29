@@ -30,4 +30,13 @@ public class AddUserCollectAlbumDto
         public string UserId { get; set; } = null!;
         public string AlbumId { get; set; } = null!;
     }
+public class UserCollectedSongDto
+{
+    public string SongId { get; set; }
+    public string SongName { get; set; }
+    public decimal Duration { get; set; }  // 修改为 decimal 以匹配 Song 实体中的类型
+    public string ArtistName { get; set; }
+}
+
+
 }

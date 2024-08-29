@@ -21,6 +21,6 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<UserCollectAlbum?> GetUserCollectAlbumAsync(string userId, string albumId);
         Task RemoveUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum);
         Task<List<Album>> GetUserCollectedAlbumsAsync(string userId);
-        Task<List<Song>> GetCollectedSongsByUserId(string userId);
+        Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId);
     }
 }

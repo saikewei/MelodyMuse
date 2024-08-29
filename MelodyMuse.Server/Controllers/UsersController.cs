@@ -235,12 +235,12 @@ namespace MelodyMuse.Server.Controllers
         }
         [Authorize]
          [HttpGet("collectsong/{userId}")]
-        public async Task<ActionResult<List<Song>>> GetCollectedSongsByUserId(string userId)
+public async Task<ActionResult<List<UserCollectedSongDto>>> GetCollectedSongsByUserId(string userId)
         {
             var songs = await _usersService.GetCollectedSongsByUserId(userId);
             if (songs == null || songs.Count == 0)
             {
-                return NotFound("No songs found for this user.");
+                return NotFound("没有收藏的歌曲.");
             }
             return Ok(songs);
         }

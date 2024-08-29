@@ -18,6 +18,6 @@ namespace MelodyMuse.Server.Services.Interfaces
                 Task AddUserCollectAlbumAsync(string userId, string albumId);
         Task RemoveUserCollectAlbumAsync(string userId, string albumId);
         Task<List<Album>> GetUserCollectedAlbumsAsync(string userId);
-        Task<List<Song>> GetCollectedSongsByUserId(string userId);
+       Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId);
     }
 }
