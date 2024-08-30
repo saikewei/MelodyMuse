@@ -112,7 +112,6 @@
             return {
                 genreSongs: [], // 流派推荐歌曲列表
                 artistSongs: [], // 歌手推荐歌曲列表
-                userId: null, // 用户ID
                 showAllGenre: false, // 是否显示所有流派推荐的歌曲
                 showAllArtist: false, // 是否显示所有歌手推荐的歌曲
                 // 图标
@@ -137,17 +136,45 @@
         },
         async created() {
             try {
-                // 获取用户ID
-                const userResponse = await api.apiClient.get('/api/users/getNow');
-                this.userId = userResponse.data.userId;
-
                 // 获取流派推荐歌曲
-                const genreResponse = await api.apiClient.get(`/api/recommend/${this.userId}`);
-                this.genreSongs = genreResponse.data;
+                const genreResponse = await api.apiClient.get(`/api/recommend/bygenre`);
+                this.genreSongs = genreResponse.data.result; 
+                // 获取每个专辑的封面图
+                for (const song of this.genreSongs) {
+                    const albumId = song.albumId;
+                    if (albumId) {
+                        try {
+                            const genreJpgResponse = await api.apiClient.get('/api/player/jpg', {
+                                params: { albumId },
+                                responseType: 'blob'
+                            });
+                            song.albumCover = URL.createObjectURL(genreJpgResponse.data);
+                        } catch (error) {
+                            console.error(`Error fetching cover for album ID ${albumId}:`, error);
+                            song.albumCover = null;
+                        }
+                    }
+                }
 
                 // 获取歌手推荐歌曲
-                const artistResponse = await api.apiClient.get(`/api/recommend/byart/${this.userId}`);
-                this.artistSongs = artistResponse.data;
+                const artistResponse = await api.apiClient.get(`/api/recommend/byartist`);
+                this.artistSongs = artistResponse.data.result;
+                // 获取每个专辑的封面图
+                for (const song of this.artistSongs) {
+                    const albumId = song.albumId;
+                    if (albumId) {
+                        try {
+                            const artistJpgResponse = await api.apiClient.get('/api/player/jpg', {
+                                params: { albumId },
+                                responseType: 'blob'
+                            });
+                            song.albumCover = URL.createObjectURL(artistJpgResponse.data);
+                        } catch (error) {
+                            console.error(`Error fetching cover for album ID ${albumId}:`, error);
+                            song.albumCover = null;
+                        }
+                    }
+                }
 
             } catch (error) {
                 console.error('Error fetching recommended songs:', error);

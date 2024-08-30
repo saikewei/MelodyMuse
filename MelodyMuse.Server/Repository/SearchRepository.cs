@@ -87,7 +87,7 @@ namespace MelodyMuse.Server.Repository
             }
 
             var songs = await _context.Songs
-                .Where(s => s.Lyrics.Contains(query))
+                .Where(predicate: s => s.Lyrics.Contains(query))
                 .ToListAsync();
 
             var result = new List<SongSearchModel>();

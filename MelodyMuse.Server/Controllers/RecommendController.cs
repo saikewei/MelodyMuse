@@ -2,8 +2,11 @@
 * 与歌曲推荐功能有关的api
 */
 
+using FluentFTP;
+using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
+using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services;
 using MelodyMuse.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -26,17 +29,14 @@ namespace MelodyMuse.Server.Controllers
     {
         // 维护到下层服务的接口
         private readonly IRecommendService _recommendService;
-        private readonly ISearchService _searchService;
         private readonly IUsersService _usersService;
-        private readonly IArtistService _artistService;
 
         // 构造函数: 初始化(传入相应的服务)接口
-        public RecommendController(IRecommendService recommendService, IUsersService usersService, ISearchService searchService, IArtistService artistService)
+        public RecommendController(IRecommendService recommendService,
+            IUsersService usersService)
         {
             _recommendService = recommendService;
             _usersService = usersService;
-            _searchService = searchService;
-            _artistService = artistService;
         }
 
         //根据id获取播放数据
@@ -74,14 +74,34 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound(errorResponse);
             }
         }
+
         //根据id进行歌手歌曲推荐
         [Authorize]
         [HttpGet]
-        [Route("byart/{userId}")]
-        public async Task<IActionResult> RecommendSongsbyArt(string userId)
+        [Route("byartist")]
+        public async Task<IActionResult> RecommendSongsbyArtist()
         {
             try
             {
+                // 从请求头中获取 JWT 令牌
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                // 如果没有令牌，返回未授权错误码401
+                if (token == null)
+                {
+                    return Unauthorized(new { msg = "未提供令牌" });
+                }
+
+                // 解析 JWT 令牌，得到存储的信息
+                var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+                // 检查解析结果是否为空
+                if (parsedToken == null)
+                {
+                    return Unauthorized(new { msg = "令牌无效" });
+                }
+
+                string userId = parsedToken.UserID;
                 // 获取用户信息
                 var user = await _usersService.GetUserById(userId);
                 if (user == null)
@@ -89,100 +109,8 @@ namespace MelodyMuse.Server.Controllers
                     return NotFound(new { msg = "用户不存在" });
                 }
 
-                // 获取用户播放数据
-                var userPlayCounts = await _recommendService.GetSongPlayCountById(userId);
-                if (userPlayCounts == null || !userPlayCounts.Any())
-                {
-                    return NotFound(new { msg = "没有播放数据" });
-                }
+                var songModelList = _recommendService.RecommendSongsbyArtist(userId);
 
-                // 提取所有歌曲的ID
-                var songIds = userPlayCounts.Select(pc => pc.SongId).Distinct();
-
-                var artistPlayCounts = new Dictionary<string, decimal>();
-
-                // 根据歌曲ID获取艺术家ID
-                foreach (var songId in songIds)
-                {
-                    var artists = await _searchService.GetArtistsBySongId(songId);
-                    decimal playCount = userPlayCounts.First(pc => pc.SongId == songId).Count.GetValueOrDefault();
-
-                    // 对每个艺术家进行处理
-                    foreach (var artist in artists)
-                    {
-                        if (playCount > 0)
-                        {
-                            if (artistPlayCounts.ContainsKey(artist.ArtistId))
-                            {
-                                artistPlayCounts[artist.ArtistId] += playCount;
-                            }
-                            else
-                            {
-                                artistPlayCounts[artist.ArtistId] = playCount;
-                            }
-                        }
-                    }
-                }
-                var topArtistIds = artistPlayCounts
-                    .OrderByDescending(apc => apc.Value)
-                    .Take(2)
-                    .Select(apc => apc.Key)
-                    .ToList();
-
-                // 如果不满两个艺术家，随机补充
-                var random = new Random();
-                while (topArtistIds.Count < 2)
-                {
-                    var randomArtistId = random.Next(5, 121).ToString();
-                    if (!topArtistIds.Contains(randomArtistId))
-                    {
-                        topArtistIds.Add(randomArtistId);
-                    }
-                }
-
-                // 根据最受欢迎的艺术家ID获取其歌曲
-                var recommendedSongs = new List<Song>();
-                foreach (var artistId in topArtistIds)
-                {
-                    var songsByArtist = await _artistService.GetSongsByArtistIdAsync(artistId);
-                    if (songsByArtist != null && songsByArtist.Any())
-                    {
-                        recommendedSongs.AddRange(songsByArtist);
-                    }
-                }
-                //以下为获取歌曲的歌手
-                var songModelList = new List<SongModel>();
-
-                foreach (var song in recommendedSongs)
-                {
-                    // 获取每首歌的艺术家
-                    var artists = await _searchService.GetArtistsBySongId(song.SongId);
-
-                    // 创建 SongWithArtists 对象并填充数据
-                    var songModelArtists = new SongModel
-                    {
-                        SongId = song.SongId,
-                        SongName = song.SongName,
-                        SongGenre = song.SongGenre,
-                        Duration = song.Duration,
-                        Lyrics = song.Lyrics,
-                        SongDate = song.SongDate,
-                        ComposerId = song.ComposerId,
-                        Status = song.Status,
-                        Artists = artists?.Select(a => new Models.Artist
-                        {
-                            ArtistId = a.ArtistId,
-                            ArtistName = a.ArtistName,
-                            ArtistBirthday = a.ArtistBirthday,
-                            ArtistIntro = a.ArtistIntro,
-                            ArtistGenre = a.ArtistGenre,
-                            ArtistFansNum = a.ArtistFansNum
-                        }).ToList() // 如果 artists 为 null，结果也将为 null
-                    };
-
-                    // 将结果添加到列表中
-                    songModelList.Add(songModelArtists);
-                }
                 return Ok(songModelList);
 
             }
@@ -199,18 +127,34 @@ namespace MelodyMuse.Server.Controllers
 
 
         //根据id进行歌曲推荐
-        //[Authorize]
+        [Authorize]
         [HttpGet]
-        [Route("{userId}")]
-        public async Task<IActionResult> RecommendSongs(string userId)
+        [Route("bygenre")]
+        public async Task<IActionResult> RecommendSongsById()
         {
             try
             {
+                // 从请求头中获取 JWT 令牌
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                // 如果没有令牌，返回未授权错误码401
+                if (token == null)
+                {
+                    return Unauthorized(new { msg = "未提供令牌" });
+                }
+
+                // 解析 JWT 令牌，得到存储的信息
+                var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+                // 检查解析结果是否为空
+                if (parsedToken == null)
+                {
+                    return Unauthorized(new { msg = "令牌无效" });
+                }
+
+                string userId = parsedToken.UserID;
                 //随机数
                 var random = new Random();
-
-                //获取30个推荐歌曲//待更改
-                //var recommendedSongs = unplayedSongs.OrderBy(x => random.Next()).Take(30).ToList();
 
                 var user = await _usersService.GetUserById(userId);
                 if (user == null)
@@ -219,129 +163,7 @@ namespace MelodyMuse.Server.Controllers
                     return NotFound(new { msg = "用户不存在" });
                 }
 
-                // 获取用户播放数据
-                var userPlayCounts = await _recommendService.GetSongPlayCountById(userId);
-
-                //由于卡顿，改为50个
-                // 获取所有歌曲列表
-                var allSongs = await _recommendService.GetAllSongs();
-
-                // 提取用户已经播放过的歌曲ID列表
-                var playedSongsIds = userPlayCounts.Select(spc => spc.SongId).ToList();
-
-                // 从所有歌曲中过滤掉已经播放过的歌曲
-                var playedSongs = allSongs.Where(song => playedSongsIds.Contains(song.SongId)).ToList();
-                //var unplayedSongs = allSongs.Where(song => !playedSongsIds.Contains(song.SongId)).ToList();
-
-
-                // 使用 HashSet 来存储推荐歌曲，避免重复
-                var recommendedSongsSet = new HashSet<Song>();
-
-                // 获取用户最常听的流派
-                var preferredGenres = playedSongs
-                    .GroupBy(song => song.SongGenre)
-                    .OrderByDescending(g => g.Count())
-                    .Select(g => g.Key)
-                    .Take(3) // 取前3个最常听的流派
-                    .ToList();
-
-                // 推荐随机歌曲中符合用户流派的歌曲
-                var genreBasedSongs = allSongs
-                    .Where(song => preferredGenres.Contains(song.SongGenre))
-                    .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                    .Take(15) // 取前15首
-                    .ToList();
-
-                // 将符合流派的歌曲添加到 HashSet
-                foreach (var song in genreBasedSongs)
-                {
-                    recommendedSongsSet.Add(song);
-                }
-
-                // 如果流派推荐的歌曲不足15个，则补充推荐
-                if (recommendedSongsSet.Count < 15)
-                {
-                    // 从未播放的歌曲中补充推荐（包括其他流派）
-                    var additionalSongs = allSongs
-                        .Where(song => !recommendedSongsSet.Contains(song)) // 确保不重复
-                        .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                        .Take(15 - recommendedSongsSet.Count) // 补充到20个
-                        .ToList();
-
-                    // 将补充歌曲添加到 HashSet
-                    foreach (var song in additionalSongs)
-                    {
-                        recommendedSongsSet.Add(song);
-                    }
-                }
-
-                // 如果流派推荐和补充推荐的歌曲仍然不足，则从已播放的歌曲中补充推荐
-                /*if (recommendedSongsSet.Count < 5)
-                {
-                    var additionalFromPlayed = allSongs
-                        .Where(song => playedSongsIds.Contains(song.SongId)) // 已播放的歌曲
-                        .Where(song => !recommendedSongsSet.Contains(song)) // 确保不重复
-                        .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                        .Take( - recommendedSongsSet.Count) // 补充
-                        .ToList();
-
-                    // 将补充歌曲添加到 HashSet
-                    foreach (var song in additionalFromPlayed)
-                    {
-                        recommendedSongsSet.Add(song);
-                    }
-                }*/
-
-                // 选择完全随机的歌曲
-                var randomSongs = allSongs
-                    .Where(song => !recommendedSongsSet.Contains(song)) // 确保不重复
-                    .OrderBy(x => Guid.NewGuid()) // 使用 Guid.NewGuid() 进行随机排序
-                    .Take(5)
-                    .ToList();
-
-                //合并流派推荐和完全随机推荐
-                var finalRecommendedSongs = recommendedSongsSet.ToList();
-                finalRecommendedSongs.AddRange(randomSongs);
-
-                // 使用 Guid.NewGuid() 对最终推荐的歌曲列表进行随机排序
-                finalRecommendedSongs = finalRecommendedSongs
-                    .OrderBy(x => Guid.NewGuid())
-                    .ToList();
-
-
-                //以下为获取歌曲的歌手
-                var songModelList = new List<SongModel>();
-
-                foreach (var song in finalRecommendedSongs)
-                {
-                    // 获取每首歌的艺术家
-                    var artists = await _searchService.GetArtistsBySongId(song.SongId);
-
-                    // 创建 SongWithArtists 对象并填充数据
-                    var songModelArtists = new SongModel
-                    {
-                        SongId = song.SongId,
-                        SongName = song.SongName,
-                        SongGenre = song.SongGenre,
-                        Duration = song.Duration,
-                        Lyrics = song.Lyrics,
-                        SongDate = song.SongDate,
-                        ComposerId = song.ComposerId,
-                        Status = song.Status,
-                        Artists = artists?.Select(a => new Models.Artist
-                        {
-                            ArtistId = a.ArtistId,
-                            ArtistName = a.ArtistName,
-                            ArtistBirthday = a.ArtistBirthday,
-                            ArtistIntro = a.ArtistIntro,
-                            ArtistGenre = a.ArtistGenre,
-                            ArtistFansNum = a.ArtistFansNum
-                        }).ToList() // 如果 artists 为 null，结果也将为 null
-                    };
-
-                    // 将结果添加到列表中
-                    songModelList.Add(songModelArtists);
-                }
+                var songModelList = _recommendService.RecommendSongsById(userId);
 
                 return Ok(songModelList);
             }
@@ -354,6 +176,5 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound(errorResponse);
             }
         }
-
     }
 }

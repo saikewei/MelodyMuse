@@ -20,6 +20,8 @@ namespace MelodyMuse.Server.models
 
         public byte? Status { get; set; }
 
+        public string? AlbumId { get; set; }
+
         public List<Artist>? Artists { get; set; }
     }
 
