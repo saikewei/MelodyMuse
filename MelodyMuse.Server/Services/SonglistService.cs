@@ -57,4 +57,9 @@ public class SonglistService : ISonglistService
 
         return true;
     }
+    public async Task<Songlist> GetSonglistByIdAsync(string songlistId)
+    {
+        return await _songlistRepository.GetSonglistBySonglistIdAsync(songlistId);
+    }
+
 }

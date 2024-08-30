@@ -68,11 +68,25 @@ namespace MelodyMuse.Server.Controllers
         public async Task<IActionResult> GetSongsInSonglist(string songlistId)
         {
             var songs = await _songlistService.GetSongsInSonglistAsync(songlistId);
+
             if (songs == null || !songs.Any())
             {
                 return NotFound();
             }
-            return Ok(songs);
+
+            var songDtos = songs.Select(song => new Songlist_SongModel
+            {
+                SongId = song.SongId,
+                Title = song.SongName,
+                Duration = song.Duration,
+                Artists = song.Artists.Select(artist => new Songlist_ArtistModel
+                {
+                    ArtistId = artist.ArtistId,
+                    ArtistName = artist.ArtistName
+                }).ToList()
+            }).ToList();
+
+            return Ok(songDtos);
         }
 
         //增加歌单
@@ -258,6 +272,30 @@ namespace MelodyMuse.Server.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("{songlistId}/info")]
+        public async Task<IActionResult> GetSonglistById(string songlistId)
+        {
+            var songlist = await _songlistService.GetSonglistByIdAsync(songlistId);
+
+            if (songlist == null)
+            {
+                return NotFound();
+            }
+
+            var songlistDto = new SonglistInfoModel
+            {
+                SonglistId = songlist.SonglistId,
+                SonglistName = songlist.SonglistName,
+                SonglistDate = songlist.SonglistDate,
+                SonglistIsPublic = songlist.SonglistIspublic,
+                UserId = songlist.UserId,
+                Username = songlist.User?.UserName // 获取关联的用户名
+            };
+
+            return Ok(songlistDto);
         }
     }
 }

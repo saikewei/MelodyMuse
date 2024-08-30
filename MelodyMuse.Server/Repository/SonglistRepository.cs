@@ -49,11 +49,12 @@ public class SonglistRepository : ISonglistRepository
 
     public async Task<IEnumerable<Song>> GetSongsBySonglistIdAsync(string songlistId)
     {
-        return await _context.Songlists
-            .Where(sl => sl.SonglistId == songlistId)
-            .Include(sl => sl.Songs)
-            .SelectMany(sl => sl.Songs)
-            .ToListAsync();
+        var songlist = await _context.Songlists
+             .Include(s => s.Songs)
+                 .ThenInclude(song => song.Artists)
+             .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+
+        return songlist?.Songs.ToList();
     }
 
     public async Task<string> AddSonglistAsync(Songlist songlist)
@@ -140,4 +141,11 @@ public class SonglistRepository : ISonglistRepository
         _context.Songlists.Update(songlist);
         await _context.SaveChangesAsync();
     }
+    public async Task<Songlist> GetSonglistBySonglistIdAsync(string songlistId)
+    {
+        return await _context.Songlists
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.SonglistId == songlistId);
+    }
+
 }

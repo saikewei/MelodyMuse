@@ -12,4 +12,5 @@ public interface ISonglistRepository
     Task<bool> DeleteSongFromSonglistAsync(string songlistId, string songId, string userId);
     Task<Songlist> GetSonglistByIdAsync(string songlistId);
     Task UpdateSonglistAsync(Songlist songlist);
+    Task<Songlist> GetSonglistBySonglistIdAsync(string songlistId);
 }

@@ -1,0 +1,3 @@
+﻿namespace MelodyMuse.Server.models
+{
+}
