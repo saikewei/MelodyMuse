@@ -81,6 +81,7 @@
         "albumProducer": "杜宣达",
         "artistId": "100",
         "liked": true,
+        "artistName": "杜宣达"
         },
         ],
         likeIcon,
@@ -110,7 +111,7 @@
             if (album.artistId) {
               //const artistResponse = await api.apiClientWithoutToken.get(`/artists/${album.artistId}`);
               const artistResponse = await axios.get(`https://localhost:7223/api/artists/${album.artistId}`);
-              album.artistName = artistResponse.data.artistName;
+              album.artistName = artistResponse.data.artistName;//动态添加属性
             }
           }
   

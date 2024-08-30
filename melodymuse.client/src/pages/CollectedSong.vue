@@ -22,6 +22,7 @@
             <tr>
               <th class="song-column">歌曲</th>
               <th class="artist-column">歌手</th>
+              <th class="album-column">专辑</th>
               <th class="duration-column">时长</th>
               <th class="action-column">操作</th>
             </tr>
@@ -40,6 +41,7 @@
                 {{ index + 1 }}. {{ song.songName }}
               </td>
               <td>{{ song.artistName }}</td>
+              <td>{{ song.albumName }}</td>
               <td>{{ formatDuration(song.duration) }}</td>
               <td>
                 <el-tooltip content="取消收藏" placement="bottom">
@@ -81,29 +83,33 @@
       return {
         collectedSongs: [
         {
-            "songId": "0c35751f-0",
-            "songName": "缓缓",
-            "duration": 236,
-            "songDate": null,
-            "songGenre": null,
-            "liked": true
-        },
-        {
-            "songId": "1b5ed95e-d",
-            "songName": "天若有情",
-            "duration": 205,
-            "songDate": null,
-            "songGenre": null,
-            "liked": true,
-        },
-        {
-            "songId": "1b5ed95e-g",
-            "songName": "天情",
-            "duration": 215,
-            "songDate": null,
-            "songGenre": null,
-            "liked": true
-        },
+        "songId": "0c35751f-0",
+        "songName": "缓缓",
+        "duration": 236,
+        "artistName": "杜宣达",
+        "liked": true
+    },
+    {
+        "songId": "1b5ed95e-d",
+        "songName": "天若有情",
+        "duration": 205,
+        "artistName": "杜宣达",
+        "liked": true
+    },
+    {
+        "songId": "2bc50733-6",
+        "songName": "最后一页",
+        "duration": 218,
+        "artistName": "杜宣达",
+        "liked": true
+    },
+    {
+        "songId": "32ff5158-6",
+        "songName": "忘记时间·2024",
+        "duration": 229,
+        "artistName": "杜宣达",
+        "liked": true
+    },
         ],
         playIcon,
         playClickedIcon,
@@ -129,13 +135,22 @@
         try {
           //const response = await api.apiClient.get(`/api/songs/user/${this.userId}/collected`);
           const response = await axios.get(`https://localhost:7223/api/songs/user/${this.userId}/collected`);
-          this.collectedSongs = response.data.map(song => ({ ...song, liked: true }));
+          const songs = response.data.map(song => ({ ...song, liked: true }));
+          // 获取每首歌的专辑名称并更新数据
+        for (let song of songs) {
+          //const albumResponse = await api.apiClientWithoutToken.get(`/songs/${song.songId}/album`);
+          const albumResponse = await axios.get(`https://localhost:7223/api/songs/${song.songId}/album`);
+          song.albumName = albumResponse.data.albumName;
+        }
+
+        this.collectedSongs = songs;
           console.log('收藏的歌曲:', this.collectedSongs);
         } catch (error) {
           console.error('获取收藏的歌曲信息失败:', error);
         }
       },
-      
+
+          
       // 切换播放状态
       togglePlayIcon(song) {
       try {
@@ -271,13 +286,17 @@
     width: 34px;
   }
   .song-column {
-    width: 50%;
+    width: 40%;
   }
   
   .artist-column {
-    width: 30%;
+    width: 20%;
   }
   
+  .album-column {
+    width: 20%;
+  }
+
   .duration-column {
     width: 10%;
   }
