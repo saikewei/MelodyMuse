@@ -148,10 +148,10 @@
                                 params: { albumId },
                                 responseType: 'blob'
                             });
-                            song.albumCover = URL.createObjectURL(genreJpgResponse.data);
+                            song.coverUrl = URL.createObjectURL(genreJpgResponse.data);
                         } catch (error) {
                             console.error(`Error fetching cover for album ID ${albumId}:`, error);
-                            song.albumCover = null;
+                            song.coverUrl = null;
                         }
                     }
                 }
@@ -168,10 +168,10 @@
                                 params: { albumId },
                                 responseType: 'blob'
                             });
-                            song.albumCover = URL.createObjectURL(artistJpgResponse.data);
+                            song.coverUrl = URL.createObjectURL(artistJpgResponse.data);
                         } catch (error) {
                             console.error(`Error fetching cover for album ID ${albumId}:`, error);
-                            song.albumCover = null;
+                            song.coverUrl = null;
                         }
                     }
                 }
