@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
+
+
 namespace MelodyMuse.Server.Repository
 {
     public class ArtistRepository : IArtistRepository
@@ -132,6 +134,26 @@ namespace MelodyMuse.Server.Repository
 
             return artist?.Users.Count ?? 0;
         }
+        public async Task<bool> IsUserInArtistAsync(string userId)
+        {
+            var artist = await _context.Artists
+                .FirstOrDefaultAsync(a => a.ArtistId == userId);
 
+            // 返回布尔值，指示是否找到相应的记录
+            return artist != null;
+        }
+        public async Task<bool> UserRegisterSinger(UserModel userInfo)
+        {
+            var artist = new Artist
+            {
+                ArtistId = "user"+userInfo.UserId,
+                UserId = userInfo.UserId,
+                ArtistName = userInfo.UserName,
+                ArtistBirthday = userInfo.UserBirthday,
+            };
+            _context.Artists.Add(artist);
+            return await _context.SaveChangesAsync() > 0;
+        }
+       
     }
 }

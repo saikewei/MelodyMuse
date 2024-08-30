@@ -19,6 +19,11 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<List<Artist>> GetAllArtistsAsync();
         Task<List<Artist>> GetArtistsByUserIdAsync(string userId);
         Task<int> GetArtistFansCountAsync(string artistId);
+
+        //查询用户是否注册为歌手
+        Task<bool> IsUserInArtistAsync(string userId);
+        //将用户注册到歌手表中
+        Task<bool> UserRegisterSinger(UserModel userInfo);
     }
 
 
