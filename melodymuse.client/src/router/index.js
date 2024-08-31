@@ -14,7 +14,7 @@ import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
 import mediaplayer from "../pages/mediaplayer.vue";
-
+import userSongShow from "../pages/userSongShow.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
@@ -128,6 +128,11 @@ const routes = [
     path: "/test",
     name: "test",
     component: () => import("../pages/userUploadSong.vue"),
+  },
+  {
+    path:"/userSongShow",
+    name:"userSongShow",
+    component:userSongShow,
   }
 ];
 
