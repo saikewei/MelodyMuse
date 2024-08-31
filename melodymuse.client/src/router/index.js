@@ -115,8 +115,8 @@ const routes = [
     component: ForgottenPassword,
   },
   {
-    path: "/AlbumDetail/:albumId",
-    //path: "/AlbumDetail",//调试用
+    //path: "/AlbumDetail/:albumId",
+    path: "/AlbumDetail",//调试用
     name: "AlbumDetail",
     component: AlbumDetail,
   }
