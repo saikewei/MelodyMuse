@@ -74,6 +74,10 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IUsersRepository>(provider =>
     new UsersRepository());
 
+//歌曲推荐
+builder.Services.AddScoped<IRecommendService, RecommendService>();
+builder.Services.AddScoped<IRecommendRepository>(provider =>
+    new RecommendRepository());
 
 //艺术家相关
 builder.Services.AddScoped<IArtistService, ArtistService>();
