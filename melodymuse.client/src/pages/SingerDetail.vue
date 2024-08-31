@@ -76,6 +76,12 @@
                              alt="添加到播放列表" />
                     </el-tooltip>
                   </td>
+                   <!-- 加入专辑按钮 -->
+                     <td>
+                     <button class="add-to-songlist-button" @click.stop="showSonglistModal(song)">
+                      ➕ 
+                     </button>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -83,6 +89,15 @@
       </div>
     </div>
   </div>
+   <!-- 弹窗：选择歌单 -->
+   <el-dialog title="选择专辑" :visible.sync="isSonglistModalVisible" width="30%">
+      <div v-for="songlist in songlists" :key="songlist.id" class="songlist-item">
+        <button @click="addToSonglist(currentSong, songlist.id)">
+          {{ songlist.name }}
+        </button>
+      </div>
+      <button class="create-new-songlist-button" @click="createNewSonglist">创建新专辑</button>
+    </el-dialog>
     <TheFooter />
   </div>
   </template>
@@ -131,7 +146,10 @@
           // 其他歌曲省略*/
           ],
         isLiked: false,
-  
+        isSonglistModalVisible: false, // 弹窗状态
+        currentSong: null, // 当前选择的歌曲
+        songlists: [], // 用户的歌单列表
+
         audio: null, // 添加 audio 对象
         currentPlayingSongId: null, // 当前正在播放的歌曲 ID
         playIcon,
@@ -335,7 +353,51 @@ async updateFollowersCount() {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   },  
+ //以下为加入专辑歌单（包括创建新专辑）
 
+    // 显示弹窗和歌单列表
+    async showSonglistModal(song) {
+    this.currentSong = song; // 存储当前正在添加的歌曲
+    await this.fetchUserSonglists(); // 从后端获取用户歌单
+    this.isSonglistModalVisible = true;
+  },
+
+  // 从后端获取用户歌单
+  async fetchUserSonglists() {
+    try {
+      const response = await api.apiClient.get(`/api/songlist/user/{userId}`);
+      this.songlists = response.data;
+    } catch (error) {
+      console.error('获取用户歌单失败:', error);
+    }
+  },
+
+  // 将歌曲添加到选中的歌单
+  async addToSonglist(song, songlistId) {
+    try {
+      await api.apiClient.post(`/api/songlists/add`, {
+        userId: this.userId,
+        songlistId,
+        songId: song.songId,
+      });
+      this.isSonglistModalVisible = false; // 添加后隐藏弹窗
+    } catch (error) {
+      console.error('添加歌曲到歌单失败:', error);
+    }
+  },
+
+  // 创建新歌单
+  async createNewSonglist() {
+    try {
+      const newSonglist = await api.apiClient.post(`/api/songlist/add`, {
+        userId: this.userId,
+        songlistName: '新歌单', // 如果需要，可以替换为动态名称
+      });
+      this.songlists.push(newSonglist.data); // 将新歌单添加到列表
+    } catch (error) {
+      console.error('创建歌单失败:', error);
+    }
+  },
   async created() {
     this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
@@ -456,5 +518,34 @@ async updateFollowersCount() {
 .add-icon{
   width: 34px; /* 设置按钮的宽度 */
  }
+ 
+ .add-to-songlist-button {
+  padding: 5px 10px;
+  border: 1px solid #284da0c1;
+  background-color: white;
+  color: #284da0c1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.songlist-item button {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  text-align: left;
+}
+
+.create-new-songlist-button {
+  padding: 8px 12px;
+  background-color: #284da0c1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
   </style>
   
