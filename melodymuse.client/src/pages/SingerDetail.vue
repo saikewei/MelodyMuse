@@ -47,13 +47,14 @@
                       <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
                            @mouseover="song.playHover = true"
                            @mouseleave="song.playHover = false"
-                           @click="togglePlayIcon(song)"
+                           @click="togglePlayIcon(song)" 
                            class="play-icon"
                            alt="播放歌曲" />
                     </el-tooltip>
                   {{ index + 1 }}. {{ song.songName }}</td>
+                 <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
-                <td>{{ song.albumNameName }}</td>
+                <td>{{ song.albumName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
               
                   <!-- 添加收藏按钮 -->
@@ -65,6 +66,14 @@
                            @click="toggleLikeIcon(song)"
                            class="like-icon"
                            alt="收藏歌曲" />
+                    </el-tooltip>
+                    <el-tooltip content="添加到播放列表" placement="bottom">
+                        <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                             @mouseover="song.addHover = true"
+                             @mouseleave="song.addHover = false"
+                             @click="toggleAddIcon(song)"
+                             class="add-icon"
+                             alt="添加到播放列表" />
                     </el-tooltip>
                   </td>
               </tr>
@@ -186,24 +195,42 @@
     },
 
     //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
-      playFirstSong() {
-        const firstSongId = this.songs[0].songId;
-        this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
-      },
+    playFirstSong() {
+    if (this.songs.length > 0) {
+      // 获取歌手歌曲列表的第一首歌曲的 ID
+      const firstSongId = this.songs[0].songId;
+      
+      // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+      const songList = this.songs.map(s => s.songId).join(',');
 
-      //用户点击歌单任意歌曲，通过songId切换到播放页面
+      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: firstSongId, // 第一个歌曲的 ID
+          songList: songList   // 所有歌曲 ID 组成的字符串
+        }
+      });
+    } else {
+      console.error('歌曲列表为空，无法播放第一首歌曲');
+    }
+  },
+
+    /*  //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
-
+    */
     //收藏方法
     async toggleLikeIcon(song) {
         try {
           if (song.liked) {
             // 如果已收藏，发送请求删除收藏
-            await api.apiClient.post(`/api/users/remove`, {
+            await api.apiClient.delete(`/api/users/remove`, {
+              data:{
               userId: this.userId,
               songId: song.songId
+              }
             });
             song.liked = false;
           } else {
@@ -215,42 +242,52 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('收藏失败,请重试', error);
-          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+          console.error('切换收藏状态失败,请重试', error);
+          song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
+      //加入歌单
+      async toggleAddIcon(song) {
+    try {
+      if (song.added) {
+        // 已经添加过，发送请求删除
+        await api.apiClient.delete(`/api/users/removefromplaylist`, {
+          data: {
+            userId: this.userId,
+            songId: song.songId
+          }
+        });
+        song.added = false;
+      } else {
+        // 未添加过，发送请求添加
+        await api.apiClient.post(`/api/users/addtoplaylist`, {
+          userId: this.userId,
+          songId: song.songId
+        });
+        song.added = true;
+      }
+    } catch (error) {
+      console.error('切换添加状态失败,请重试', error);
+      song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
+    }
+  },
 
       // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-      togglePlayIcon(song){
-      try{
-        if (this.currentPlayingSongId === song.songId && !this.audio.paused) {
-          // 如果当前正在播放同一首歌，则暂停音乐
-          this.audio.pause();
-          song.playing = false; // 当前歌曲状态设为未播放
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        } else {
-          // 如果当前没有播放音乐或播放不同的音乐
-          if (this.audio) {
-            this.audio.pause(); // 暂停当前播放的音乐
-            // 
-            const previousSong = this.album.songs.find(s => s.songId === this.currentPlayingSongId);
-            if (previousSong) {
-              previousSong.playing = false;
-            }
-           }
-          const songUrl = `/api/player/file?songId=${song.songId}`;
-          this.audio = new Audio(song.songUrl); 
-          this.audio.play();
-          this.currentPlayingSongId = song.songId;
+      togglePlayIcon(song) {
+    try {
+      // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+      const songList = this.songs.map(s => s.songId).join(',');
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: song.songId, // 当前播放的歌曲 ID
+          songList: songList   // 歌曲列表的所有 songId
         }
-        song.playing = !song.playing; // 切换播放状态
-      }catch (error) {
-          console.error('播放失败,请重试', error);
-          song.playing = false; 
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        }
-      },
-
+      });
+    } catch (error) {
+      console.error('跳转到播放页面失败:', error);
+    }
+  },
       
 
       //实现关注和取消关注
@@ -276,7 +313,7 @@
       await this.updateFollowersCount();
 
     } catch (error) {
-      console.error('Failed to toggle follow:', error);
+      console.error('切换关注状态失败', error);
       // 如果操作失败，恢复到原来的状态
       this.isFollowing = !this.isFollowing;
     }
@@ -416,5 +453,8 @@ async updateFollowersCount() {
   .like-icon {
   width: 34px; /* 设置按钮的宽度 */
 }
+.add-icon{
+  width: 34px; /* 设置按钮的宽度 */
+ }
   </style>
   

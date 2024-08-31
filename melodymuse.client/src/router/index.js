@@ -19,6 +19,8 @@ import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
 import AlbumDetail from "../pages/AlbumDetail.vue";
+import CollectedSong from "../pages/CollectedSong.vue";
+import CollectedAlbum from "../pages/CollectedAlbum.vue";
 
 const routes = [
   {
@@ -119,7 +121,18 @@ const routes = [
     path: "/AlbumDetail",//调试用
     name: "AlbumDetail",
     component: AlbumDetail,
-  }
+  },
+  {
+    path: "/CollectedSong",
+    name: "CollectedSong",
+    component: CollectedSong,
+  },
+  {
+    path: "/CollectedAlbum",
+    name: "CollectedAlbum",
+    component: CollectedAlbum,
+  },
+
 ];
 
 const router = createRouter({

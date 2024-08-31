@@ -113,5 +113,13 @@ namespace MelodyMuse.Server.Services
 
             await _usersRepository.RemoveUserCollectAlbumAsync(existingCollect);
         }
+                public async Task<List<Album>> GetUserCollectedAlbumsAsync(string userId)
+        {
+            return await _usersRepository.GetUserCollectedAlbumsAsync(userId);
+        }
+        public async Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId)
+        {
+            return await _usersRepository.GetCollectedSongsByUserId(userId);
+        }
     }
 }

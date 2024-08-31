@@ -127,5 +127,30 @@ namespace MelodyMuse.Server.Repository
             _context.UserCollectAlbums.Remove(userCollectAlbum);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<Album>> GetUserCollectedAlbumsAsync(string userId)
+        {
+            // 查询用户收藏的所有专辑
+            var albums = await _context.UserCollectAlbums
+                .Where(u => u.UserId == userId)
+                .Include(u => u.Album)
+                .Select(u => u.Album)
+                .ToListAsync();
+
+            return albums;
+        }
+ // 获取指定用户关注的所有歌曲，并返回DTO对象
+        public async Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId)
+        {
+            return await _context.UserCollectSongs
+                .Where(u => u.UserId == userId)
+                .Select(u => new UserCollectedSongDto
+                {
+                    SongId = u.Song.SongId,
+                    SongName = u.Song.SongName,
+                    Duration = u.Song.Duration ?? 0, // 如果为 null，返回 0
+                    ArtistName = u.Song.Artists.FirstOrDefault().ArtistName // 获取第一个关联的艺术家的名字
+                })
+                .ToListAsync();
+        }
     }
 }

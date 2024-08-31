@@ -42,16 +42,19 @@
                 <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
 
                   <td>
-                    <!-- 添加播放按钮 -->
-                    <el-tooltip content="播放歌曲" placement="bottom">
-                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
-                           @mouseover="song.playHover = true"
-                           @mouseleave="song.playHover = false"
-                           @click="togglePlayIcon(song)"
-                           class="play-icon"
-                           alt="播放歌曲" />
-                    </el-tooltip>
-                    {{ index + 1 }}. {{ song.songName }}</td>
+                  <!-- 播放按钮 -->
+                  <el-tooltip content="播放歌曲" placement="bottom">
+                    <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                        @mouseover="song.playHover = true"
+                        @mouseleave="song.playHover = false"
+                        @click.stop="togglePlayIcon(song)"      
+                        
+                        class="play-icon"
+                        alt="播放歌曲" />
+                  </el-tooltip>
+                  {{ index + 1 }}. {{ song.songName }}
+                </td>
+               <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
@@ -65,6 +68,14 @@
                            @click="toggleLikeIcon(song)"
                            class="like-icon"
                            alt="收藏歌曲" />
+                    </el-tooltip>
+                    <el-tooltip content="添加到播放列表" placement="bottom">
+                        <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                             @mouseover="song.addHover = true"
+                             @mouseleave="song.addHover = false"
+                             @click="toggleAddIcon(song)"
+                             class="add-icon"
+                             alt="添加到播放列表" />
                     </el-tooltip>
                   </td>
                   <!-- 加入专辑按钮 -->
@@ -200,22 +211,42 @@
       },
       //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
-        const firstSongId = this.album.songs[0].songId;
-        this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
-      },
+    try {
+      // 获取第一首歌的 songId
+      const firstSong = this.album.songs[0];
+      const firstSongId = firstSong.songId;
+
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = this.album.songs.map(s => s.songId).join(',');
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: firstSongId, // 第一首歌的 songId
+          songList: songList
+        }
+      });
+
+    } catch (error) {
+      console.error('播放第一首歌曲失败:', error);
+    }
+  },
       //用户点击歌单任意歌曲，通过songId切换到播放页面
-      playSong(songId) {
+      /*playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
-
+      */
       //收藏方法
       async toggleLikeIcon(song) {
         try {
           if (song.liked) {
             // 如果已收藏，发送请求删除收藏
-            await api.apiClient.post(`/api/users/remove`, {
+            await api.apiClient.delete(`/api/users/remove`, {
+              data: {
               userId: this.userId,
               songId: song.songId
+              }
             });
             song.liked = false;
           } else {
@@ -227,41 +258,57 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('收藏失败,请重试', error);
-          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+          console.error('切换收藏状态失败,请重试', error);
+          song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
-
+      //加入歌单
+      async toggleAddIcon(song) {
+    try {
+      if (song.added) {
+        // 已经添加过，发送请求删除
+        await api.apiClient.delete(`/api/users/removefromplaylist`, {
+          data: {
+            userId: this.userId,
+            songId: song.songId
+          }
+        });
+        song.added = false;
+      } else {
+        // 未添加过，发送请求添加
+        await api.apiClient.post(`/api/users/addtoplaylist`, {
+          userId: this.userId,
+          songId: song.songId
+        });
+        song.added = true;
+      }
+    } catch (error) {
+      console.error('切换添加状态失败,请重试', error);
+      song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
+    }
+  },
       // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-      togglePlayIcon(song){
-      try{
-        if (this.currentPlayingSongId === song.songId && !this.audio.paused) {
-          // 如果当前正在播放同一首歌，则暂停音乐
-          this.audio.pause();
-          song.playing = false; // 当前歌曲状态设为未播放
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        } else {
-          // 如果当前没有播放音乐或播放不同的音乐
-          if (this.audio) {
-            this.audio.pause(); // 暂停当前播放的音乐
-            // 
-            const previousSong = this.album.songs.find(s => s.songId === this.currentPlayingSongId);
-            if (previousSong) {
-              previousSong.playing = false;
-            }
-           }
-          const songUrl = `/api/player/file?songId=${song.songId}`;
-          this.audio = new Audio(song.songUrl); 
-          this.audio.play();
-          this.currentPlayingSongId = song.songId;
-        }
-        song.playing = !song.playing; // 切换播放状态
-      }catch (error) {
-          console.error('播放失败,请重试', error);
-          song.playing = false; 
-          this.currentPlayingSongId = null; // 清空当前播放的歌曲 ID
-        }
-      },
+      togglePlayIcon(song) {
+    try {
+      // 获取当前歌曲的 ID
+      const songId = song.songId;
+
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = this.album.songs.map(s => s.songId).join(',');
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      this.$router.push({ 
+        name: 'mediaplayer', 
+        params: { 
+          songId: songId, 
+          songList: songList 
+        } 
+      });
+
+    } catch (error) {
+      console.error('跳转播放页面失败:', error);
+    }
+  },
       
       // 将毫秒转换为分钟和秒
       formatDuration(duration) {
@@ -274,9 +321,11 @@
       try {
         if (this.isLiked) {
           await api.apiClient.delete(`/api/users/removealbum`, {
-            userId: this.userId, 
-            albumId: this.albumId
-          });
+            data: {
+          userId: this.userId,
+          albumId: this.albumId
+        }
+      });
           this.isLiked = false;//取消收藏
         } else {
           await api.apiClient.post(`/api/users/addalbum`, {
@@ -285,9 +334,11 @@
           });
           this.isLiked = true;//收藏
         }
+        this.$forceUpdate(); // 强制更新视图
       } catch (error) {
         console.error('切换收藏状态失败:', error);
         this.isLiked = !this.isLiked;
+        this.$forceUpdate(); // 强制更新视图
       }
     },
   },
@@ -480,5 +531,8 @@
   margin-top: 10px;
 }
 
+ .add-icon{
+  width: 34px; /* 设置按钮的宽度 */
+ }
   </style>
   
