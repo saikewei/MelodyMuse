@@ -67,14 +67,14 @@
                            class="like-icon"
                            alt="收藏歌曲" />
                     </el-tooltip>
-                    <el-tooltip content="添加到播放列表" placement="bottom">
+                    <!--<el-tooltip content="添加到播放列表" placement="bottom">
                         <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
                              @mouseover="song.addHover = true"
                              @mouseleave="song.addHover = false"
                              @click="toggleAddIcon(song)"
                              class="add-icon"
                              alt="添加到播放列表" />
-                    </el-tooltip>
+                    </el-tooltip>-->
                   </td>
                    <!-- 加入专辑按钮 -->
                      <td>
@@ -264,7 +264,7 @@
           song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
-      //加入歌单
+      /*//加入歌单
       async toggleAddIcon(song) {
     try {
       if (song.added) {
@@ -288,7 +288,7 @@
       console.error('切换添加状态失败,请重试', error);
       song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
     }
-  },
+  },*/
 
       // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
       togglePlayIcon(song) {
