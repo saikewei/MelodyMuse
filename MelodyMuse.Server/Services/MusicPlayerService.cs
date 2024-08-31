@@ -44,10 +44,10 @@ namespace MelodyMuse.Server.Services
 
             // 获取歌曲所属专辑ID
             var albumId = await _musicplayerrepository.GetAlbumIdBySongId(songId);
-            if (albumId == null)
+            /*if (albumId == null)
             {
                 throw new ArgumentNullException($"Album for song with ID {songId} not found.");
-            }
+            }*/
 
             // 创建并填充SongMetaDataModel对象
             var responseModel = new SongMetaDataModel
