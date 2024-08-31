@@ -181,7 +181,7 @@ namespace MelodyMuse.Server.Services
         public async Task<bool> UserUploadSongAsync(SongUploadByUserModel songUploadByUserModel, string userId)
         {
             // 检查Artists表中是否存在用户信息
-            if (!await _artistRepository.IsUserInArtistAsync(userId))
+            if (!await _artistRepository.IsUserInArtistAsync("user"+userId))
             {
                 var userInfo = await _userRepository.GetUserById(userId);
                 if (userInfo != null)
