@@ -67,6 +67,14 @@
                            class="like-icon"
                            alt="收藏歌曲" />
                     </el-tooltip>
+                    <el-tooltip content="添加到播放列表" placement="bottom">
+                        <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                             @mouseover="song.addHover = true"
+                             @mouseleave="song.addHover = false"
+                             @click="toggleAddIcon(song)"
+                             class="add-icon"
+                             alt="添加到播放列表" />
+                    </el-tooltip>
                   </td>
               </tr>
             </tbody>
@@ -234,10 +242,35 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('操作失败,请重试', error);
-          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+          console.error('切换收藏状态失败,请重试', error);
+          song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
+      //加入歌单
+      async toggleAddIcon(song) {
+    try {
+      if (song.added) {
+        // 已经添加过，发送请求删除
+        await api.apiClient.delete(`/api/users/removefromplaylist`, {
+          data: {
+            userId: this.userId,
+            songId: song.songId
+          }
+        });
+        song.added = false;
+      } else {
+        // 未添加过，发送请求添加
+        await api.apiClient.post(`/api/users/addtoplaylist`, {
+          userId: this.userId,
+          songId: song.songId
+        });
+        song.added = true;
+      }
+    } catch (error) {
+      console.error('切换添加状态失败,请重试', error);
+      song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
+    }
+  },
 
       // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
       togglePlayIcon(song) {
@@ -280,7 +313,7 @@
       await this.updateFollowersCount();
 
     } catch (error) {
-      console.error('Failed to toggle follow:', error);
+      console.error('切换关注状态失败', error);
       // 如果操作失败，恢复到原来的状态
       this.isFollowing = !this.isFollowing;
     }
@@ -420,5 +453,8 @@ async updateFollowersCount() {
   .like-icon {
   width: 34px; /* 设置按钮的宽度 */
 }
+.add-icon{
+  width: 34px; /* 设置按钮的宽度 */
+ }
   </style>
   
