@@ -84,14 +84,14 @@
         flex: 0 0 100%;
         height: 100%;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: center; /* 垂直居中 */
+        justify-content: center; /* 水平居中 */
     }
 
         .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: auto;
+            height: 100%; /* 让图片高度填满容器 */
+            object-fit: cover; /* 保持图片比例，裁剪多余部分 */
         }
 
     .carousel-controls {

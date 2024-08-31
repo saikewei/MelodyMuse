@@ -252,10 +252,10 @@
         }
 
     .song-cover {
-        width: 100%;
-        height: 150px; /* 保持正方形 */
-        object-fit: cover;
-        border-radius: 8px 8px 0 0;
+        width: 280px; /* Fixed width */
+        height: 200px; /* Fixed height to maintain a square shape */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+        border-radius: 4px 4px 0 0;
     }
 
     .song-info {
