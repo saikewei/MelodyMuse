@@ -124,6 +124,11 @@ const routes = [
     name: "rankartists",
     component: RankArtists,
   },
+  {
+    path: "/test",
+    name: "test",
+    component: () => import("../pages/userUploadSong.vue"),
+  }
 ];
 
 const router = createRouter({
