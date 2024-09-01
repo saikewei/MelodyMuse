@@ -80,5 +80,44 @@ namespace MelodyMuse.Server.Controllers
                 return StatusCode(500, new { msg = "服务器错误", error = ex.Message });
             }
         }
+
+
+        //获取其他用户
+        [Authorize]
+        [HttpGet("userId")]
+        public async Task<ActionResult> GetOtherUserInfo(string userId)
+        {
+            try
+            {
+
+                //构建实例
+                UserModel user = await _usersService.GetUserById(userId);
+                if (user == null)
+                {
+                    // 不存在时的处理逻辑
+                    return NotFound(new { msg = "用户不存在" });
+                }
+                //检查是否为歌手
+                if (await _usersService.Useridentity("user" + userId))
+                {
+                    return Ok(new
+                    {
+                        User = user,
+                        ArtistId = "user" + user.UserId
+                    });
+                }
+                else
+                {
+                    return Ok(user);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                // 捕获异常并返回服务器错误
+                return StatusCode(500, new { msg = "服务器错误", error = ex.Message });
+            }
+        }
     }
 }
