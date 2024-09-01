@@ -63,24 +63,13 @@ namespace MelodyMuse.Server.Controllers
             string localFilePathJPG;
             string ftpJpgFilePath;
 
-            if (albumId == null)
-            {
-                // 使用默认的封面文件路径
-                localFilePathJPG = Path.Combine(_cacheDirectory, "albumCover.jpg");
-                ftpJpgFilePath = "/albumCover/albumCover.jpg";
+            // 使用指定 albumId 的封面文件路径
+            localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
+            ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
 
-                // 下载并缓存默认封面文件
-                await DownloadAndCacheFileAsync("albumCover.jpg", localFilePathJPG, ftpJpgFilePath);
-            }
-            else
-            {
-                // 使用指定 albumId 的封面文件路径
-                localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
-                ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
+            // 下载并缓存指定 albumId 的封面文件
+            await DownloadAndCacheFileAsync($"{albumId}.jpg", localFilePathJPG, ftpJpgFilePath);
 
-                // 下载并缓存指定 albumId 的封面文件
-                await DownloadAndCacheFileAsync($"{albumId}.jpg", localFilePathJPG, ftpJpgFilePath);
-            }
 
             // 检查文件是否存在
             if (!System.IO.File.Exists(localFilePathJPG))
@@ -167,6 +156,8 @@ namespace MelodyMuse.Server.Controllers
                 var songMetadata = await _musicService.GetSongBySongId(songId);
                 var artistId = songMetadata.ComposerId;
                 var albumId = songMetadata.AlbumId;
+                if (albumId == null)
+                    albumId = "Default";
 
                 if (songMetadata == null)
                 {
