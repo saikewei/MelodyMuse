@@ -5,6 +5,7 @@ using MelodyMuse.Server.models;
 using Microsoft.AspNetCore.Authorization;
 using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.Services;
+using TencentCloud.Dlc.V20210125.Models;
 
 namespace MelodyMuse.Server.Controllers
 {
@@ -63,13 +64,32 @@ namespace MelodyMuse.Server.Controllers
                 {
                     return Ok(new
                     {
-                        User = user,
-                        ArtistId = "user" + user.UserId
+                       UserID=user.UserId,
+                       UserName=user.UserName,
+                       UserEmail=user.UserEmail,
+                       UserPhone=user.UserPhone,
+                       UserSex=user.UserSex,
+                       UserAge=user.UserAge,
+                       UserBirthday=user.UserBirthday,
+                       UserStatus=user.UserStatus,
+                       IsArtist=true,
+                       ArtistId = "user" + user.UserId
                     });
                 }
                 else
                 {
-                    return Ok(user);
+                    return Ok(new
+                    {
+                        UserID = user.UserId,
+                        UserName = user.UserName,
+                        UserEmail = user.UserEmail,
+                        UserPhone = user.UserPhone,
+                        UserSex = user.UserSex,
+                        UserAge = user.UserAge,
+                        UserBirthday = user.UserBirthday,
+                        UserStatus = user.UserStatus,
+                        IsArtist = false
+                    });
                 }
 
                
@@ -83,7 +103,7 @@ namespace MelodyMuse.Server.Controllers
 
 
         //获取其他用户
-        [Authorize]
+        //[Authorize]
         [HttpGet("userId")]
         public async Task<ActionResult> GetOtherUserInfo(string userId)
         {
@@ -102,13 +122,32 @@ namespace MelodyMuse.Server.Controllers
                 {
                     return Ok(new
                     {
-                        User = user,
+                        UserID = user.UserId,
+                        UserName = user.UserName,
+                        UserEmail = user.UserEmail,
+                        UserPhone = user.UserPhone,
+                        UserSex = user.UserSex,
+                        UserAge = user.UserAge,
+                        UserBirthday = user.UserBirthday,
+                        UserStatus = user.UserStatus,
+                        IsArtist = true,
                         ArtistId = "user" + user.UserId
                     });
                 }
                 else
                 {
-                    return Ok(user);
+                    return Ok(new
+                    {
+                        UserID = user.UserId,
+                        UserName = user.UserName,
+                        UserEmail = user.UserEmail,
+                        UserPhone = user.UserPhone,
+                        UserSex = user.UserSex,
+                        UserAge = user.UserAge,
+                        UserBirthday = user.UserBirthday,
+                        UserStatus = user.UserStatus,
+                        IsArtist = false
+                    });
                 }
 
 
