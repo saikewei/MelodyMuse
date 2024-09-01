@@ -13,23 +13,40 @@
             <span>单曲 {{ singleCount }}</span>
             <span>专辑 {{ albumCount }}</span>
           </div>
+          <el-button @click="newSong" class="uploadButton">上传歌曲</el-button>
+          <uploadSong :isVisible="uploadWindowVisibility" @cancelEvent="handleCancelEvent" @submitSuccessEvent="handleSubmitSuccess" @submitFailEvent="handleSubmitFail"/>
         </div>
       </div>
   
       <div class="songs">
         <h2 style=" margin-top: 10px;margin-bottom: 5px; margin-left: 10px;color:#284da0c1;" > 所有歌曲</h2>
+
         <div class="songs-table">
           <table>
             <thead>
               <tr>
                 <th>歌曲</th>
+                <th></th>
                 <th>专辑</th>
                 <th>时长</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(song, index) in songs" :key="index" @click="playSong(song.songId)">
+              <tr v-for="(song, index) in songs" :key="index" >
                 <td>{{ index + 1 }}. {{ song.songName }}</td>
+
+                <td class="statss">
+                  <button class="play-button" @click="playSong(song.songId)">
+                    <img :src="playMusicSrc" alt="播放">
+                  </button>
+                  <button class="delete-button" @click="deleteSong(song.songId)">
+                    <img :src="deleteMusicSrc" alt="删除">
+                  </button>
+                  <button class="addToPlayList-button" @click="showPlayList(song.songId)">
+                    <img :src="addToPlayListSrc" alt="添加到">
+                  </button>
+                </td>
+
                 <td>{{ song.albumName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
               </tr>
@@ -47,6 +64,8 @@ import TheHeader from '@/components/TheHeader.vue';
 import api from '../api/http.js'
 import uploadSong from '../components/userNewSong.vue'
 import {ElButton,ElMessage} from 'element-plus'
+import {ref} from 'vue'
+import router from "../router"
 
 export default{
     components:{
@@ -54,9 +73,15 @@ export default{
         uploadSong,
         profilePicture,
         ElButton,
+        ref,
     },
     data(){
         return{
+            router,
+            playMusicSrc : ref('/play.jpg'),
+            deleteMusicSrc : ref('/delete.jpg'),
+            addToPlayListSrc : ref('/add.jpg'),
+            profilePicture,
             uploadWindowVisibility:false,
             userInfo:{
               "userId":"",
@@ -80,7 +105,7 @@ export default{
       },
       albumCount(){
         const albums = this.songs.map(song => song.albumName);
-        return new Set(albums).size();
+        return new Set(albums).size;
       },
       formattedBirthday(){
         const birthDay = new Date(this.userInfo.userBirthday);
@@ -90,48 +115,80 @@ export default{
     methods:{
       async fetchUserInfo(){
         try{
-          const response= await api.apiClient.get("api/");
-          if(response.status_code != "200"){
-            ElMessage({
-              message:"获取用户信息失败，请稍后再试",
-              type:"error"
-            })
+          const response= await api.apiClient.get("api/userinfo/info");
             this.userInfo = response.data;
 
             if(this.userInfo.isArtist){
-              this.fetchSongs(this.userInfo.artistId);
+              await this.fetchSongs(this.userInfo.artistId);
             }
-          }
         }
         catch(error){
+          ElMessage({
+              message:"获取用户信息失败，请稍后再试",
+              type:"error"
+            })
           console.error("获取用户信息失败:"+error);
         }
       },
 
       async fetchSongs(artistId){
         try{
-          const songsResponse = await api.apiClient.get(`/api/artist/${this.artistId}/songs`);
-          if(songsResponse.status_code!="200"){
-            ElMessage({
-              message:"获取歌曲信息失败,请稍后再试",
-              type:"error"
-            })
-          }
-          else{
+          const songsResponse = await api.apiClient.get(`/api/artist/${artistId}/songs`);
+          console.log(songsResponse)
             this.songs = await Promise.all(
               songsResponse.data.map(async (song) => {
                 const albumResponse = await api.apiClient.get(`/api/songs/${song.songId}/album`);
                 return {...song,albumName:albumResponse.data};
               })
             )
-          }
         }catch(error){
+          ElMessage({
+              message:"获取歌曲信息失败,请稍后再试",
+              type:"error"
+            })
           console.error("歌曲信息获取失败:"+error);
         }
       },
 
       playSong(songId){
-        
+        //console.log(songId)
+        //console.log(this.songs)
+        var songs=""
+        this.songs.forEach(song=>{
+          songs+=song.songId
+          songs+=","
+        })
+        songs=songs.slice(0,-1);
+        //console.log(songs)
+        router.push(`/mediaplayer/${songId}/${songs}`)
+      },
+      deleteSong(songId){
+        console.log(songId)
+      },
+      showPlayList(songId){
+
+      },
+
+      newSong(){
+        this.uploadWindowVisibility=true;
+      },
+
+
+      handleCancelEvent() {
+        this.uploadWindowVisibility = false;
+      },
+      handleSubmitSuccess() {
+        this.uploadWindowVisibility = false;
+        ElMessage({
+          message:"上传成功",
+          type:"success",
+        })
+      },
+      handleSubmitFail() {
+        ElMessage({
+          message:"上传失败",
+          type:"error",
+        })
       },
 
       formatDuration(duration) {
@@ -238,6 +295,58 @@ export default{
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+  }
+
+  .uploadButton{
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    background-color: #0df1c8c1;
+  }
+
+  .statss {
+    display: flex;
+    gap: 10px; /* 按钮之间的间距 */
+    margin-top: 10px;
+    flex-wrap: nowrap; /* 防止按钮换行 */
+  }
+
+  .play-button{
+    width: 32px; /* 固定宽度 */
+    height: 32px; /* 固定高度 */
+    padding: 0; /* 清除内边距 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* 背景颜色 */
+    border: none; /* 边框 */
+    cursor: pointer; /* 鼠标悬停时的手形指针 */
+    margin-top:0px;
+  }
+
+  .delete-button,
+  .addToPlayList-button {
+    width: 32px; /* 固定宽度 */
+    height: 32px; /* 固定高度 */
+    padding: 0; /* 清除内边距 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* 背景颜色 */
+    border: none; /* 边框 */
+    cursor: pointer; /* 鼠标悬停时的手形指针 */
+  }
+
+  .play-button img{
+    width: 24px; /* 图片宽度 */
+    height: 24px; /* 图片高度 */
+    vertical-align: middle;
+  }
+  .delete-button img,
+  .addToPlayList-button img {
+    width: 24px; /* 图片宽度 */
+    height: 24px; /* 图片高度 */
+    vertical-align: middle;
   }
   </style>
   

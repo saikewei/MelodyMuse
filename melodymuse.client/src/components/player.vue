@@ -2,7 +2,7 @@
   <div class="music-player">
     <div class="content">
       <el-col :span="12" class="image-container">
-        <img :src="currentImage" alt="Album cover" class="album-image" />
+        <img :src="currentImage ? currentImage : defaultImage" alt="Album cover" class="album-image" />
       </el-col>
       <el-col :span="12" class="lyrics-container">
         <div class = "songName">
@@ -73,6 +73,7 @@ import { ref, onMounted ,watch} from 'vue';
 import api from '../api/http.js'
 import { useRouter, useRoute } from 'vue-router';
 import playListWindow from './playListWindow.vue';
+import {ElMessage} from 'element-plus'
 
 const route = useRoute(); 
 
@@ -93,6 +94,7 @@ var albumId = ref('');
 var songName = ref('');
 var composerId = ref('');
 var currentImage = ref('');
+var defaultImage = ref("/defaultImage.jpg")
 var currentLine = ref(0);
 var audioElement = ref(null);
 var progress = ref(0);
@@ -157,6 +159,7 @@ async function pull_song_data(songId){
 
     // 使用歌曲信息中的数据
     composerId.value = songInfo.composerId;
+    console.log(songInfo.albumId)
     albumId.value = songInfo.albumId;
 
 
@@ -225,7 +228,6 @@ async function fetch_img(albumId) {
     return imageUrl;
   } catch (error) {
     console.log(error);
-    return null;
   }
 }
 
@@ -242,7 +244,7 @@ async function fetchLyrics(songId,artistId){
 
   if(response.status === 200)
   {
-  return response.data;
+    return response.data;
   }
   else{
     return '[00:00.00] 获取歌词失败'
@@ -250,6 +252,7 @@ async function fetchLyrics(songId,artistId){
 
 }catch(error){
   console.log(error)
+  return '[00:00.00] 获取歌词失败'
 }
 }
 
@@ -270,10 +273,18 @@ async function fetchSong(songId, artistId) {
       // 返回音频的 URL
       return audioUrl;
     } else {
+      ElMessage({
+        message:"音乐加载失败",
+        type:"error"
+      })
       return null;
     }
   } catch (error) {
     console.log(error);
+    ElMessage({
+        message:"音乐加载失败",
+        type:"error"
+    })
     return null;
   }
 }
