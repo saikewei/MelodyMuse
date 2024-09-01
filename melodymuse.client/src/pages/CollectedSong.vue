@@ -64,7 +64,7 @@
   <script>
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
-  //import api from '../api/http.js';
+  import api from '../api/http.js';
   import axios from 'axios';
   import playIcon from '../assets/pics/play.png'; 
   import playClickedIcon from '../assets/pics/play-click.png'; 
@@ -82,34 +82,7 @@
     data() {
       return {
         collectedSongs: [
-        {
-        "songId": "0c35751f-0",
-        "songName": "缓缓",
-        "duration": 236,
-        "artistName": "杜宣达",
-        "liked": true
-    },
-    {
-        "songId": "1b5ed95e-d",
-        "songName": "天若有情",
-        "duration": 205,
-        "artistName": "杜宣达",
-        "liked": true
-    },
-    {
-        "songId": "2bc50733-6",
-        "songName": "最后一页",
-        "duration": 218,
-        "artistName": "杜宣达",
-        "liked": true
-    },
-    {
-        "songId": "32ff5158-6",
-        "songName": "忘记时间·2024",
-        "duration": 229,
-        "artistName": "杜宣达",
-        "liked": true
-    },
+      
         ],
         playIcon,
         playClickedIcon,
@@ -133,13 +106,13 @@
       // 获取收藏的歌曲信息
       async fetchCollectedSongs() {
         try {
-          //const response = await api.apiClient.get(`/api/songs/user/${this.userId}/collected`);
-          const response = await axios.get(`https://localhost:7223/api/songs/user/${this.userId}/collected`);
+          const response = await api.apiClient.get(`/api/users/collectsong/${this.userId}`);
+         // const response = await axios.get(`https://localhost:7223/api/songs/user/${this.userId}/collected`);
           const songs = response.data.map(song => ({ ...song, liked: true }));
           // 获取每首歌的专辑名称并更新数据
         for (let song of songs) {
-          //const albumResponse = await api.apiClientWithoutToken.get(`/songs/${song.songId}/album`);
-          const albumResponse = await axios.get(`https://localhost:7223/api/songs/${song.songId}/album`);
+          const albumResponse = await api.apiClient.get(`/api/songs/${song.songId}/album`);
+          //const albumResponse = await axios.get(`https://localhost:7223/api/songs/${song.songId}/album`);
           song.albumName = albumResponse.data.albumName;
         }
 
@@ -177,8 +150,8 @@
       async toggleLikeIcon(song) {
       song.liked = !song.liked;
       try {
-        //await api.apiClient.delete(`/api/users/remove`, {
-        await axios.delete(`https://localhost:7223/api/users/remove`, {
+        await api.apiClient.delete(`/api/users/remove`, {
+        //await axios.delete(`https://localhost:7223/api/users/remove`, {
           data: {
             userId: this.userId,
             songId: song.songId

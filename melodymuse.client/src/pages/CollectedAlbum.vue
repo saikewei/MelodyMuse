@@ -59,8 +59,8 @@
   <script>
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
-  import axios from 'axios';
-  //import api from '../api/http.js';
+  //import axios from 'axios';
+  import api from '../api/http.js';
   import likeIcon from '../assets/pics/like.png'; 
   import likeClickedIcon from '../assets/pics/like-click.png'; 
   
@@ -73,16 +73,7 @@
     data() {
       return {
         collectedAlbums: [
-        {
-        "albumId": "3689b676-9",
-        "albumName": "杜宣达",
-        "albumReleasedate": "2002-09-13T03:47:21",
-        "albumCompany": "蓝天乐律",
-        "albumProducer": "杜宣达",
-        "artistId": "100",
-        "liked": true,
-        "artistName": "杜宣达"
-        },
+       
         ],
         likeIcon,
         likeClickedIcon,
@@ -102,15 +93,15 @@
       // 获取收藏的专辑信息
       async fetchCollectedAlbums() {
         try {
-         //const response = await api.apiClient.get(`/api/users/user/${this.userId}/albums`);
-          const response = await axios.get(`https://localhost:7223/api/users/user/${this.userId}/albums`);
+         const response = await api.apiClient.get(`/api/users/user/${this.userId}/albums`);
+          //const response = await axios.get(`https://localhost:7223/api/users/user/${this.userId}/albums`);
           const albums = response.data.map(album => ({ ...album, liked: true }));
   
           // 获取歌手的名字并更新数据
           for (let album of albums) {
             if (album.artistId) {
-              //const artistResponse = await api.apiClientWithoutToken.get(`/artists/${album.artistId}`);
-              const artistResponse = await axios.get(`https://localhost:7223/api/artists/${album.artistId}`);
+              const artistResponse = await api.apiClient.get(`/api/artist/${album.artistId}`);
+             //const artistResponse = await axios.get(`https://localhost:7223/api/artists/${album.artistId}`);
               album.artistName = artistResponse.data.artistName;//动态添加属性
             }
           }
@@ -126,8 +117,8 @@
       async toggleLikeIcon(album) {
         album.liked = !album.liked;
         try {
-          //await api.apiClient.delete(`/api/users/removeAlbum`, {
-          await axios.delete(`https://localhost:7223/api/users/removeAlbum`, {
+          await api.apiClient.delete(`/api/users/removeAlbum`, {
+          //await axios.delete(`https://localhost:7223/api/users/removeAlbum`, {
             data: {
               userId: this.userId,
               albumId: album.albumId
