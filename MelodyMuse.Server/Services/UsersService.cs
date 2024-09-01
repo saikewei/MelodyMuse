@@ -14,10 +14,12 @@ namespace MelodyMuse.Server.Services
     {
         //内部维护一个下层数据库访问服务(Repository)的接口
         private readonly IUsersRepository _usersRepository;
+        private readonly IArtistRepository _artistRepository;
 
-        public UsersService(IUsersRepository usersRepository)
+        public UsersService(IUsersRepository usersRepository, IArtistRepository artistRepository)
         {
             _usersRepository = usersRepository;
+            _artistRepository = artistRepository;
         }
         // 构造函数，注入实例
         public UsersService(UsersRepository usersRepository)
@@ -50,6 +52,11 @@ namespace MelodyMuse.Server.Services
         {
             // 调用 IUserRepository 中的方法更新用户资料
             await _usersRepository.UpdateUserAsync(user);
+        }
+
+        public async Task<bool> Useridentity(string userId)
+        {
+            return await _artistRepository.IsUserInArtistAsync(userId);
         }
     }
 }

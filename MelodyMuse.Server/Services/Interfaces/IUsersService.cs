@@ -13,5 +13,7 @@ namespace MelodyMuse.Server.Services.Interfaces
         Task<User?> UpdateUserStatus(string userId, string newStatus);
         Task<List<string>> GetAllUserIds();
         Task UpdateUserAsync(User user);
+
+        Task<bool> Useridentity(string userId);//判断用户是否已经上传歌曲成为歌手
     }
 }
