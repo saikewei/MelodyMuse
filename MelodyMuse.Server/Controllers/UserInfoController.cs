@@ -103,8 +103,8 @@ namespace MelodyMuse.Server.Controllers
 
 
         //获取其他用户
-        //[Authorize]
-        [HttpGet("userId")]
+        [Authorize]
+        [HttpGet("{userId}")]
         public async Task<ActionResult> GetOtherUserInfo(string userId)
         {
             try
