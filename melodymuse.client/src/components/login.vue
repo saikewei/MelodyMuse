@@ -30,6 +30,7 @@
 
 <script>
 import api from '../api/http.js'
+import { ElMessage } from 'element-plus';
 export default {
   data() {
     return {
@@ -62,7 +63,7 @@ export default {
       });
 
       if (response.status === 200 && response.data.token) {
-        alert('登录成功');
+        ElMessage.success('登录成功');
         localStorage.setItem('token', response.data.token);
         this.$router.push('/');
       } else {

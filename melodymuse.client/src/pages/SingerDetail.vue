@@ -1,7 +1,8 @@
 <template>
+  <div>
+        <TheHeader />
   <div class="page-container">
     <div class="profile">
-      <TheHeader />
       <div class="header">
         <img class="profile-picture" :src="profilePicture" alt="Profile Picture" />
         <div class="profile-info">
@@ -33,13 +34,40 @@
                 <th>歌曲</th>
                 <th>专辑</th>
                 <th>时长</th>
+                <!-- 添加按钮 -->
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(song, index) in songs" :key="index" @click="playSong(song.songId)">
-                <td>{{ index + 1 }}. {{ song.songName }}</td>
-                <td>{{ song.albumName }}</td>
+            
+                <td>
+                  <!-- 添加播放按钮 -->
+                  <el-tooltip content="播放歌曲" placement="bottom">
+                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                           @mouseover="song.playHover = true"
+                           @mouseleave="song.playHover = false"
+                           @click="togglePlayIcon(song)" 
+                           class="play-icon"
+                           alt="播放歌曲" />
+                    </el-tooltip>
+                  {{ index + 1 }}. {{ song.songName }}</td>
+                 <!-- togglePlayIcon(song)换成playSong(song.songId) -->
+
+                <td>{{ song.albumNameName }}</td>
                 <td>{{ formatDuration(song.duration) }}</td>
+              
+                  <!-- 添加收藏按钮 -->
+                  <td>
+                    <el-tooltip content="收藏歌曲" placement="bottom">
+                      <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                           @mouseover="song.likeHover = true"
+                           @mouseleave="song.likeHover = false"
+                           @click="toggleLikeIcon(song)"
+                           class="like-icon"
+                           alt="收藏歌曲" />
+                    </el-tooltip>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -47,13 +75,25 @@
       </div>
     </div>
   </div>
+    <TheFooter />
+  </div>
   </template>
   
   <script>
   import profilePicture from '../assets/logo2.jpg';
-  import TheHeader from '@/components/TheHeader.vue';
+  import TheFooter from "../components/TheFooter.vue";
+  import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js'
-    
+  import playIcon from '../assets/pics/play.png'; // 添加按钮图片路径↓
+  import playClickedIcon from '../assets/pics/play-click.png'; 
+  import playHoverIcon from '../assets/pics/play-cover.png'; 
+  import likeIcon from '../assets/pics/like.png'; 
+  import likeHoverIcon from '../assets/pics/like-cover.png'; 
+  import likeClickedIcon from '../assets/pics/like-click.png'; 
+  import addIcon from '../assets/pics/add.png'; 
+  import addHoverIcon from '../assets/pics/add-cover.png'; 
+  import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+
   export default {
     data() {
       return {
@@ -64,18 +104,37 @@
           artistName:'',
           artistGenre: '',
           artistIntro: '',
-          artistBirthday: ''
+          artistBirthday: '',
         },
         followersCount: 0, // 数字格式，方便处理加减
         isFollowing: false,
-        songs:[]
-        /*songs: [
-          { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+        songs:[
+          
+        /*  { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+          { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
+          { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
+          { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
+          { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
+          { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
+          { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
           { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' },          
-          // 其他歌曲省略
-        ]*/
+          // 其他歌曲省略*/
+          ],
+        isLiked: false,
+  
+        audio: null, // 添加 audio 对象
+        currentPlayingSongId: null, // 当前正在播放的歌曲 ID
+        playIcon,
+        playClickedIcon,
+        playHoverIcon,
+        likeIcon,
+        likeHoverIcon,
+        likeClickedIcon,
+        addIcon,
+        addHoverIcon,
+        addClickedIcon,
       };
     },
     computed: {
@@ -95,6 +154,7 @@
     },
     components: {
       TheHeader,
+      TheFooter,
     },
     methods: {
     //获取艺术家信息，前端已测试成功
@@ -127,15 +187,75 @@
     },
 
     //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
-      playFirstSong() {
-        const firstSongId = this.songs[0].songId;
-        this.$router.push({ name: 'PlayerPage', params: { songId: firstSongId } });
-      },
+    playFirstSong() {
+    if (this.songs.length > 0) {
+      // 获取歌手歌曲列表的第一首歌曲的 ID
+      const firstSongId = this.songs[0].songId;
+      
+      // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+      const songList = this.songs.map(s => s.songId).join(',');
+
+      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: firstSongId, // 第一个歌曲的 ID
+          songList: songList   // 所有歌曲 ID 组成的字符串
+        }
+      });
+    } else {
+      console.error('歌曲列表为空，无法播放第一首歌曲');
+    }
+  },
 
       //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
         this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
       },
+
+    //收藏方法
+    async toggleLikeIcon(song) {
+        try {
+          if (song.liked) {
+            // 如果已收藏，发送请求删除收藏
+            await api.apiClient.delete(`/api/users/remove`, {
+              data:{
+              userId: this.userId,
+              songId: song.songId
+              }
+            });
+            song.liked = false;
+          } else {
+            // 如果未收藏，发送请求添加收藏
+            await api.apiClient.post(`/api/users/add`, {
+              userId: this.userId,
+              songId: song.songId
+            });
+            song.liked = true;
+          }
+        } catch (error) {
+          console.error('操作失败,请重试', error);
+          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+        }
+      },
+
+      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+      togglePlayIcon(song) {
+    try {
+      // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+      const songList = this.songs.map(s => s.songId).join(',');
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: song.songId, // 当前播放的歌曲 ID
+          songList: songList   // 歌曲列表的所有 songId
+        }
+      });
+    } catch (error) {
+      console.error('跳转到播放页面失败:', error);
+    }
+  },
+      
 
       //实现关注和取消关注
       async toggleFollow() {
@@ -174,6 +294,7 @@ async updateFollowersCount() {
       console.error('添加人数失败:', error);
     }
   },
+
     //处理歌曲时长，将秒数转换为 mm:ss 格式
     formatDuration(duration) {
       const minutes = Math.floor(duration / 60);
@@ -181,6 +302,7 @@ async updateFollowersCount() {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   },  
+
   async created() {
     this.artistId = this.$route.params.artistId;  // 假设从路由参数中获取artistId，也可以换成其他方式
     if (this.artistId) {
@@ -197,8 +319,8 @@ async updateFollowersCount() {
   <style scoped>
 
 .page-container {
-  background: radial-gradient(circle, #f0f0f5, #d8d8fb); /* 从中心向外的渐变 */
-  min-height: 100vh;
+  background: linear-gradient(to top, #f0f0f5, #d8dff8); /* 从中心向外的渐变 */
+  min-height: 94vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -208,6 +330,7 @@ async updateFollowersCount() {
 .profile {
   width: 90%;
   max-width: 1200px; /* 设置最大宽度 */
+  max-height:680px;
   margin: 20px auto;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -223,8 +346,8 @@ async updateFollowersCount() {
   .profile-picture {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
-    margin-right: 20px;
+    border-radius: 8px;
+    margin-right: 30px;
   }
   
   .profile-info {
@@ -273,7 +396,7 @@ async updateFollowersCount() {
 }
   
   .songs-table {
-    max-height: 400px;
+    max-height: 320px;
     overflow-y: auto;
   }
   
@@ -291,5 +414,11 @@ async updateFollowersCount() {
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
+  .play-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
+  .like-icon {
+  width: 34px; /* 设置按钮的宽度 */
+}
   </style>
   

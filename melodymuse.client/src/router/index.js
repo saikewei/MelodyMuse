@@ -18,6 +18,9 @@ import userSongShow from "../pages/userSongShow.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
+import Test from "@/pages/test.vue";
+import AlbumDetail from "../pages/AlbumDetail.vue";
+import SonglistDetail from "@/pages/SonglistDetail.vue";
 import RankSongs from "../pages/RankSongs.vue";
 import RankArtists from "../pages/RankArtists.vue";
 
@@ -94,6 +97,7 @@ const routes = [
     component: mediaplayer,
   },
   {
+    //path: "/SingerDetail/",//调试用
     path: "/SingerDetail/:artistId",
     name: "SingerDetail",
     component: SingerDetail,
@@ -134,6 +138,22 @@ const routes = [
     name:"userSongShow",
     component:userSongShow,
   }
+  {
+    path: "/test",
+    name: "test",
+    component: Test,
+  },
+  {
+    path: "/AlbumDetail/:albumId",
+    //path: "/AlbumDetail",//调试用
+    name: "AlbumDetail",
+    component: AlbumDetail,
+  },
+  {
+    path: "/SonglistDetail/:songListId",
+    name: "SonglistDetail",
+    component: SonglistDetail,
+  },
 ];
 
 const router = createRouter({

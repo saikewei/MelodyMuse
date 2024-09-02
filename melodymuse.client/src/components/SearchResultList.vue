@@ -79,13 +79,13 @@
                              class="icon"
                              alt="收藏歌曲" />
                     </el-tooltip>
-                    <el-tooltip content="添加到播放列表" placement="bottom">
+                    <el-tooltip content="添加到歌单" placement="bottom">
                         <img :src="scope.row.added ? addClickedIcon : scope.row.addHover ? addHoverIcon : addIcon"
                              @mouseover="scope.row.addHover = true"
                              @mouseleave="scope.row.addHover = false"
                              @click="toggleAddIcon(scope.row)"
                              class="icon"
-                             alt="添加到播放列表" />
+                             alt="添加到歌单" />
                     </el-tooltip>
                 </template>
             </el-table-column>
@@ -94,6 +94,9 @@
         <div v-else class="no-results">
             抱歉，没有找到相关结果
         </div>
+        <el-dialog v-model="dialogAddVisible" width="500px" v-if="dialogAddVisible">
+            <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose"/>
+        </el-dialog>
     </div>
 </template>
 
@@ -108,6 +111,7 @@
     import addIcon from '../assets/pics/add.png';
     import addHoverIcon from '../assets/pics/add-cover.png';
     import addClickedIcon from '../assets/pics/add-click.png';
+import AddToSongList from './AddToSongList.vue';
 
     export default {
         props: {
@@ -132,7 +136,12 @@
                 addIcon,
                 addHoverIcon,
                 addClickedIcon,
+                dialogAddVisible: false,
+                currentSongId: 0,
             };
+        },
+        components:{
+            AddToSongList
         },
         created() {
             this.query = this.$route.query.query || ''; // 从路由中获取查询参数
@@ -197,7 +206,12 @@
                 song.liked = !song.liked;
             },
             toggleAddIcon(song) {
-                song.added = !song.added;
+                console.log(song);
+                this.currentSongId=song.songId;
+                this.dialogAddVisible=true;
+            },
+            handleDialogClose(isVisible) {
+                this.dialogAddVisible = isVisible;
             }
         }
     }

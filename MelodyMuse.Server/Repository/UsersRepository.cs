@@ -92,5 +92,59 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Users.ToListAsync();
         }
+         public async Task AddUserCollectSongAsync(UserCollectSong userCollectSong)
+        {
+            // 添加用户收藏的歌曲
+            await _context.UserCollectSongs.AddAsync(userCollectSong);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserCollectSong?> GetUserCollectSongAsync(string userId, string songId)
+        {
+            // 查询用户是否已经收藏了该歌曲
+            return await _context.UserCollectSongs
+                .FirstOrDefaultAsync(ucs => ucs.UserId == userId && ucs.SongId == songId);
+        }
+        public async Task RemoveUserCollectSongAsync(UserCollectSong userCollectSong)
+        {
+            _context.UserCollectSongs.Remove(userCollectSong);
+            await _context.SaveChangesAsync();
+        }
+         public async Task AddUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum)
+        {
+            await _context.UserCollectAlbums.AddAsync(userCollectAlbum);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserCollectAlbum?> GetUserCollectAlbumAsync(string userId, string albumId)
+        {
+            return await _context.UserCollectAlbums
+                .FirstOrDefaultAsync(uca => uca.UserId == userId && uca.AlbumId == albumId);
+        }
+
+        public async Task RemoveUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum)
+        {
+            _context.UserCollectAlbums.Remove(userCollectAlbum);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<Album>> GetUserCollectedAlbumsAsync(string userId)
+        {
+            // 查询用户收藏的所有专辑
+            var albums = await _context.UserCollectAlbums
+                .Where(u => u.UserId == userId)
+                .Include(u => u.Album)
+                .Select(u => u.Album)
+                .ToListAsync();
+
+            return albums;
+        }
+        // 获取指定用户关注的所有歌曲
+        public async Task<List<Song>> GetCollectedSongsByUserId(string userId)
+        {
+            return await _context.UserCollectSongs
+                .Where(u => u.UserId == userId)
+                .Select(u => u.Song)
+                .ToListAsync();
+        }
     }
 }
