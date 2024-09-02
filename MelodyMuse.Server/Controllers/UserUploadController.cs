@@ -15,9 +15,11 @@ namespace MelodyMuse.Server.Controllers
     public class UserUploadController : Controller
     {
         private readonly IUploadSongService _uploadsongService;
-        public UserUploadController(IUploadSongService songService)
+        private readonly IMusicPlayerService _musicService;
+        public UserUploadController(IUploadSongService songService, IMusicPlayerService musicService)
         {
             _uploadsongService = songService;
+            _musicService = musicService;
         }
 
         [HttpPost("uploadsong")]
@@ -60,5 +62,32 @@ namespace MelodyMuse.Server.Controllers
             return BadRequest("Error uploading song.");
         }
 
+        [HttpPost("deletesong")]
+        [Authorize]
+        public async Task<IActionResult> DeleteSong(string songId)
+        {
+
+            // 从请求头中获取 JWT 令牌//
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            //如果没有令牌，返回未授权错误码401//
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+
+            // 解析 JWT 令牌 得到存储的信息ParsedToken:id,name,phone
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+            //下面是输出测试查看是否正确//
+            Console.WriteLine(parsedToken.UserID + " " + parsedToken.Username + " " + parsedToken.UserPhone);
+            var userId = parsedToken.UserID;
+
+            if (! await _uploadsongService.UserDeleteSongAsync(userId, songId))
+            {
+                return BadRequest("Error delete song.");
+            }
+
+            return Ok(new { message = "Song delete successfully." });
+        }
     }
 }
+//af8dd101-e
