@@ -21,10 +21,8 @@
                     <SearchResults :results="filteredResults" :searchType="searchType" />
                 </div>
             </div>
-            <div style="margin: auto">
-                <el-button type="primary">个人信息</el-button>
-                <el-button type="danger" @click="logOut">退出登录</el-button>
-            </div>
+            <a class="account-link" href="/singer">{{ userName==''?'名称加载中':userName }}</a>
+            <el-button type="danger" @click="logOut">退出登录</el-button>
         </nav>
     </div>
 </template>
@@ -52,7 +50,8 @@
                 actualQuery: '', // 点击Search按钮时用
                 searchResults: [],
                 searchType: 'song', // 初始设置
-                showPopup: false  // 控制弹出框显示
+                showPopup: false,  // 控制弹出框显示
+                userName: '',
             };
         },
         computed: {
@@ -61,10 +60,11 @@
                 return this.searchResults.filter(result => result.type === this.searchType);
             }
         },
-        created() {
+        async created() {
             this.inputQuery = this.$route.query.query || '';
             this.searchType = this.$route.query.type || 'song';
             this.updateSearchType(this.searchType);
+            await this.fetchUserInfo();
 
             // 设置默认的活跃项为首页
             if (this.$route.path === '/') {
@@ -122,6 +122,12 @@
                     this.searchResults = [];
                     this.showPopup = false;
                 }
+            },
+            async fetchUserInfo()
+            {
+                const userInfoResponse = await api.apiClient.get('/api/users/info');
+                this.userName=userInfoResponse.data.userName;
+                console.log(userInfoResponse.data);
             },
             handleSearchTypeChange() {
                 this.performSearch();
@@ -241,6 +247,20 @@
         display: flex;
         align-items: center;
     }
+
+    .account-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.account-link:hover {
+    color: #284da0c1; /* 悬停时改变颜色 */
+    text-decoration: underline; /* 悬停时添加下划线 */
+}
 
         .navbar-search select {
             padding: 8px;

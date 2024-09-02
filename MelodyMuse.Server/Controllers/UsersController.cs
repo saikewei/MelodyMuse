@@ -121,6 +121,52 @@ namespace MelodyMuse.Server.Controllers
             }
         }
 
+        // 通过用户ID获取其信息
+        [Authorize]
+        [HttpGet("info")]
+        public async Task<IActionResult> GetUserByToken()
+        {
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+
+            try
+            {
+                //构建实例
+                UserModel user = await _usersService.GetUserById(userId);
+
+                if (user == null)
+                {
+                    // 不存在时的处理逻辑
+                    return NotFound(new { msg = "用户不存在" });
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    msg = "查询失败" + ex.Message
+                };
+                //返回404
+                return NotFound(errorResponse);
+            }
+        }
+
         // 更新用户资料
         [Authorize]
         [HttpPut("{userId}")]

@@ -61,6 +61,16 @@ const routes = [
     ],
   },
   {
+    path: "/user",
+    children: [
+      {
+        path: "personal-info",
+        name: "modify",
+        component: modify,
+      },
+    ],
+  },
+  {
     path: "/my-music",
     name: "my-music",
     component: MyMusic,
