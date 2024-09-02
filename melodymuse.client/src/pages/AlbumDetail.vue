@@ -71,11 +71,33 @@
                     </el-tooltip>
                   </td>
                   <!-- 加入专辑按钮 -->
-                  <td>
+                  <!--<td>
                      <button class="add-to-songlist-button" @click.stop="showSonglistModal(song)">
                       ➕ 
                      </button>
-                  </td>
+                  </td>-->
+                  
+    <td>
+      <el-tooltip content="添加到歌单" placement="bottom">
+        <img 
+          :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+          @mouseover="song.addHover = true"
+          @mouseleave="song.addHover = false"
+          @click="toggleDialog(song.id)"  <!-- 修改此处，点击按钮打开弹窗 -->
+          class="icon"
+          alt="添加到歌单" 
+        />
+      </el-tooltip>
+    </td>
+
+    <!-- 引用弹窗组件 -->
+    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+      <AddToSongList 
+        :songId="currentSongId" 
+        :dialogVisible="dialogVisible" 
+        @update:dialogVisible="handleDialogClose" 
+      />
+    </el-dialog>
              </tr>
            </tbody>
          </table>
@@ -83,15 +105,7 @@
      </div>
    </div>
  </div>
-  <!-- 弹窗：选择歌单 -->
-  <el-dialog title="选择专辑" :visible.sync="isSonglistModalVisible" width="30%">
-      <div v-for="songlist in songlists" :key="songlist.id" class="songlist-item">
-        <button @click="addToSonglist(currentSong, songlist.id)">
-          {{ songlist.name }}
-        </button>
-      </div>
-      <button class="create-new-songlist-button" @click="createNewSonglist">创建新专辑</button>
-    </el-dialog>
+ 
       <TheFooter  />
  </div>
 </template>
@@ -110,7 +124,9 @@
   import addIcon from '../assets/pics/add.png'; 
   import addHoverIcon from '../assets/pics/add-cover.png'; 
   import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+  import AddToSongList from '../components/AddToSongList.vue';
   
+
   export default {
     data() {
       return {
@@ -149,7 +165,7 @@
         //*/
         ],
         isLiked: false,
-        isSonglistModalVisible: false, // 弹窗状态
+        dialogAddVisible: false, // 弹窗状态
         currentSong: null, // 当前选择的歌曲
         songlists: [], // 用户的歌单列表
         },
@@ -165,6 +181,7 @@
         addClickedIcon,
       };
     },
+   
     computed: {
       //歌曲计数
       songCount() {
@@ -177,6 +194,7 @@
       }
     },
     components: {
+      AddToSongList, 
       TheHeader,
       TheFooter,
     },
@@ -279,7 +297,8 @@
       song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
     }
   },*/
-      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+     
+  // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
       togglePlayIcon(song) {
     try {
       // 获取当前歌曲的 ID
@@ -301,7 +320,15 @@
       console.error('跳转播放页面失败:', error);
     }
   },
-      
+      toggleAddIcon(song) {
+          console.log(song);
+          this.currentSongId=song.songId;
+          this.dialogAddVisible=true;
+      },
+      handleDialogClose(isVisible) {
+          this.dialogAddVisible = isVisible;
+      },
+
       // 将毫秒转换为分钟和秒
       formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
@@ -355,7 +382,7 @@
   },
 
   // 将歌曲添加到选中的歌单
-  async addToSonglist(song, songlistId) {
+  /*async addToSonglist(song, songlistId) {
     try {
       await api.apiClient.post(`/api/songlists/add`, {
         userId: this.userId,
@@ -379,7 +406,7 @@
     } catch (error) {
       console.error('创建歌单失败:', error);
     }
-  },
+  },*/
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
@@ -522,7 +549,11 @@
   cursor: pointer;
   margin-top: 10px;
 }
-
+.icon {
+  width: 24px; /* 设置图标宽度 */
+  height: 24px; /* 设置图标高度 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
  
   </style>
   
