@@ -151,34 +151,19 @@ export default{
       },
 
       playSong(songId){
+        //console.log(songId)
+        //console.log(this.songs)
         var songs=""
         this.songs.forEach(song=>{
           songs+=song.songId
           songs+=","
         })
         songs=songs.slice(0,-1);
+        //console.log(songs)
         router.push(`/mediaplayer/${songId}/${songs}`)
       },
-      async deleteSong(songId){
+      deleteSong(songId){
         console.log(songId)
-        try
-        {
-          const response = await api.apiClient.post(`/api/usersub/deletesong/${songId}`);
-          ElMessage({
-            message:"删除成功",
-            type:"success"
-          })
-
-        }
-        catch(error){
-          ElMessage({
-            message:"删除失败",
-            type:"error"
-          })
-          console.error("删除歌曲失败:"+error)
-        }
-        
-
       },
       showPlayList(songId){
 
@@ -220,7 +205,10 @@ export default{
         console.error("加载页面失败"+error)
       }
     }
-  }
+
+
+
+}
 </script>
 
 <style scoped>
