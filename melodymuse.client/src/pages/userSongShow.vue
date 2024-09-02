@@ -168,7 +168,7 @@ export default{
             message:"删除成功",
             type:"success"
           })
-
+          location.reload()
         }
         catch(error){
           ElMessage({
