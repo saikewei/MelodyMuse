@@ -6,12 +6,15 @@
           <div class="header">
             <img class="songList-cover" :src="songListCover" alt="Album Cover" />
             <div class="songList-info">
-              <h1>{{ songList.songListName }}</h1>
+              <h1>{{ songListInfo == null?'歌单名加载中':songListInfo.songlistName }}</h1>
               <p style="color:darkgray;font-size: small;">
-                创建人：{{ songList.songListProducer }}
+                创建人：{{ songListInfo ==  null?'加载中': songListInfo.username}}
+              </p>
+              <p style="color:darkgray;font-size: small;">
+                创建时间：{{ formattedCreateDate }}
               </p>
               <div class="stats">
-                <span>歌曲 {{ songCount }}</span>
+                <span>歌曲总数： {{ songCount }}</span>
               </div>
               <button class="play-button" @click="playFirstSong">▷播放专辑</button>
               <button 
@@ -50,11 +53,11 @@
                           class="play-icon"
                           alt="播放歌曲" />
                     </el-tooltip>
-                    {{ index + 1 }}. {{ song.songName }}
+                    {{ index + 1 }}. {{ song.title }}
                   </td>
                  <!-- togglePlayIcon(song)换成playSong(song.songId) -->
   
-                    <td>{{ song.artistName }}</td>
+                    <td>{{ song.artists[0].artistName }}</td>
                     <td>{{ formatDuration(song.duration) }}</td>
   
                     <!-- 添加收藏按钮 -->
@@ -71,6 +74,7 @@
                </tr>
              </tbody>
            </table>
+           <p style="text-align: center;" v-if="songList==null">歌单内暂无歌曲</p>
          </div>
        </div>
      </div>
@@ -99,9 +103,9 @@
         return {
         songListCover,
           userId: '',
-          songListId: '09324b02c2',
+          songListId: '',
           songList: null,
-          songListInfo: null,
+          songListInfo: null, 
            // 添加
           playIcon,
           playClickedIcon,
@@ -117,11 +121,17 @@
       computed: {
         //歌曲计数
         songCount() {
+          if(this.songList==null){
+            return 0;
+          }
           return this.songList.length;
         },
         //把发行日期转化为规范格式
-        formattedReleaseDate() {
-          const releaseDate = new Date(this.songList.songListCreatedate);
+        formattedCreateDate() {
+          if(this.songListInfo==null){
+            return '加载中';
+          }
+          const releaseDate = new Date(this.songListInfo.songlistDate);
           return releaseDate.toLocaleDateString();
         }
       },
@@ -130,25 +140,22 @@
         TheFooter,
       },
       methods: {
-        async fetchAlbumData() {
+        async fetchSonglistData() {
           try {
             const songListResponse = await api.apiClient.get(`/api/songList/${this.songListId}/songs`);
             this.songList = songListResponse.data;
             console.log(this.songList)
-            // await this.fetchArtistName();
           } catch (error) {
             console.error('获取专辑信息失败:', error);
           }
         },
-        async fetchArtistName() {
+        async fetchSonglistInfo() {
           try {
-            const artistResponse = await api.apiClient.get(`/api/artist/${this.songList.artistId}`);
-            const artistName = artistResponse.data.artistName;
-            this.songList.songs.forEach(song => {
-              song.artistName = artistName;
-            });
+            const artistInfoResponse = await api.apiClient.get(`/api/songlist/${this.songListId}/info`);
+            this.songListInfo = artistInfoResponse.data;
+            console.log(artistInfoResponse.data);
           } catch (error) {
-            console.error('获取歌手信息失败:', error);
+            console.error('获取歌单信息失败:', error);
           }
         },
         //点击播放专辑按钮，自动播放第一首歌曲
@@ -261,9 +268,10 @@
       },
     },
       async created() {
-        // this.songListId = this.$route.params.songListId;
+        this.songListId = this.$route.params.songListId;
         if (this.songListId) {
-          await this.fetchAlbumData();
+          await this.fetchSonglistData();
+          await this.fetchSonglistInfo();
         } else {
           console.error('未找到 songListId');
         }

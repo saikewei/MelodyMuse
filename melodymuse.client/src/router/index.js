@@ -128,8 +128,7 @@ const routes = [
     component: AlbumDetail,
   },
   {
-    path: "/SonglistDetail",
-    //path: "/AlbumDetail",//调试用
+    path: "/SonglistDetail/:songListId",
     name: "SonglistDetail",
     component: SonglistDetail,
   },

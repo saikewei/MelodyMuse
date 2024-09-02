@@ -54,8 +54,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import api from '../api/http.js'
+import { ref, onMounted } from 'vue';
+import api from '../api/http.js';
+import { useRouter } from 'vue-router';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 interface Playlist {
@@ -68,7 +69,8 @@ const songlists = ref<Playlist[]>([]);
 const loading = ref(true);
 const dialogVisible = ref(false);
 const currentPlaylist = ref<Partial<Playlist> & { isPublic?: boolean }>({});
-const formRef = ref(null)
+const formRef = ref(null);
+const router = useRouter();
 
 const fetchSongList = async () => {
   try {
@@ -94,7 +96,7 @@ onMounted(() => {
 
 const viewDetails = (playlist: Playlist) => {
   console.log(`Viewing details for playlist: ${playlist.songlistName}`)
-  // 你可以在这里实现查看歌单详细信息的逻辑
+  router.push(`/SonglistDetail/${playlist.songlistId}`);
 }
 
 const openCreateDialog = () => {
