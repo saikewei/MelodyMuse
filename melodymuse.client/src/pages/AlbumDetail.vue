@@ -97,7 +97,7 @@
 </template>
   
   <script>
-  import albumCover from '../assets/logo2.jpg';
+  //import albumCover from '../assets/logo2.jpg';
   import TheFooter from "../components/TheFooter.vue";
   import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js';
@@ -114,7 +114,7 @@
   export default {
     data() {
       return {
-        albumCover,
+        albumCover: '',
         userId: '',
         albumId: '',
         album: {
@@ -185,11 +185,29 @@
         try {
           const albumResponse = await api.apiClient.get(`/api/album/${this.albumId}`);
           this.album = albumResponse.data;
-          await this.fetchArtistName();
+          await this.fetchAlbumCover();//获取专辑封面
+          await this.fetchArtistName();//获取歌手名字
         } catch (error) {
           console.error('获取专辑信息失败:', error);
         }
       },
+
+      async fetchAlbumCover() {
+      try {
+        const coverResponse = await api.apiClient.get(`/api/player/jpg`, {
+          params: {
+            albumId: this.albumId,
+          },
+          responseType: 'blob', // 表明服务器返回的数据是二进制流
+        });
+
+        const imageUrl = URL.createObjectURL(coverResponse.data);
+        this.albumCover = imageUrl;
+      } catch (error) {
+        console.error('获取专辑封面失败:', error);
+        this.albumCover = '../assets/logo2.jpg'; // 如果失败，使用默认封面
+      }
+    },
       async fetchArtistName() {
         try {
           const artistResponse = await api.apiClient.get(`/api/artist/${this.album.artistId}`);
@@ -201,6 +219,7 @@
           console.error('获取歌手信息失败:', error);
         }
       },
+
       //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
     try {
@@ -417,12 +436,21 @@
     align-items: center;
     padding: 20px;
   }
-  
+  /*
+  .album-cover {
+  width: 200px;
+  height: 200px;
+  margin-right: 20px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+  */
   .album-cover {
     width: 150px;
     height: 150px;
     border-radius: 8px;
     margin-right: 30px;
+    object-fit: cover;
   }
   
   .album-info {
