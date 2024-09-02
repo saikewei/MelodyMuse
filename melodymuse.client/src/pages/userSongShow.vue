@@ -142,10 +142,10 @@ export default{
               })
             )
         }catch(error){
-          ElMessage({
-              message:"获取歌曲信息失败,请稍后再试",
-              type:"error"
-            })
+          // ElMessage({
+          //     message:"获取歌曲信息失败,请稍后再试",
+          //     type:"error"
+          //   })
           console.error("歌曲信息获取失败:"+error);
         }
       },
@@ -198,6 +198,7 @@ export default{
           message:"上传成功",
           type:"success",
         })
+        location.reload();
       },
       handleSubmitFail() {
         ElMessage({
