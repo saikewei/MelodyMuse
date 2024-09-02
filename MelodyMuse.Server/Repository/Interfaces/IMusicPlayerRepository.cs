@@ -13,5 +13,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<string> GetAlbumIdBySongId(string songId);
 
         Task<bool> CountPlays(string songId, string userId);
+
+        Task<bool> DeleteCountPlaysRecord(string songId);
     }
 }

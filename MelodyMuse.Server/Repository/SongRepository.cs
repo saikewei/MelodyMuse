@@ -80,6 +80,89 @@ namespace MelodyMuse.Server.Repository
             return result > 0;
         }
 
+
+        public async Task<bool> DeleteMakeupSongListRecord(string songId)
+        {
+            // SQL 语句用于检查记录是否存在
+            var checkSql = "SELECT COUNT(1) FROM SONG_MAKEUP_SONGLIST WHERE SONG_ID = :songId";
+
+            // SQL 语句用于删除记录
+            var deleteSql = "DELETE FROM SONG_MAKEUP_SONGLIST WHERE SONG_ID = :songId";
+
+            // 创建参数
+            var parameter = new OracleParameter("songId", songId);
+
+            try
+            {
+                // 获取数据库连接
+                var connection = (OracleConnection)_context.Database.GetDbConnection();
+
+                // 打开连接（如果尚未打开）
+                if (connection.State != System.Data.ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                }
+
+                // 检查是否存在该记录
+                using (var checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = checkSql;
+                    checkCommand.Parameters.Add(parameter);
+
+                    var count = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                    // 如果不存在记录，返回 true，因为没有要删除的内容
+                    if (count == 0)
+                    {
+                        return true;
+                    }
+                }
+
+                // 如果存在记录，则执行删除操作
+                using (var deleteCommand = connection.CreateCommand())
+                {
+                    deleteCommand.CommandText = deleteSql;
+                    deleteCommand.Parameters.Add(parameter);
+
+                    var result = await deleteCommand.ExecuteNonQueryAsync();
+
+                    // 返回删除结果，是否有记录被删除
+                    return result > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                // 记录异常日志或处理异常
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteSongRecord(string songId)
+        {
+            try
+            {
+                // 检查 Songs 表中是否存在指定 songId 的记录
+                var songRecord = await _context.Songs.FirstOrDefaultAsync(song => song.SongId == songId);
+
+                if (songRecord != null)
+                {
+                    // 存在记录，进行删除操作
+                    _context.Songs.Remove(songRecord);
+
+                    // 保存更改并返回删除结果
+                    return await _context.SaveChangesAsync() > 0;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                
+                Console.WriteLine(ex.Message); // 示例日志记录或其他日志记录方式
+                return false; // 返回 false 表示删除失败
+            }
+        }
+
     }
 }
 

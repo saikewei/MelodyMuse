@@ -93,6 +93,68 @@ namespace MelodyMuse.Server.Repository
             return result > 0;
         }
 
+        public async Task<bool> DeleteartistSingSongAsync(string songId, string artistId)
+        {
+            // SQL 语句用于检查记录是否存在
+            var checkSql = "SELECT 1 FROM ARTIST_SING_SONG WHERE SONG_ID = :songId AND ARTIST_ID = :artistId";
+
+            // SQL 语句用于删除记录
+            var deleteSql = "DELETE FROM ARTIST_SING_SONG WHERE SONG_ID = :songId AND ARTIST_ID = :artistId";
+
+            // 创建参数
+            var parameters = new[]
+            {
+                 new OracleParameter("songId", songId),
+                 new OracleParameter("artistId", artistId)
+            };
+
+            try
+            {
+                var connection = (OracleConnection)_context.Database.GetDbConnection();
+
+                // 确保连接在使用前处于打开状态
+                if (connection.State != System.Data.ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                }
+
+                // 检查是否存在该记录
+                using (var checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = checkSql;
+                    checkCommand.Parameters.AddRange(parameters);
+
+                    var exists = (await checkCommand.ExecuteScalarAsync()) != null;
+
+                    // 如果不存在记录，返回 true，因为没有要删除的内容
+                    if (!exists)
+                    {
+                        return true;
+                    }
+                }
+
+                // 如果存在记录，则执行删除操作
+                using (var deleteCommand = connection.CreateCommand())
+                {
+                    deleteCommand.CommandText = deleteSql;
+                    deleteCommand.Parameters.AddRange(parameters);
+
+                    var result = await deleteCommand.ExecuteNonQueryAsync();
+
+                    // 返回删除结果，是否有记录被删除
+                    return result > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                // 记录异常日志或处理异常
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+
+
         public async Task<bool> IncrementArtistFansNumAsync(string artistId)
         {
             try
@@ -154,6 +216,9 @@ namespace MelodyMuse.Server.Repository
             _context.Artists.Add(artist);
             return await _context.SaveChangesAsync() > 0;
         }
-       
+
+        
+
+
     }
 }
