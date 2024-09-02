@@ -39,7 +39,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
+                <tr v-for="(song, index) in album.songs" :key="index">
 
                   <td>
                   <!-- 播放按钮 -->
@@ -83,7 +83,7 @@
           :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
           @mouseover="song.addHover = true"
           @mouseleave="song.addHover = false"
-          @click="toggleDialog(song.id)"  <!-- 修改此处，点击按钮打开弹窗 -->
+          @click="toggleDialog(song.id)"  
           class="icon"
           alt="添加到歌单" 
         />
