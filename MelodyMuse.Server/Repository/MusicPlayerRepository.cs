@@ -4,6 +4,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Oracle.ManagedDataAccess.Client;
 
+
 namespace MelodyMuse.Server.Repository
 {
     // 音乐播放器仓库类，实现IMusicPlayerRepository接口
@@ -61,6 +62,68 @@ namespace MelodyMuse.Server.Repository
 
             return albumId;
         }
+        public async Task<bool> CountPlays(string songId, string userId)
+        {
+            var sql0 = "UPDATE SONG_PLAY_COUNT SET COUNT = COUNT + 1 WHERE USER_ID = :userId AND SONG_ID = :songId";
+            var sql1 = "INSERT INTO SONG_PLAY_COUNT (SONG_ID, USER_ID, COUNT) VALUES (:songId, :userId, 1)";
+
+            await using (var command = _context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = sql0;
+                command.Parameters.Add(new OracleParameter("userId", userId));
+                command.Parameters.Add(new OracleParameter("songId", songId));
+                
+
+                await _context.Database.OpenConnectionAsync();
+                var transaction = await _context.Database.BeginTransactionAsync(); // 开启事务
+
+                try
+                {
+                    Console.WriteLine("Executing UPDATE query...");
+
+                    var result0 = await command.ExecuteNonQueryAsync();
+                    Console.WriteLine($"UPDATE result: {result0} rows affected.");
+
+                    if (result0 == 0)
+                    {
+                        Console.WriteLine("No rows updated, executing INSERT query...");
+
+                        var result1 = await _context.Database.ExecuteSqlRawAsync(sql1,
+                            new OracleParameter("songId", songId),
+                            new OracleParameter("userId", userId));
+
+                        Console.WriteLine($"INSERT result: {result1} rows affected.");
+
+                        await transaction.CommitAsync(); // 提交事务
+                        Console.WriteLine("Transaction committed.");
+
+                        return result1 > 0;
+                    }
+                    else
+                    {
+                        await transaction.CommitAsync(); // 提交事务
+                        Console.WriteLine("Transaction committed.");
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(); // 回滚事务
+                    Console.WriteLine("Transaction rolled back due to an error.");
+                    Console.WriteLine($"Error: {ex.Message}");
+                    throw;
+                }
+                finally
+                {
+                    await _context.Database.CloseConnectionAsync();
+                    Console.WriteLine("Database connection closed.");
+                }
+            }
+        }
+
+
+
+
 
     }
 }

@@ -29,6 +29,10 @@ builder.Services.AddCors(options =>
 
 
 // Register services
+//������ط���
+builder.Services.AddScoped<IRankingService, RankingService>();
+builder.Services.AddScoped<IRankingRepository>(provider =>
+   new RankingRepository());
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository>(provider => new AccountRepository());
 builder.Services.AddMemoryCache();
@@ -42,6 +46,8 @@ builder.Services.AddScoped<IMusicPlayerRepository>(provider =>
     new MusicPlayerRepository());
 builder.Services.AddScoped<ISongEditRepository>(provider =>
     new SongEditRepository());
+builder.Services.AddScoped<ISonglistRepository>(provider =>
+    new SonglistRepository());
 
 //MusicSubmit services
 
@@ -70,6 +76,10 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IUsersRepository>(provider =>
     new UsersRepository());
 
+//歌曲推荐
+builder.Services.AddScoped<IRecommendService, RecommendService>();
+builder.Services.AddScoped<IRecommendRepository>(provider =>
+    new RecommendRepository());
 
 //艺术家相关
 builder.Services.AddScoped<IArtistService, ArtistService>();
@@ -104,6 +114,9 @@ builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
 //SongEdit services
 builder.Services.AddScoped<ISongEditService, SongEditService>();
+
+//Songlist services
+builder.Services.AddScoped<ISonglistService, SonglistService>();
 
 var app = builder.Build();
 

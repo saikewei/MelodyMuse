@@ -7,6 +7,7 @@ using MelodyMuse.Server.Services.Interfaces;
 using System.Text;
 
 
+
 namespace MelodyMuse.Server.Services
 {
     public class UploadSongService : IUploadSongService
@@ -14,16 +15,17 @@ namespace MelodyMuse.Server.Services
         private readonly ISongRepository _songRepository;
         private readonly IAlbumRepository _albumRepository;
         private readonly IArtistRepository _artistRepository;
+        private readonly IUsersRepository _userRepository;
         private readonly string _ftpServer = "101.126.23.58";
         private readonly string _ftpUsername = "ftpuser"; 
         private readonly string _ftpPassword = "tongjiORCL2024"; 
 
-        public UploadSongService(ISongRepository songRepository, IAlbumRepository albumRepository, IArtistRepository artistRepository)
+        public UploadSongService(ISongRepository songRepository, IAlbumRepository albumRepository, IArtistRepository artistRepository, IUsersRepository userRepository)
         {
             _songRepository = songRepository;
             _albumRepository = albumRepository;
             _artistRepository = artistRepository;
-            
+            _userRepository = userRepository;
         }
         
         public async Task<bool> UploadSongAsync(SongUploadModel songUploadDto)
@@ -174,8 +176,114 @@ namespace MelodyMuse.Server.Services
 
             return true;
         }
+
+
+        public async Task<bool> UserUploadSongAsync(SongUploadByUserModel songUploadByUserModel, string userId)
+        {
+            // 检查Artists表中是否存在用户信息
+            if (!await _artistRepository.IsUserInArtistAsync("user"+userId))
+            {
+                var userInfo = await _userRepository.GetUserById(userId);
+                if (userInfo != null)
+                {
+                    // 如果用户不存在于Artist表中，则尝试将其注册为歌手
+                    if (!await _artistRepository.UserRegisterSinger(userInfo))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            // 生成歌曲ID
+            var songId = Guid.NewGuid().ToString().Substring(0, 10);
+
+            var token = new CancellationToken();
+            using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            {
+                ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
+
+                await ftp.Connect(token);
+                //获取相关歌手信息
+                var artist = await _artistRepository.GetArtistByIdAsync("user"+userId);
+                
+                if (artist != null)
+                {
+
+                    var artistId = "user" + userId;
+                    // 创建歌曲在FTP上的存储路径：/songs/{artistId}/{songId}/
+                    var artistFolderPath = $"/songs/{artistId}";
+                    var songFolderPath = $"{artistFolderPath}/{songId}";
+
+                    if (!await ftp.DirectoryExists(artistFolderPath, token))
+                    {
+                        await ftp.CreateDirectory(artistFolderPath, token);
+                    }
+
+                    if (!await ftp.DirectoryExists(songFolderPath, token))
+                    {
+                        await ftp.CreateDirectory(songFolderPath, token);
+                    }
+
+                    // 上传歌曲文件到FTP服务器的songId文件夹中
+                    var fileName = $"{songId}{Path.GetExtension(songUploadByUserModel.SongFile.FileName)}";
+                    var ftpFilePath = $"{songFolderPath}/{fileName}";
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await songUploadByUserModel.SongFile.CopyToAsync(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        await ftp.UploadStream(memoryStream, ftpFilePath, token: token);
+                    }
+
+                    // 生成歌词文件的路径和内容
+                    var lyricsFileName = $"{songId}.txt";
+                    var lyricsFilePath = $"{songFolderPath}/{lyricsFileName}";
+
+                    using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(songUploadByUserModel.Lyrics)))
+                    {
+                        await ftp.UploadStream(memoryStream, lyricsFilePath, token: token);
+                    }
+                }
+
+
+
+                await ftp.Disconnect(token);
+            }
+
+            // 创建歌曲实体对象
+            var song = new Song
+            {
+                SongId = songId,
+                SongName = songUploadByUserModel.SongName,
+                Duration = songUploadByUserModel.Duration,
+                SongGenre = songUploadByUserModel.SongGenre,
+                Lyrics = songUploadByUserModel.Lyrics,
+                SongDate = DateTime.Now,
+                ComposerId = "user"+userId,
+                Status = 0, // 表示未发布，需要管理员审核
+            };
+
+            // 将歌曲信息保存到数据库
+            if (!await _songRepository.CreateSongAsync(song))
+            {
+                return false;
+            }
+
+            // 保存歌手和歌曲的关联信息
+            if (!await _artistRepository.artistSingSongAsync(song.SongId, "user" + userId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
-    
+
 }
 
 

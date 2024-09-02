@@ -32,6 +32,7 @@
   </template>
   
   <script>
+import { ElMessage } from 'element-plus';
 import api from '../api/http.js'
 
 
@@ -84,7 +85,7 @@ export default {
         });
 
         if (response.status === 200) {
-          alert('验证码已发送');
+          ElMessage.success('验证码已发送');
         } else {
           this.resetError = response.data.msg || '发送验证码失败，请重试。';
         }
@@ -149,7 +150,7 @@ export default {
         });
 
         if (response.status === 200) {
-          alert('密码已重置成功');
+          ElMessage.success('密码已重置成功');
           // Redirect to the login page
           this.$router.push('/login');
         } else {

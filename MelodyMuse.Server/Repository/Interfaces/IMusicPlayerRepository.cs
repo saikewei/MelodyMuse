@@ -11,5 +11,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<List<Artist>> GetSingersBySongId(string songId);
 
         Task<string> GetAlbumIdBySongId(string songId);
+
+        Task<bool> CountPlays(string songId, string userId);
     }
 }

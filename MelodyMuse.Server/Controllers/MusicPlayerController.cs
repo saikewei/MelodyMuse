@@ -3,6 +3,8 @@ using MelodyMuse.Server.models;
 using MelodyMuse.Server.Services.Interfaces;
 using FluentFTP;
 using Microsoft.AspNetCore.Authorization;
+using MelodyMuse.Server.Services;
+using MelodyMuse.Server.Configure;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -43,11 +45,11 @@ namespace MelodyMuse.Server.Controllers
         {
             var localFilePathMp3 = Path.Combine(_cacheDirectory, $"{artistId}_{songId}.mp3");
             var ftpMp3FilePath = $"/songs/{artistId}/{songId}/{songId}.mp3";
-
+            
             await DownloadAndCacheFileAsync($"{artistId}_{songId}.mp3", localFilePathMp3, ftpMp3FilePath);
 
             var fileStream = new FileStream(localFilePathMp3, FileMode.Open, FileAccess.Read);
-
+            
             var response = new FileStreamResult(fileStream, "audio/mpeg");
             response.EnableRangeProcessing = true;
 
@@ -58,14 +60,28 @@ namespace MelodyMuse.Server.Controllers
         [HttpGet("jpg")]
         public async Task<IActionResult> GetJpgFile([FromQuery] string albumId)
         {
-            var localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
-            var ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
+            string localFilePathJPG;
+            string ftpJpgFilePath;
 
+            // 使用指定 albumId 的封面文件路径
+            localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
+            ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
+
+            // 下载并缓存指定 albumId 的封面文件
             await DownloadAndCacheFileAsync($"{albumId}.jpg", localFilePathJPG, ftpJpgFilePath);
 
+
+            // 检查文件是否存在
+            if (!System.IO.File.Exists(localFilePathJPG))
+            {
+                return NotFound("The requested album cover was not found.");
+            }
+
+            // 打开文件流并返回文件
             var fileStream = new FileStream(localFilePathJPG, FileMode.Open, FileAccess.Read);
             return File(fileStream, "image/jpeg");
         }
+
 
         [HttpGet("txt")]
         public async Task<IActionResult> GetTxtFile([FromQuery] string songId, [FromQuery] string artistId)
@@ -123,15 +139,32 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
+
+                // 从请求头中获取 JWT 令牌//
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                //如果没有令牌，返回未授权错误码401//
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                // 解析 JWT 令牌 得到存储的信息ParsedToken:id,name,phone
+                var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+                //下面是输出测试查看是否正确//
+                Console.WriteLine(parsedToken.UserID + " " + parsedToken.Username + " " + parsedToken.UserPhone);
+                var userId = parsedToken.UserID;
                 var songMetadata = await _musicService.GetSongBySongId(songId);
                 var artistId = songMetadata.ComposerId;
                 var albumId = songMetadata.AlbumId;
+                if (albumId == null)
+                    albumId = "Default";
+
                 if (songMetadata == null)
                 {
                     // 歌曲ID不存在时的处理逻辑
                     return NotFound("歌曲ID不存在");
                 }
-
+                await _musicService.IncreaseSongPlaysBySongIdandUserId(songId, userId);
                 songMetadata.SongUrl = $"api/player/mp3?songId={songId}&artistId={artistId}"; // 更新URL指向文件流方法
                 songMetadata.LyricUrl = $"api/player/txt?songId={songId}&artistId={artistId}"; // 更新URL指向文件流方法
                 songMetadata.CoverUrl = $"api/player/jpg?albumId={albumId}"; // 更新URL指向文件流方法

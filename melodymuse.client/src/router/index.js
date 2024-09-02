@@ -14,13 +14,17 @@ import modify from "../pages/modify.vue";
 import createAlbum from "../pages/CreateAlbum.vue";
 import UploadSong from "../pages/UploadSong.vue";
 import mediaplayer from "../pages/mediaplayer.vue";
-
+import userSongShow from "../pages/userSongShow.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
+import Test from "@/pages/test.vue";
 import AlbumDetail from "../pages/AlbumDetail.vue";
 import CollectedSong from "../pages/CollectedSong.vue";
 import CollectedAlbum from "../pages/CollectedAlbum.vue";
+import SonglistDetail from "@/pages/SonglistDetail.vue";
+import RankSongs from "../pages/RankSongs.vue";
+import RankArtists from "../pages/RankArtists.vue";
 
 const routes = [
   {
@@ -89,7 +93,7 @@ const routes = [
     component: UserManage, //?????????????????????
   },
   {
-    path: "/mediaplayer/:songId/:songList",  
+    path: "/mediaplayer/:songId/:songList",
     //eg:  /mediaplayer/1cd134c4-c/1cd134c4-c,6adb0c3a-c
     name: "mediaplayer",
     component: mediaplayer,
@@ -100,7 +104,6 @@ const routes = [
     name: "SingerDetail",
     component: SingerDetail,
   },
-
   {
     path: "/FollowedArtist",
     name: "FollowedArtist",
@@ -117,8 +120,28 @@ const routes = [
     component: ForgottenPassword,
   },
   {
-    //path: "/AlbumDetail/:albumId",
-    path: "/AlbumDetail",//调试用
+    path: "/ranksongs",
+    name: "ranksongs",
+    component: RankSongs,
+  },
+  {
+    path: "/rankartists",
+    name: "rankartists",
+    component: RankArtists,
+  },
+  {
+    path: "/userSongShow",
+    name: "userSongShow",
+    component: userSongShow,
+  },
+  {
+    path: "/test",
+    name: "test",
+    component: Test,
+  },
+  {
+    path: "/AlbumDetail/:albumId",
+    //path: "/AlbumDetail",//调试用
     name: "AlbumDetail",
     component: AlbumDetail,
   },
@@ -132,7 +155,11 @@ const routes = [
     name: "CollectedAlbum",
     component: CollectedAlbum,
   },
-
+{
+    path: "/SonglistDetail/:songListId",
+    name: "SonglistDetail",
+    component: SonglistDetail,
+  },
 ];
 
 const router = createRouter({

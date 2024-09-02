@@ -25,6 +25,8 @@ public partial class User
 
     public virtual ICollection<Artist> Artists { get; set; } = new List<Artist>();
 
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
     public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();

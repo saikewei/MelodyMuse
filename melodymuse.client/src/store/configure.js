@@ -1,4 +1,3 @@
-// store/configure.js
 const configure = {
     namespaced: true, // ÆôÓÃÃüÃû¿Õ¼ä
     state: {
@@ -7,21 +6,19 @@ const configure = {
     },
     getters: {
         activeName: state => {
-            let activeName = state.activeName
+            let activeName = state.activeName;
             if (!activeName) {
-                activeName = JSON.parse(window.sessionStorage.getItem('activeName'))
+                activeName = JSON.parse(window.sessionStorage.getItem('activeName'));
             }
-            return activeName
+            return activeName;
         }
     },
     mutations: {
         setActiveName: (state, activeName) => {
-            state.activeName = activeName
-            window.sessionStorage.setItem('activeName', JSON.stringify(activeName))
+            state.activeName = activeName;
+            window.sessionStorage.setItem('activeName', JSON.stringify(activeName));
         }
     }
 }
 
-export default configure
-
-
+export default configure;

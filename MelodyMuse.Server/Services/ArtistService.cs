@@ -28,26 +28,30 @@ namespace MelodyMuse.Server.Services
         {
             return await _artistRepository.FollowArtistAsync(userId, artistId);
         }
-  
+
         public async Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name)
         {
             return await _artistRepository.GetArtistsByNameAsync(name);
         }
-          public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
+        public async Task<bool> UnfollowArtistAsync(string userId, string artistId)
         {
             return await _artistRepository.UnfollowArtistAsync(userId, artistId);
         }
-         public async Task<bool> IncrementArtistFansNumAsync(string artistId)
+        public async Task<bool> IncrementArtistFansNumAsync(string artistId)
         {
             return await _artistRepository.IncrementArtistFansNumAsync(artistId);
         }
-         public async Task<List<Artist>> GetAllArtistsAsync()
+        public async Task<List<Artist>> GetAllArtistsAsync()
         {
             return await _artistRepository.GetAllArtistsAsync();
         }
-         public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
+        public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
         {
             return await _artistRepository.GetArtistsByUserIdAsync(userId);
+        }
+        public async Task<int> GetArtistFansCountAsync(string artistId)
+        {
+            return await _artistRepository.GetArtistFansCountAsync(artistId);
         }
     }
 }

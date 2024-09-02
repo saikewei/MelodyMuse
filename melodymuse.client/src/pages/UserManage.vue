@@ -42,7 +42,7 @@
 
     const fetchUserIds = async () => {
         try {
-            const response = await axiapi.apiClientos.get('/api/users');
+            const response = await api.apiClient.get('/api/users');
             return response.data;
         } catch (error) {
             console.error('获取用户ID失败:', error);

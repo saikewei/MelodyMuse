@@ -32,7 +32,7 @@
     import nameUr1 from '../assets/name1.jpg';
     import { navMsg } from '../assets/data/header';
     import SearchResults from './SearchResults.vue';
-    import api from '../api/http.js'
+    import api from '../api/http.js';
 
     export default {
         components: {
@@ -49,13 +49,11 @@
                 actualQuery: '', // 点击Search按钮时用
                 searchResults: [],
                 searchType: 'song', // 初始设置
-                actualType: 'song',
                 showPopup: false  // 控制弹出框显示
             };
         },
         computed: {
             ...mapGetters('configure', ['activeName']),
-            ...mapGetters('search', ['searchType']),
             filteredResults() {
                 return this.searchResults.filter(result => result.type === this.searchType);
             }
@@ -63,7 +61,18 @@
         created() {
             this.inputQuery = this.$route.query.query || '';
             this.searchType = this.$route.query.type || 'song';
-            this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
+            this.updateSearchType(this.searchType);
+
+            // 设置默认的活跃项为首页
+            if (this.$route.path === '/') {
+                this.$store.commit('configure/setActiveName', '首页');
+            } else {
+                const activeNavItem = this.navMsg.find(item => item.path === this.$route.path);
+                if (activeNavItem) {
+                    this.$store.commit('configure/setActiveName', activeNavItem.name);
+                }
+            }
+
             if (this.inputQuery) {
                 this.performSearch();
             }
@@ -73,16 +82,6 @@
         },
         beforeUnmount() {
             document.removeEventListener('click', this.handleOutsideClick);
-        },
-        watch: {
-            '$route.query': {
-                handler(newQuery) {
-                    this.searchQuery = newQuery.query || '';
-                    this.searchType = newQuery.type || 'artists';
-                    this.performSearch();
-                },
-                immediate: true
-            }
         },
         methods: {
             ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
@@ -108,10 +107,8 @@
                         results = songResponse.data.map(song => ({ ...song, type: 'song' }));
                     }
 
-                    //this.updateSearchResults(results);
                     this.searchResults = results;
 
-                    // 检查鼠标是否在搜索框内，如果不在则隐藏弹出框
                     if (this.$refs.searchInput && this.$refs.searchInput.contains(document.activeElement)) {
                         this.showPopup = this.searchResults.length > 0;
                     } else {
@@ -119,30 +116,27 @@
                     }
                 } catch (error) {
                     console.error('API Error:', error);
-                    //this.updateSearchResults([]);
                     this.searchResults = [];
                     this.showPopup = false;
                 }
             },
             handleSearchTypeChange() {
-                //this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
-                this.performSearch(); // 更新搜索结果
+                this.performSearch();
             },
             goSearchPage() {
-                if (this.inputQuery != '') {
+                if (this.inputQuery !== '') {
                     this.actualQuery = this.inputQuery;
-                    this.actualType = this.searchType;
-                    this.updateSearchType(this.actualType); // 更新 Vuex 中的搜索类型
                     this.$router.push({
                         path: '/searchResultPage',
                         query: {
                             query: this.actualQuery,
-                            type: this.actualType
+                            type: this.searchType
                         }
                     });
                 }
             },
             goHome() {
+                this.$store.commit('configure/setActiveName', '首页');
                 this.$router.push({ path: '/' });
             },
             goPage(path, name) {
@@ -169,6 +163,7 @@
 </script>
 
 <style scoped>
+    /* 样式代码保持不变 */
     .header-container {
         display: flex;
         flex-direction: column;
@@ -280,9 +275,11 @@
             color: white;
             cursor: pointer;
         }
+
             .navbar-search button:hover {
                 background-color: #95ADE0;
             }
+
             .navbar-search button:active {
                 background-color: #385FAB;
             }
@@ -292,11 +289,12 @@
         top: 100%;
         left: 0;
         width: 100%;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        z-index: 1000;
-        max-height: 400px;
+        background: white;
+        border: 1px solid #cacaca;
+        border-radius: 10px;
+        max-height: 300px;
         overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>

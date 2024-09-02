@@ -4,7 +4,6 @@
     <TheAside />
     <el-dialog 
       v-model="dialogFromVisible" 
-      title="歌曲信息编辑" 
       width="1500"
       v-if="dialogFromVisible">
         <EditForm :song_id="currentSong" @cancelEvent="dialogFromVisible=false" @submitEvent="refreshSongs"/>
@@ -179,9 +178,11 @@ export default {
 .song-el-table{
   width: 85%;
   left: 150px;
+  top: 15px;
 }
 
 .search-el-input{
   left: 150px;
+  top:15px;
 }
 </style>
