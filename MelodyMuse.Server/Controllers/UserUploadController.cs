@@ -15,11 +15,11 @@ namespace MelodyMuse.Server.Controllers
     public class UserUploadController : Controller
     {
         private readonly IUploadSongService _uploadsongService;
-        private readonly IMusicPlayerService _musicService;
-        public UserUploadController(IUploadSongService songService, IMusicPlayerService musicService)
+       
+        public UserUploadController(IUploadSongService songService)
         {
             _uploadsongService = songService;
-            _musicService = musicService;
+           
         }
 
         [HttpPost("uploadsong")]

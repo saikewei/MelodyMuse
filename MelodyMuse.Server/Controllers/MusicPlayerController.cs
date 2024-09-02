@@ -5,6 +5,7 @@ using FluentFTP;
 using Microsoft.AspNetCore.Authorization;
 using MelodyMuse.Server.Services;
 using MelodyMuse.Server.Configure;
+using Microsoft.Extensions.Options;
 
 
 namespace MelodyMuse.Server.Controllers
@@ -16,20 +17,21 @@ namespace MelodyMuse.Server.Controllers
     public class MusicPlayerController : Controller
     {
         private readonly IMusicPlayerService _musicService;
-
+        private readonly FtpSettings _ftpSettings;
         private readonly string _cacheDirectory;
         // 设置缓存目录的最大大小限制 (例如: 500MB)
         private readonly long _cacheSizeLimit = 500 * 1024 * 1024; // 500 MB
 
-        private readonly string _ftpServer = "101.126.23.58";
-        private readonly string _ftpUsername = "ftpuser";
-        private readonly string _ftpPassword = "tongjiORCL2024";
+        //private readonly string _ftpServer = "101.126.23.58";
+        //private readonly string _ftpUsername = "ftpuser";
+        //private readonly string _ftpPassword = "tongjiORCL2024";
 
-        public MusicPlayerController(IMusicPlayerService musicService)
+
+        public MusicPlayerController(IMusicPlayerService musicService, IOptions<FtpSettings> ftpSettings)
         {
 
             _musicService = musicService;
-
+            _ftpSettings = ftpSettings.Value;
             // 使用相对路径设置缓存目录
             _cacheDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MusicCache");
 
@@ -118,7 +120,8 @@ namespace MelodyMuse.Server.Controllers
                 // 在下载前检查缓存大小，并清理缓存
                 ManageCacheSize();
 
-                using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+                //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+                using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
                 {
                     ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 

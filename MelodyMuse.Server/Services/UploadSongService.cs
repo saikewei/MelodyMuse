@@ -1,9 +1,11 @@
 ﻿using FluentFTP;
+using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
+using Microsoft.Extensions.Options;
 using System.Text;
 using TencentCloud.Cpdp.V20190820.Models;
 
@@ -18,17 +20,19 @@ namespace MelodyMuse.Server.Services
         private readonly IArtistRepository _artistRepository;
         private readonly IUsersRepository _userRepository;
         private readonly IMusicPlayerRepository _musicplayerRepository;
-        private readonly string _ftpServer = "101.126.23.58";
-        private readonly string _ftpUsername = "ftpuser"; 
-        private readonly string _ftpPassword = "tongjiORCL2024"; 
+        private readonly FtpSettings _ftpSettings;
+        //private readonly string _ftpServer = "101.126.23.58";
+        //private readonly string _ftpUsername = "ftpuser"; 
+        //private readonly string _ftpPassword = "tongjiORCL2024"; 
 
-        public UploadSongService(ISongRepository songRepository, IAlbumRepository albumRepository, IArtistRepository artistRepository, IUsersRepository userRepository, IMusicPlayerRepository musicplayerRepository)
+        public UploadSongService(ISongRepository songRepository, IAlbumRepository albumRepository, IArtistRepository artistRepository, IUsersRepository userRepository, IMusicPlayerRepository musicplayerRepository, IOptions<FtpSettings> ftpSettings)
         {
             _songRepository = songRepository;
             _albumRepository = albumRepository;
             _artistRepository = artistRepository;
             _userRepository = userRepository;
             _musicplayerRepository = musicplayerRepository;
+            _ftpSettings = ftpSettings.Value; // 从配置中读取 FTP 设置
         }
         
         public async Task<bool> UploadSongAsync(SongUploadModel songUploadDto)
@@ -52,7 +56,8 @@ namespace MelodyMuse.Server.Services
             
             var artists = new List<Artist>();
             var token = new CancellationToken();
-            using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
@@ -205,7 +210,8 @@ namespace MelodyMuse.Server.Services
             var songId = Guid.NewGuid().ToString().Substring(0, 10);
 
             var token = new CancellationToken();
-            using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
@@ -348,7 +354,8 @@ namespace MelodyMuse.Server.Services
 
             //删除ftp服务器上的相关文件
             var token = new CancellationToken();
-            using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 

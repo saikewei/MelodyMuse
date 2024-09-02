@@ -5,6 +5,8 @@ using MelodyMuse.Server.Repository.Interfaces;
 using FluentFTP;
 using MelodyMuse.Server.Repository;
 using System.Text;
+using MelodyMuse.Server.Configure;
+using Microsoft.Extensions.Options;
 
 
 namespace MelodyMuse.Server.Services
@@ -13,15 +15,17 @@ namespace MelodyMuse.Server.Services
     {
         
         
-            private readonly IAlbumRepository _albumRepository;
-            private readonly string _ftpServer = "101.126.23.58";
-            private readonly string _ftpUsername = "ftpuser";
-            private readonly string _ftpPassword = "tongjiORCL2024";
+        private readonly IAlbumRepository _albumRepository;
+        //private readonly string _ftpServer = "101.126.23.58";
+        //private readonly string _ftpUsername = "ftpuser";
+        //private readonly string _ftpPassword = "tongjiORCL2024";
+        private readonly FtpSettings _ftpSettings;
 
 
-        public CreateAlbumService(IAlbumRepository albumRepository)
+        public CreateAlbumService(IAlbumRepository albumRepository, IOptions<FtpSettings> ftpSettings)
         {
-                _albumRepository = albumRepository;
+            _albumRepository = albumRepository;
+            _ftpSettings = ftpSettings.Value; // 读取 FTP 配置
         }
 
         public async Task<bool> CreateAlbumAsync(AlbumCreateModel albumCreateDto)
@@ -37,7 +41,8 @@ namespace MelodyMuse.Server.Services
             var albumCoverFileName = $"{albumId}{fileExtension}";
 
             var token = new CancellationToken();
-            using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
+            using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
 
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;

@@ -8,6 +8,7 @@ using MelodyMuse.Server.Configure;
 using System.Text;
 using MelodyMuse.Server.OuterServices.Interfaces;
 using MelodyMuse.Server.OuterServices;
+using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -109,6 +110,13 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+
+// 加载配置文件
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+// 注册 FtpSettings 到 DI 容器
+builder.Services.Configure<FtpSettings>(builder.Configuration.GetSection("FtpSettings"));
+
+
 // MusicPlayer services
 builder.Services.AddScoped<IMusicPlayerService, MusicPlayerService>();
 
@@ -148,6 +156,7 @@ app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
 app.UseAuthorization();
+
 
 app.MapControllers();
 
