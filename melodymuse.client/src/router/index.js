@@ -129,11 +129,6 @@ const routes = [
     component: RankArtists,
   },
   {
-    path: "/test",
-    name: "test",
-    component: () => import("../pages/userUploadSong.vue"),
-  },
-  {
     path:"/userSongShow",
     name:"userSongShow",
     component:userSongShow,
