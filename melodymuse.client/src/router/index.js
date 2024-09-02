@@ -102,7 +102,6 @@ const routes = [
     name: "SingerDetail",
     component: SingerDetail,
   },
-
   {
     path: "/FollowedArtist",
     name: "FollowedArtist",
@@ -129,15 +128,10 @@ const routes = [
     component: RankArtists,
   },
   {
-    path: "/test",
-    name: "test",
-    component: () => import("../pages/userUploadSong.vue"),
+    path: "/userSongShow",
+    name: "userSongShow",
+    component: userSongShow,
   },
-  {
-    path:"/userSongShow",
-    name:"userSongShow",
-    component:userSongShow,
-  }
   {
     path: "/test",
     name: "test",
