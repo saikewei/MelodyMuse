@@ -21,7 +21,10 @@
                     <SearchResults :results="filteredResults" :searchType="searchType" />
                 </div>
             </div>
-            <el-button @click="logOut">退出登录</el-button>
+            <div style="margin: auto">
+                <el-button type="primary">个人信息</el-button>
+                <el-button type="danger" @click="logOut">退出登录</el-button>
+            </div>
         </nav>
     </div>
 </template>

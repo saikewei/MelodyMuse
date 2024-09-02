@@ -8,19 +8,19 @@
         active-text-color="#20a0ff"
         @select="handleSelect"
       >
-        <el-menu-item index="/personal-info">
+        <el-menu-item index="/admin/personal-info">
           <span>个人信息</span>
         </el-menu-item>
-        <el-menu-item index="/check-song">
+        <el-menu-item index="/admin/check-song">
           <span>歌曲审核</span>
         </el-menu-item>
-        <el-menu-item index="/song-info">
+        <el-menu-item index="/admin/song-info">
           <span>歌曲管理</span>
         </el-menu-item>
-        <el-menu-item index="/uploadSong">
+        <el-menu-item index="/admin/uploadSong">
           <span>上传歌曲</span>
         </el-menu-item>
-        <el-menu-item index="/usermanage">
+        <el-menu-item index="/admin/usermanage">
           <span>用户管理</span>
         </el-menu-item>
       </el-menu>

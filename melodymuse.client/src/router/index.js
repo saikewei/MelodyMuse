@@ -31,34 +31,44 @@ const routes = [
     component: Home,
   },
   {
+    path: "/admin",
+    children: [
+      {
+        path: "personal-info",
+        name: "modify",
+        component: modify,
+      },
+      {
+        path: "check-song",
+        name: "Check",
+        component: Check,
+      },
+      {
+        path: "usermanage",
+        name: "usermanage", //?????????????????????
+        component: UserManage, //?????????????????????
+      },
+      {
+        path: "uploadSong",
+        name: "UploadSong",
+        component: UploadSong,
+      },
+      {
+        path: "song-info",
+        name: "song-info",
+        component: SongInfoEdit,
+      },
+    ],
+  },
+  {
     path: "/my-music",
     name: "my-music",
     component: MyMusic,
   },
   {
-    path: "/personal-info",
-    name: "modify",
-    component: modify,
-  },
-  {
     path: "/createAlbum",
     name: "createAlbum",
     component: createAlbum,
-  },
-  {
-    path: "/uploadSong",
-    name: "UploadSong",
-    component: UploadSong,
-  },
-  {
-    path: "/check-song",
-    name: "Check",
-    component: Check,
-  },
-  {
-    path: "/song-info",
-    name: "song-info",
-    component: SongInfoEdit,
   },
   {
     path: "/sign",
@@ -85,11 +95,7 @@ const routes = [
     name: "Register",
     component: Register,
   },
-  {
-    path: "/usermanage",
-    name: "usermanage", //?????????????????????
-    component: UserManage, //?????????????????????
-  },
+
   {
     path: "/mediaplayer/:songId/:songList",
     //eg:  /mediaplayer/1cd134c4-c/1cd134c4-c,6adb0c3a-c
@@ -129,10 +135,10 @@ const routes = [
     component: RankArtists,
   },
   {
-    path:"/userSongShow",
-    name:"userSongShow",
-    component:userSongShow,
-  }
+    path: "/userSongShow",
+    name: "userSongShow",
+    component: userSongShow,
+  },
   {
     path: "/test",
     name: "test",
