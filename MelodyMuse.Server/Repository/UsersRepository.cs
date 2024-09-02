@@ -33,7 +33,7 @@ namespace MelodyMuse.Server.Repository
             {
                 UserId = userData.UserId,
                 UserName = userData.UserName,
-                Password = userData.Password,
+                //Password = userData.Password,
                 UserEmail = userData.UserEmail,
                 UserPhone = userData.UserPhone,
                 UserSex = userData.UserSex,
