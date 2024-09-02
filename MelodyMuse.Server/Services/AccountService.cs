@@ -7,6 +7,8 @@
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
+using System.Security.Cryptography;
+using System.Text;
 
 
 
@@ -29,6 +31,8 @@ namespace MelodyMuse.Server.Services
         //登录:调用下层接口提供的登陆验证服务
         public async Task<GenerateTokenModel> LoginAsync(LoginModel _loginModel)
         {
+            //替换哈希值
+            _loginModel.Password = caculateSha256Hash(_loginModel.Password);
             return await _accountRepository.LoginAsync(_loginModel);
         }
 
@@ -36,6 +40,9 @@ namespace MelodyMuse.Server.Services
         //注册:调用下层接口提供的注册服务
         public async Task<bool> RegisterAsync(RegisterModel _registerModel)
         {
+            //替换哈希值
+            _registerModel.Password =caculateSha256Hash(_registerModel.Password);
+
             return await _accountRepository.RegisterAsync(_registerModel);
         }
         public async Task<bool> CheckPhoneNumberExistsAsync(string phoneNumber) // 实现新方法
@@ -43,7 +50,7 @@ namespace MelodyMuse.Server.Services
             var user = await _accountRepository.GetUserByPhoneNumberAsync(phoneNumber);
             return user != null;
         }
-      public async Task<bool> ResetPasswordAsync(string phoneNumber, string Password)
+        public async Task<bool> ResetPasswordAsync(string phoneNumber, string Password)
         {
             try
             {
@@ -70,7 +77,22 @@ namespace MelodyMuse.Server.Services
             }
         }
 
+        private string caculateSha256Hash(string rawData)
+        {
+            // 使用SHA256类计算哈希值
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // 将输入字符串转换为字节数组并计算哈希值
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
+                // 将字节数组转换为十六进制字符串
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
     }
-    
 }
