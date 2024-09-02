@@ -14,10 +14,12 @@ namespace MelodyMuse.Server.Services
     {
         //内部维护一个下层数据库访问服务(Repository)的接口
         private readonly IUsersRepository _usersRepository;
+        private readonly IArtistRepository _artistRepository;
 
-        public UsersService(IUsersRepository usersRepository)
+        public UsersService(IUsersRepository usersRepository, IArtistRepository artistRepository)
         {
             _usersRepository = usersRepository;
+            _artistRepository = artistRepository;
         }
         // 构造函数，注入实例
         public UsersService(UsersRepository usersRepository)
@@ -51,6 +53,7 @@ namespace MelodyMuse.Server.Services
             // 调用 IUserRepository 中的方法更新用户资料
             await _usersRepository.UpdateUserAsync(user);
         }
+
        public async Task AddUserCollectSongAsync(string userId, string songId)
         {
 
@@ -84,7 +87,7 @@ namespace MelodyMuse.Server.Services
             await _usersRepository.RemoveUserCollectSongAsync(existingCollect);
         }
          public async Task AddUserCollectAlbumAsync(string userId, string albumId)
-        {
+         {
 
             var existingCollect = await _usersRepository.GetUserCollectAlbumAsync(userId, albumId);
             if (existingCollect != null)
@@ -100,7 +103,7 @@ namespace MelodyMuse.Server.Services
             };
 
             await _usersRepository.AddUserCollectAlbumAsync(userCollectAlbum);
-        }
+         }
 
         public async Task RemoveUserCollectAlbumAsync(string userId, string albumId)
         {
@@ -113,13 +116,21 @@ namespace MelodyMuse.Server.Services
 
             await _usersRepository.RemoveUserCollectAlbumAsync(existingCollect);
         }
-                public async Task<List<Album>> GetUserCollectedAlbumsAsync(string userId)
+        public async Task<List<Album>> GetUserCollectedAlbumsAsync(string userId)
         {
             return await _usersRepository.GetUserCollectedAlbumsAsync(userId);
         }
-         public async Task<List<Song>> GetCollectedSongsByUserId(string userId)
+
+        public async Task<List<Song>> GetCollectedSongsByUserId(string userId)
         {
             return await _usersRepository.GetCollectedSongsByUserId(userId);
+        }
+
+
+        public async Task<bool> Useridentity(string userId)
+        {
+            return await _artistRepository.IsUserInArtistAsync(userId);
+
         }
     }
 }

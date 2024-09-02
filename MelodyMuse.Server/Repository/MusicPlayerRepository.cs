@@ -120,7 +120,33 @@ namespace MelodyMuse.Server.Repository
                 }
             }
         }
+        public async Task<bool> DeleteCountPlaysRecord(string songId)
+        {
+            try
+            {
+                // 检查 SongPlayCounts 表中是否存在指定 songId 的记录
+                var records = await _context.SongPlayCounts
+                .Where(u => u.SongId == songId)
+                .ToListAsync();
 
+                
+                //存在记录，进行删除
+                if (records.Any())
+                {
+                    _context.SongPlayCounts.RemoveRange(records);
+                    return await _context.SaveChangesAsync() > 0;
+                }
+
+                //不存在记录
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // 捕获异常并记录（这里你可以记录到日志中）
+                Console.WriteLine(ex.Message); // 示例日志记录或其他日志记录方式
+                return false; // 返回 false 表示删除失败
+            }
+        }
 
 
 

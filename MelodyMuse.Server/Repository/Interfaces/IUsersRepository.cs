@@ -14,6 +14,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<List<User>> GetAllUsers();
         // 更新用户资料
         Task UpdateUserAsync(User user);
+
         Task AddUserCollectSongAsync(UserCollectSong userCollectSong);
         Task<UserCollectSong?> GetUserCollectSongAsync(string userId, string songId);
         Task RemoveUserCollectSongAsync(UserCollectSong userCollectSong); // 新增
@@ -22,5 +23,16 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task RemoveUserCollectAlbumAsync(UserCollectAlbum userCollectAlbum);
         Task<List<Album>> GetUserCollectedAlbumsAsync(string userId);
         Task<List<Song>> GetCollectedSongsByUserId(string userId);
+
+
+        //更新Upload表
+        Task<bool> UserUpload(Upload upload);
+        
+        //删除Upload表上的记录
+        Task<bool> DeleteUploadRecord(string userId,string songId);
+
+        //删除User_Collect_Song表里的记录
+        Task<bool> DeleteCollectSongRecord(string songId);
+
     }
 }

@@ -92,6 +92,7 @@ namespace MelodyMuse.Server.Repository
         {
             return await _context.Users.ToListAsync();
         }
+
          public async Task AddUserCollectSongAsync(UserCollectSong userCollectSong)
         {
             // 添加用户收藏的歌曲
@@ -145,6 +146,49 @@ namespace MelodyMuse.Server.Repository
                 .Where(u => u.UserId == userId)
                 .Select(u => u.Song)
                 .ToListAsync();
+        }
+
+
+        public async Task<bool> UserUpload(Upload upload)
+        {
+            _context.Uploads.Add(upload);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteUploadRecord(string userId, string songId)
+        {
+            // 查找Uploads表中是否存在指定的userId和songId
+            var uploadRecord = await _context.Uploads.FirstOrDefaultAsync(u => u.UserId == userId && u.SongId == songId);
+
+            // 如果找到了对应的记录
+            if (uploadRecord != null)
+            {
+                // 删除该记录
+                _context.Uploads.Remove(uploadRecord);
+
+                // 保存更改并返回结果
+                return await _context.SaveChangesAsync() > 0;
+            }
+
+            // 如果没有找到对应的记录
+            return true;
+        }
+        public async Task<bool> DeleteCollectSongRecord(string songId)
+        {
+            // 查找所有收藏了指定SongId的记录
+            var records = await _context.UserCollectSongs
+                .Where(u => u.SongId == songId)
+                .ToListAsync();
+
+            // 如果存在相关记录，进行删除
+            if (records.Any())
+            {
+                _context.UserCollectSongs.RemoveRange(records);
+                return await _context.SaveChangesAsync() > 0;
+            }
+
+            // 如果没有找到相关记录
+            return true;
         }
     }
 }

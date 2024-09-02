@@ -17,5 +17,9 @@ namespace MelodyMuse.Server.Repository.Interfaces
 
         Task<bool> songMakeupAlbumAsync(string songId, string albumId);
 
+        Task<bool> DeleteMakeupSongListRecord(string songId);
+
+        Task<bool> DeleteSongRecord(string songId);
+
     }
 }
