@@ -163,7 +163,7 @@ export default{
         console.log(songId)
         try
         {
-          const response = await api.apiClient.post(`/api/usersub/deletesong/${songId}`);
+          const response = await api.apiClient.post(`/api/usersub/deletesong?songId=${songId}`);
           ElMessage({
             message:"删除成功",
             type:"success"
