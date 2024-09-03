@@ -1,4 +1,5 @@
 <template>
+  <TheHeader/>
   <div class="music-player">
     <div class="content">
       <el-col :span="12" class="image-container">
@@ -6,7 +7,7 @@
       </el-col>
       <el-col :span="12" class="lyrics-container">
         <div class = "songName">
-          <span class = "songName">{{ songName }}</span>
+          <span>{{ songName }}</span>
         </div>
         <div class="lyrics-wrapper">
           <div
@@ -43,6 +44,7 @@
           <img :src="nextSongSrc" alt="Next Song" />
         </button>
 
+
         <button class="play-mode-button" @click="togglePlayMode">
           <img :src="playModeSrc" alt="Play Mode" />
         </button>
@@ -58,12 +60,14 @@
             </ul>
           </div>
         </playListWindow>
-      </div>
 
-      <div class="volume-slider">
-        <label for="volume">音量:</label>
-        <input type="range" id="volume" min="0" max="1" step="0.01" v-model="volume" @input="updateVolume">
-        <span>{{ Math.round(volume * 100) }}%</span>
+
+        
+        <div class="volume-slider">
+          <label for="volume">音量:</label>
+          <input type="range" id="volume" min="0" max="1" step="0.01" v-model="volume" @input="updateVolume">
+          <span>{{ Math.round(volume * 100) }}%</span>
+        </div>
       </div>
   </div>
 </template>
@@ -74,6 +78,8 @@ import api from '../api/http.js'
 import { useRouter, useRoute } from 'vue-router';
 import playListWindow from './playListWindow.vue';
 import {ElMessage} from 'element-plus'
+import TheHeader from '../components/TheHeader.vue';
+import TheFooter from '../components/TheFooter.vue';
 
 const route = useRoute(); 
 
@@ -344,7 +350,7 @@ async function fetchSongInfo(songId) {
 
 function getLineStyle(index) {
   const distance = Math.abs(currentLine.value - index);
-  const maxDistance = 2;
+  const maxDistance = 3;
   const scale = Math.max(1 - distance * 0.15, 0.85);
   const opacity = Math.max(1 - distance * 0.3, 0.5);
   return {
@@ -511,6 +517,15 @@ async function prevSong() {
 </script>
 
 <style scoped>
+.music-player{
+  background: linear-gradient(to top, #f0f0f5, #d8dff8); /* 从中心向外的渐变 */
+  min-height: 94vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
 .music-player {
   display: flex;
   flex-direction: column; /* 修改为column布局 */
@@ -549,16 +564,26 @@ async function prevSong() {
   overflow: hidden; /* 防止歌词超出容器 */
 }
 
+
+.songName{
+  font-size: 2.0em;
+  font-weight: bold;
+  color: #110ad9;
+  height:20%;
+}
+
+
 .lyrics-wrapper {
   text-align: center;
   width: 100%;
-  display: flex;
   flex-direction: column;
   justify-content: center;
+  height:60%;
 }
 
 .lyrics-line {
   transition: transform 0.3s ease, opacity 0.3s ease; /* 添加过渡效果 */
+  margin-top:10px;
 }
 
 
@@ -637,6 +662,13 @@ svg {
   height: 10px;
 }
 
+
+.volume-slider {
+  width: 200px;
+  height: 0px;
+  margin-left:30px;
+}
+
 .play-mode-button{
   transform: scale(0.1);
   transition: transform 0.3s ease; /* 添加平滑过渡效果 */
@@ -647,13 +679,6 @@ svg {
 
 .play-mode-button :hover{
   transform: scale(0.9); 
-}
-
-.songName{
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #06dcfd;
-  margin-bottom: 100px;
 }
 
 .play-list-button{
@@ -686,12 +711,5 @@ svg {
 .highlighted {
   background-color: rgb(0, 255, 26); /* 你可以选择你喜欢的颜色 */
 }
-
-.volume-slider {
-  position: absolute;
-  display: flex;
-  margin-top: 485px;
-}
-
 
 </style>
