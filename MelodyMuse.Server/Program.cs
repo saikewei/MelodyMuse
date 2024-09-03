@@ -28,18 +28,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAnyOrigin",
-        builder =>
-        {
-            builder.AllowAnyOrigin() 
-                   .AllowAnyHeader() 
-                   .AllowAnyMethod() 
-                   .AllowCredentials(); 
-        });
-});
-
 
 // Register services
 //������ط���
@@ -142,7 +130,6 @@ var app = builder.Build();
 
 // Enable CORS
 app.UseCors("AllowSpecificOrigin");
-//app.UseCors("AllowAnyOrigin");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
