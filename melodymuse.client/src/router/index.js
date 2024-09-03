@@ -25,6 +25,7 @@ import RankSongs from "../pages/RankSongs.vue";
 import RankArtists from "../pages/RankArtists.vue";
 import TheAside from "@/components/TheAside.vue";
 import NotFound from "@/pages/NotFound.vue";
+import Statistics from "@/pages/Statistics.vue";
 
 const routes = [
   {
@@ -59,6 +60,11 @@ const routes = [
         path: "song-info",
         name: "song-info",
         component: SongInfoEdit,
+      },
+      {
+        path: "statistics",
+        name: "statistics",
+        component: Statistics,
       },
     ],
   },

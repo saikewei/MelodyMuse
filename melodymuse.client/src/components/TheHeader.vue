@@ -21,7 +21,7 @@
                     <SearchResults :results="filteredResults" :searchType="searchType" />
                 </div>
             </div>
-            <a class="account-link" href="/singer">{{ userName==''?'名称加载中':userName }}</a>
+            <a class="account-link" :href="profile_href">{{ userName==''?'名称加载中':userName }}</a>
             <el-button type="danger" @click="logOut">退出登录</el-button>
         </nav>
     </div>
@@ -52,6 +52,7 @@
                 searchType: 'song', // 初始设置
                 showPopup: false,  // 控制弹出框显示
                 userName: '',
+                profile_href: '/404',
             };
         },
         computed: {
@@ -65,6 +66,14 @@
             this.searchType = this.$route.query.type || 'song';
             this.updateSearchType(this.searchType);
             await this.fetchUserInfo();
+            const checkStatusResponse = await api.apiClient("/api/users/info");
+            console.log(checkStatusResponse.data);
+            if(checkStatusResponse.data.userStatus==2){
+                this.profile_href='/user/admin/personal-info';
+            }
+            else{
+                this.profile_href='/user/normal/personal-info';
+            }
 
             // 设置默认的活跃项为首页
             if (this.$route.path === '/') {

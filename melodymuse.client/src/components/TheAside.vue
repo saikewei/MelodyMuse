@@ -11,6 +11,9 @@
         <el-menu-item index="/personal-info">
           <span>个人信息</span>
         </el-menu-item>
+        <el-menu-item index="/statistics">
+          <span>统计信息</span>
+        </el-menu-item>
         <div v-if="status=='admin'">
           <el-menu-item index="/check-song">
           <span>歌曲审核</span>
@@ -47,6 +50,9 @@ export default{
     created() {
       this.currentRoute = '/'+useRoute().path.split('/').pop();
       this.status = useRoute().params['status'];
+      if(this.status!='normal'&&this.status!='admin'){
+        useRouter().push('/404');
+      }
     }, 
     setup() {
     const router = useRouter()
