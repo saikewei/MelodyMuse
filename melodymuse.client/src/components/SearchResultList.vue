@@ -245,10 +245,14 @@
 
     .search-summary {
         margin-bottom: 20px;
-        margin-right:1020px;
+        margin-left: 10px; /* 将margin-left设置为0，让元素相对于左侧对齐 */
         font-size: 15px;
         color: #666;
+        text-align: left; /* 确保文本内容也是左对齐的 */
+        position: relative; /* 如果需要进一步调整定位，可以使用position属性 */
+        left: 0; /* 确保组件按照最左侧进行定位 */
     }
+
 
     .result-count {
         color: #CC2C1F;

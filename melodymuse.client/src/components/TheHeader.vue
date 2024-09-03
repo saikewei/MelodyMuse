@@ -32,6 +32,7 @@
     import nameUr1 from '../assets/name1.jpg';
     import { navMsg } from '../assets/data/header';
     import SearchResults from './SearchResults.vue';
+    let cancelToken;
 
     export default {
         components: {
@@ -84,45 +85,56 @@
             }
         },
         methods: {
-            ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
-            async performSearch() {
-                if (this.inputQuery.trim() === '') {
-                    this.searchResults = [];
-                    this.showPopup = false;
-                    return;
+        ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
+        
+        async performSearch() {
+            if (this.inputQuery.trim() === '') {
+                this.searchResults = [];
+                this.showPopup = false;
+                return;
+            }
+
+            if (cancelToken) {
+                cancelToken.cancel('Operation canceled due to new request.');
+            }
+
+            cancelToken = axios.CancelToken.source();
+
+            try {
+                let results = [];
+
+                if (this.searchType === 'artist') {
+                    const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
+                        params: { query: encodeURIComponent(this.inputQuery) },
+                        cancelToken: cancelToken.token
+                    });
+                    results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
+                } else if (this.searchType === 'song') {
+                    const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
+                        params: { query: encodeURIComponent(this.inputQuery) },
+                        cancelToken: cancelToken.token
+                    });
+                    results = songResponse.data.map(song => ({ ...song, type: 'song' }));
                 }
 
-                try {
-                    let results = [];
+                this.searchResults = results;
 
-                    if (this.searchType === 'artist') {
-                        const artistResponse = await axios.get(`https://localhost:7223/api/search/artists`, {
-                            params: { query: encodeURIComponent(this.inputQuery) }
-                        });
-                        results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
-                    } else if (this.searchType === 'song') {
-                        const songResponse = await axios.get(`https://localhost:7223/api/search/songs`, {
-                            params: { query: encodeURIComponent(this.inputQuery) }
-                        });
-                        results = songResponse.data.map(song => ({ ...song, type: 'song' }));
-                    }
-
-                    //this.updateSearchResults(results);
-                    this.searchResults = results;
-
-                    // 检查鼠标是否在搜索框内，如果不在则隐藏弹出框
-                    if (this.$refs.searchInput && this.$refs.searchInput.contains(document.activeElement)) {
-                        this.showPopup = this.searchResults.length > 0;
-                    } else {
-                        this.showPopup = false;
-                    }
-                } catch (error) {
+                // 检查输入框是否获得焦点，如果是则显示结果弹出框
+                if (this.$refs.searchInput && this.$refs.searchInput.contains(document.activeElement)) {
+                    this.showPopup = this.searchResults.length > 0;
+                } else {
+                    this.showPopup = false;
+                }
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log('Request canceled', error.message);
+                } else {
                     console.error('API Error:', error);
-                    //this.updateSearchResults([]);
                     this.searchResults = [];
                     this.showPopup = false;
                 }
-            },
+            }
+        },
             handleSearchTypeChange() {
                 //this.updateSearchType(this.searchType); // 更新 Vuex 中的搜索类型
                 this.performSearch(); // 更新搜索结果
