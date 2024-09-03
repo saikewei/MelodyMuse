@@ -77,7 +77,6 @@
      </div>
    </div>
  </div>
-      <TheFooter  />
  </div>
 </template>
   

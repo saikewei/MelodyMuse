@@ -61,7 +61,6 @@
         </li>
       </ul>
     </div>
-    <TheFooter />
   </div>
 </template>
 

@@ -3,7 +3,6 @@
         <TheHeader />
         <Swiper />
         <RecommendedSongs />
-        <TheFooter />
     </div>
 </template>
 
@@ -26,21 +25,21 @@
 
 <style scoped>
     .home {
-        min-height: 100vh; /* È·±£Ò³ÃæÖÁÉÙÕ¼¾ÝÊÓ¿Ú¸ß¶È */
-        padding-bottom: 80px; /* Áô³ö×ã¹»¿Õ¼ä¸ø footer£¬µ÷ÕûÎªÊÊºÏµÄ¸ß¶È */
-        box-sizing: border-box; /* È·±£ padding °üº¬ÔÚÔªËØµÄ×Ü¸ß¶ÈÄÚ */
+        min-height: 100vh; /* È·ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½Ó¿Ú¸ß¶ï¿½ */
+        padding-bottom: 80px; /* ï¿½ï¿½ï¿½ï¿½ï¿½ã¹»ï¿½Õ¼ï¿½ï¿½ footerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ÊºÏµÄ¸ß¶ï¿½ */
+        box-sizing: border-box; /* È·ï¿½ï¿½ padding ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½Ü¸ß¶ï¿½ï¿½ï¿½ */
     }
 
     .swiper {
         position: relative;
-        z-index: 1; /* È·±£ÂÖ²¥Í¼ÔÚÍÆ¼ö¸èÇúÉÏÃæ */
-        margin-bottom: 20px; /* ÎªÍÆ¼ö¸èÇúÁô³ö¼ä¾à */
+        z-index: 1; /* È·ï¿½ï¿½ï¿½Ö²ï¿½Í¼ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+        margin-bottom: 20px; /* Îªï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     }
 
     .recommended-songs {
         position: relative;
-        z-index: 0; /* È·±£ÍÆ¼ö¸èÇúÔÚÂÖ²¥Í¼ÏÂ·½ */
-        margin-bottom: 60px; /* Îª footer Áô³ö¿Õ¼ä */
+        z-index: 0; /* È·ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½Í¼ï¿½Â·ï¿½ */
+        margin-bottom: 60px; /* Îª footer ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ */
     }
 
     .the-footer {
@@ -48,15 +47,15 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 100%; /* È·±£ footer ¿í¶È¸²¸ÇÕû¸öÊÓ¿Ú¿í¶È */
-        max-width: 1200px; /* ×î´ó¿í¶È£¬È·±£ footer ²»»á¹ý¿í */
-        height: 70px; /* ÉèÖÃ footer µÄ¸ß¶È */
-        background-color: #f1f1f1; /* ±³¾°ÑÕÉ« */
-        z-index: 2; /* È·±£ footer ÔÚÆäËûÄÚÈÝÉÏÃæ */
+        width: 100%; /* È·ï¿½ï¿½ footer ï¿½ï¿½ï¿½È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿Ú¿ï¿½ï¿½ï¿½ */
+        max-width: 1200px; /* ï¿½ï¿½ï¿½ï¿½ï¿½È£ï¿½È·ï¿½ï¿½ footer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+        height: 70px; /* ï¿½ï¿½ï¿½ï¿½ footer ï¿½Ä¸ß¶ï¿½ */
+        background-color: #f1f1f1; /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É« */
+        z-index: 2; /* È·ï¿½ï¿½ footer ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
         text-align: center;
-        line-height: 30px; /* ´¹Ö±¾ÓÖÐ footer ÖÐµÄÎÄ±¾ */
-        padding: 0 0px; /* Ìí¼Ó×óÓÒÄÚ±ß¾à */
-        box-sizing: border-box; /* È·±£ padding °üº¬ÔÚÔªËØµÄ×Ü¿í¶ÈÄÚ */
+        line-height: 30px; /* ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ footer ï¿½Ðµï¿½ï¿½Ä±ï¿½ */
+        padding: 0 0px; /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ß¾ï¿½ */
+        box-sizing: border-box; /* È·ï¿½ï¿½ padding ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½Ü¿ï¿½ï¿½ï¿½ï¿½ï¿½ */
     }
 </style>
 

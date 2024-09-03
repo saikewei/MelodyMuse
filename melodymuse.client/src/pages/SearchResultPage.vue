@@ -4,7 +4,6 @@
         <div v-if="loading">加载中...</div>
         <div v-else>
             <SearchResultList :results="searchResults" :searchType="searchType" @updateCategory="handleCategoryUpdate" />
-            <TheFooter />
         </div>
     </div>
 </template>
