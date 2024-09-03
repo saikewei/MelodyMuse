@@ -54,7 +54,6 @@
                   </el-tooltip>
                   {{ index + 1 }}. {{ song.songName }}
                 </td>
-               <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
@@ -74,21 +73,19 @@
                   
                  
                   <td>
-  <el-tooltip content="添加到歌单" placement="bottom">
-    <img 
-      :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
-      @mouseover="song.addHover = true"
-      @mouseleave="song.addHover = false"
-      @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
-      class="icon"
-      alt="添加到歌单" 
-    />
-  </el-tooltip>
-</td>
+                    <el-tooltip content="添加到歌单" placement="bottom">
+                      <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                           @mouseover="song.addHover = true"
+                           @mouseleave="song.addHover = false"
+                           @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
+                           class="add-icon"
+                          alt="添加到歌单" />
+                    </el-tooltip>
+                    </td>
 
 
     <!-- 引用弹窗组件 -->
-    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+    <el-dialog v-model="dialogVisible" width="500px">
       <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
     </el-dialog>
              </tr>
@@ -123,6 +120,7 @@
   export default {
     data() {
       return {
+        currentSongId: '',
         albumCover: '',
         userId: '',
         albumId: '',
@@ -158,7 +156,7 @@
         //*/
         ],
         isLiked: false,
-        dialogAddVisible: false, // 弹窗状态
+        dialogVisible: false, // 弹窗状态
         currentSong: null, // 当前选择的歌曲
         songlists: [], // 用户的歌单列表
         },
@@ -280,13 +278,13 @@
         }
       },
       toggleAddIcon(song) {
-        console.log('toggleAddIcon called with song:', song);
+    console.log('toggleAddIcon called with song:', song);
     this.currentSongId = song.songId;
     this.dialogVisible = true;
     console.log('dialogVisible:', this.dialogVisible);
     console.log('currentSongId:', this.currentSongId);
   },
-  handleDialogClose(isVisible) {
+      handleDialogClose(isVisible) {
     this.dialogVisible = isVisible;
   },
      
@@ -517,7 +515,7 @@
   cursor: pointer;
   margin-top: 10px;
 }
-.icon {
+.add-icon {
   width: 24px; /* 设置图标宽度 */
   height: 24px; /* 设置图标高度 */
   cursor: pointer; /* 鼠标悬停时显示手型 */
