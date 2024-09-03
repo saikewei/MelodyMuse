@@ -70,33 +70,26 @@
                            alt="收藏歌曲" />
                     </el-tooltip>
                   </td>
-                  <!-- 加入专辑按钮 -->
-                  <!--<td>
-                     <button class="add-to-songlist-button" @click.stop="showSonglistModal(song)">
-                      ➕ 
-                     </button>
-                  </td>-->
+
                   
-    <td>
-      <el-tooltip content="添加到歌单" placement="bottom">
-        <img 
-          :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
-          @mouseover="song.addHover = true"
-          @mouseleave="song.addHover = false"
-          @click="toggleDialog(song.id)"  
-          class="icon"
-          alt="添加到歌单" 
-        />
-      </el-tooltip>
-    </td>
+                 
+                  <td>
+  <el-tooltip content="添加到歌单" placement="bottom">
+    <img 
+      :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+      @mouseover="song.addHover = true"
+      @mouseleave="song.addHover = false"
+      @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
+      class="icon"
+      alt="添加到歌单" 
+    />
+  </el-tooltip>
+</td>
+
 
     <!-- 引用弹窗组件 -->
     <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
-      <AddToSongList 
-        :songId="currentSongId" 
-        :dialogVisible="dialogVisible" 
-        @update:dialogVisible="handleDialogClose" 
-      />
+      <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
     </el-dialog>
              </tr>
            </tbody>
@@ -261,11 +254,6 @@
       console.error('播放第一首歌曲失败:', error);
     }
   },
-      //用户点击歌单任意歌曲，通过songId切换到播放页面
-      /*playSong(songId) {
-        this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
-      },
-      */
       //收藏方法
       async toggleLikeIcon(song) {
         try {
@@ -291,31 +279,16 @@
           song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
-     /* //加入歌单
-      async toggleAddIcon(song) {
-    try {
-      if (song.added) {
-        // 已经添加过，发送请求删除
-        await api.apiClient.delete(`/api/users/removefromplaylist`, {
-          data: {
-            userId: this.userId,
-            songId: song.songId
-          }
-        });
-        song.added = false;
-      } else {
-        // 未添加过，发送请求添加
-        await api.apiClient.post(`/api/users/addtoplaylist`, {
-          userId: this.userId,
-          songId: song.songId
-        });
-        song.added = true;
-      }
-    } catch (error) {
-      console.error('切换添加状态失败,请重试', error);
-      song.added = !song.added; // 切换添加状态失败，恢复到之前的状态
-    }
-  },*/
+      toggleAddIcon(song) {
+        console.log('toggleAddIcon called with song:', song);
+    this.currentSongId = song.songId;
+    this.dialogVisible = true;
+    console.log('dialogVisible:', this.dialogVisible);
+    console.log('currentSongId:', this.currentSongId);
+  },
+  handleDialogClose(isVisible) {
+    this.dialogVisible = isVisible;
+  },
      
   // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
       togglePlayIcon(song) {
@@ -339,14 +312,7 @@
       console.error('跳转播放页面失败:', error);
     }
   },
-      toggleAddIcon(song) {
-          console.log(song);
-          this.currentSongId=song.songId;
-          this.dialogAddVisible=true;
-      },
-      handleDialogClose(isVisible) {
-          this.dialogAddVisible = isVisible;
-      },
+
 
       // 将毫秒转换为分钟和秒
       formatDuration(duration) {
@@ -400,32 +366,6 @@
     }
   },
 
-  // 将歌曲添加到选中的歌单
-  /*async addToSonglist(song, songlistId) {
-    try {
-      await api.apiClient.post(`/api/songlists/add`, {
-        userId: this.userId,
-        songlistId,
-        songId: song.songId,
-      });
-      this.isSonglistModalVisible = false; // 添加后隐藏弹窗
-    } catch (error) {
-      console.error('添加歌曲到歌单失败:', error);
-    }
-  },
-
-  // 创建新歌单
-  async createNewSonglist() {
-    try {
-      const newSonglist = await api.apiClient.post(`/api/songlist/add`, {
-        userId: this.userId,
-        songlistName: '新歌单', // 如果需要，可以替换为动态名称
-      });
-      this.songlists.push(newSonglist.data); // 将新歌单添加到列表
-    } catch (error) {
-      console.error('创建歌单失败:', error);
-    }
-  },*/
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
