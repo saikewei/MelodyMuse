@@ -85,7 +85,7 @@
 
 
     <!-- 引用弹窗组件 -->
-    <el-dialog v-model="dialogVisible" width="500px">
+    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
       <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
     </el-dialog>
              </tr>
@@ -95,9 +95,10 @@
      </div>
    </div>
  </div>
- 
+    
       <TheFooter  />
  </div>
+    
 </template>
   
   <script>
@@ -156,10 +157,10 @@
         //*/
         ],
         isLiked: false,
-        dialogVisible: false, // 弹窗状态
         currentSong: null, // 当前选择的歌曲
         songlists: [], // 用户的歌单列表
         },
+        dialogVisible: false, // 弹窗状态
          // 添加
         playIcon,
         playClickedIcon,
