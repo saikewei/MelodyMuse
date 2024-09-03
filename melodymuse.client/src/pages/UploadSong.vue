@@ -19,7 +19,7 @@
     import newSong from "../components/newSong.vue";
     import TheAside from "@/components/TheAside.vue";
     import SimpleHeader from "@/components/SimpleHeader.vue";
-
+    import { useRoute, useRouter } from 'vue-router';
 
     export default {
         components:{
@@ -32,6 +32,11 @@
         data(){
             return{
                   
+            }
+        },
+        mounted(){
+            if(useRoute().params['status']!='admin'){
+                useRouter().push("/404");
             }
         }
     }

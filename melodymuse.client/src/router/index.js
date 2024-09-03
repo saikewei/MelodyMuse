@@ -23,6 +23,8 @@ import AlbumDetail from "../pages/AlbumDetail.vue";
 import SonglistDetail from "@/pages/SonglistDetail.vue";
 import RankSongs from "../pages/RankSongs.vue";
 import RankArtists from "../pages/RankArtists.vue";
+import TheAside from "@/components/TheAside.vue";
+import NotFound from "@/pages/NotFound.vue";
 
 const routes = [
   {
@@ -31,7 +33,7 @@ const routes = [
     component: Home,
   },
   {
-    path: "/admin",
+    path: "/user/:status",
     children: [
       {
         path: "personal-info",
@@ -57,16 +59,6 @@ const routes = [
         path: "song-info",
         name: "song-info",
         component: SongInfoEdit,
-      },
-    ],
-  },
-  {
-    path: "/user",
-    children: [
-      {
-        path: "personal-info",
-        name: "modify",
-        component: modify,
       },
     ],
   },
@@ -164,6 +156,11 @@ const routes = [
     path: "/SonglistDetail/:songListId",
     name: "SonglistDetail",
     component: SonglistDetail,
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "404",
+    component: NotFound,
   },
 ];
 

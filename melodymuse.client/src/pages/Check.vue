@@ -46,6 +46,8 @@
 import TheHeader from '@/components/SimpleHeader.vue';
 import TheAside from '@/components/TheAside.vue';
 import api from '../api/http.js'
+import { useRoute, useRouter } from 'vue-router';
+
 
 export default {
 data() {
@@ -64,6 +66,10 @@ components: {
 }, 
 mounted() {
   //
+  if(useRoute().params['status']!='admin'){
+    useRouter().push("/404");
+  }
+
   console.log(this.musicList); // 检查musicList是否有数据
   this.fetchMusicList();
 },

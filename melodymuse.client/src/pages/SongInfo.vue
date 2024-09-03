@@ -47,6 +47,7 @@ import { format } from 'date-fns';
 import TheHeader from "../components/SimpleHeader.vue";
 import TheAside from "../components/TheAside.vue";
 import api from '../api/http.js'
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   data() {
@@ -70,6 +71,9 @@ export default {
     TheAside,
   },
   mounted() {
+    if(useRoute().params['status']!='admin'){
+    useRouter().push("/404");
+  }
     this.updateTableHeight();
     window.addEventListener('resize', this.updateTableHeight);
   },
