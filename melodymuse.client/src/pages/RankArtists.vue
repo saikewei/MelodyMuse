@@ -25,8 +25,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(artist, index) in artists" :key="artist.artistId" @click="goToArtistPage(artist.artistId)">
-              <td>{{ artist.artistName }}</td>
+            <tr v-for="(artist, index) in artists" :key="artist.artistId">
+              <td>
+                <router-link :to="{ name: 'SingerDetail', params: { artistId: artist.artistId } }" class="artist-link">
+                  {{ artist.artistName }}
+                </router-link>
+              </td>
               <td>{{ artist.fansCount }}</td>
               <td>{{ artist.totalPlayCount }}</td>
             </tr>
@@ -69,10 +73,6 @@ export default {
           console.error('获取音乐人信息失败:', error);
         });
       },
-    goToArtistPage(artistId) {
-      console.log(`Navigating to artist page with ID: ${artistId}`);
-      this.$router.push({ name: 'ArtistDetail', params: { artistId: artistId } });
-    }
   },
   mounted() {
     this.fetchArtists();
@@ -179,5 +179,15 @@ export default {
 .ranking-table tr:hover {
   background-color: #f5f5f5;
   cursor: pointer; /* 鼠标悬停时显示为指针 */
+}
+
+.artist-link {
+  color: #284da0c1; /* 蓝色文字 */
+  background-color: transparent; /* 透明背景 */
+}
+
+.artist-link:hover {
+    text-decoration: underline; /* 下划线 */
+    text-decoration-color: #284da0c1; /* 蓝色下划线 */
 }
 </style>
