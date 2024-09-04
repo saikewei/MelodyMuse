@@ -106,7 +106,7 @@
       // 获取收藏的歌曲信息
       async fetchCollectedSongs() {
         try {
-          const response = await api.apiClient.get(`/api/users/collectsong/${this.userId}`);
+          const response = await api.apiClient.get(`/api/users/collectsong`);
          // const response = await axios.get(`https://localhost:7223/api/songs/user/${this.userId}/collected`);
           const songs = response.data.map(song => ({ ...song, liked: true }));
           // 获取每首歌的专辑名称并更新数据

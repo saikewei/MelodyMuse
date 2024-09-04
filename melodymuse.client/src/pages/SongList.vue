@@ -6,7 +6,6 @@
 </template>
 
 <script>
-    import TheFooter from "../components/TheFooter.vue"
     import TheHeader from "../components/TheHeader.vue"
     import AllSongList from "@/components/AllSongList.vue";
 
@@ -14,7 +13,6 @@
         name: 'song-list',
         components: {
             TheHeader,
-            TheFooter,
             AllSongList
         }
     }

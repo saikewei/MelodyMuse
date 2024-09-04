@@ -218,14 +218,32 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
-            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.SongId))
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            if (dto == null || string.IsNullOrEmpty(dto.SongId))
             {
                 return BadRequest("请求数据为空");
             }
 
             try
             {
-                await _usersService.AddUserCollectSongAsync(dto.UserId, dto.SongId);
+                await _usersService.AddUserCollectSongAsync(parsedToken.UserID, dto.SongId);
                 return Ok("歌曲成功收藏");
             }
             catch (ArgumentException ex)
@@ -245,14 +263,32 @@ namespace MelodyMuse.Server.Controllers
          [HttpDelete("remove")]
         public async Task<IActionResult> RemoveUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
-            if (dto == null || string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.SongId))
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            if (dto == null ||  string.IsNullOrEmpty(dto.SongId))
             {
                 return BadRequest("请求数据为空");
             }
 
             try
             {
-                await _usersService.RemoveUserCollectSongAsync(dto.UserId, dto.SongId);
+                await _usersService.RemoveUserCollectSongAsync(parsedToken.UserID, dto.SongId);
                 return Ok("歌曲成功取消收藏");
             }
             catch (ArgumentException ex)
@@ -328,10 +364,28 @@ namespace MelodyMuse.Server.Controllers
             return Ok(albums);
         }
         [Authorize]
-         [HttpGet("collectsong/{userId}")]
-public async Task<ActionResult<List<UserCollectedSongDto>>> GetCollectedSongsByUserId(string userId)
+         [HttpGet("collectsong")]
+public async Task<ActionResult<List<UserCollectedSongDto>>> GetCollectedSongsByUserId()
         {
-            var songs = await _usersService.GetCollectedSongsByUserId(userId);
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            var songs = await _usersService.GetCollectedSongsByUserId(parsedToken.UserID);
             if (songs == null || songs.Count == 0)
             {
                 return NotFound("没有收藏的歌曲.");

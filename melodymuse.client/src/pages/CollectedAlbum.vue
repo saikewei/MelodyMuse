@@ -51,13 +51,11 @@
           </tbody>
         </table>
       </div>
-      <TheFooter />
     </div>
   </template>
   
   
   <script>
-  import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
   //import axios from 'axios';
   import api from '../api/http.js';
