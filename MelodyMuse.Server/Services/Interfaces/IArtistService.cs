@@ -17,5 +17,6 @@ namespace MelodyMuse.Server.Services.Interfaces
         Task<List<Artist>> GetAllArtistsAsync();
         Task<List<Artist>> GetArtistsByUserIdAsync(string userId);
         Task<int> GetArtistFansCountAsync(string artistId);
+        Task<bool> IsFollowingArtistAsync(string userId, string artistId);
     }
 }

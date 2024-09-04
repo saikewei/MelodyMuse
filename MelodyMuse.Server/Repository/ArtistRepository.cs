@@ -14,6 +14,12 @@ using System.Collections.Generic;
 
 namespace MelodyMuse.Server.Repository
 {
+    public class UserFollowArtist
+    {
+        public string UserId { get; set; }
+        public string ArtistId { get; set; }
+    }
+
     public class ArtistRepository : IArtistRepository
     {
         private readonly ModelContext _context;
@@ -40,33 +46,45 @@ namespace MelodyMuse.Server.Repository
             var sql = "INSERT INTO USER_FOLLOW_ARTIST (USER_ID, ARTIST_ID) VALUES (:userId, :artistId)";
             var result = await _context.Database.ExecuteSqlRawAsync(sql, new OracleParameter("userId", userId), new OracleParameter("artistId", artistId));
             return result > 0;
-            /*try
+
+        }
+
+        public async Task<bool> IsFollowingArtistAsync(string userId, string artistId)
+        {
+            var sql = "SELECT COUNT(*) FROM USER_FOLLOW_ARTIST WHERE USER_ID = :userId AND ARTIST_ID = :artistId";
+
+            // 获取数据库连接
+            var connection = _context.Database.GetDbConnection();
+
+            try
             {
-                var user = await _context.Users
-                    .Include(u => u.Artists)
-                    .FirstOrDefaultAsync(u => u.UserId == userId);
-                
-                var artist = await _context.Artists
-                    .FirstOrDefaultAsync(a => a.ArtistId == artistId);
-
-                if (user == null || artist == null)
+                // 确保连接在使用前处于打开状态
+                if (connection.State != System.Data.ConnectionState.Open)
                 {
-                    return false;
+                    await connection.OpenAsync();
                 }
 
-                if (!user.Artists.Contains(artist))
+                // 创建并配置 SQL 命令
+                using (var command = connection.CreateCommand())
                 {
-                    user.Artists.Add(artist);
-                    await _context.SaveChangesAsync();
-                }
+                    command.CommandText = sql;
+                    command.Parameters.Add(new OracleParameter("userId", userId));
+                    command.Parameters.Add(new OracleParameter("artistId", artistId));
 
-                return true;
+                    // 执行命令并获取结果
+                    var result = await command.ExecuteScalarAsync();
+                    var count = Convert.ToInt32(result);
+
+                    // 返回是否存在记录
+                    return count > 0;
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                // 处理异常
+                Console.WriteLine(ex.Message);
                 return false;
-            }*/
-
+            }
         }
 
 

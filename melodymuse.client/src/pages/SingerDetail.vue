@@ -411,6 +411,29 @@ async updateFollowersCount() {
       console.error('未找到 artistId');
     }
     this.userId ='001';// this.$route.params.userId
+    try {
+    // 发起请求并等待响应
+    const response = await api.apiClient.get(`/api/artist/FollowStatus/${this.artistId}`);
+    
+    // 如果响应状态码是 2xx，设置 isFollowing 为 true
+    if (response.status >= 200 && response.status < 300) {
+      this.isFollowing = true;
+    } else {
+      // 处理其他状态码
+      this.isFollowing = false;
+    }
+  } catch (error) {
+    // 捕获请求错误
+    if (error.response && error.response.status === 404) {
+      // 如果错误是 404 状态码，设置 isFollowing 为 false
+      this.isFollowing = false;
+    } else {
+      // 处理其他错误
+      console.error('请求错误:', error);
+      this.isFollowing = false;
+    }
+  }
+    
   }
   };
   </script>

@@ -9,6 +9,7 @@ namespace MelodyMuse.Server.Repository.Interfaces
         Task<Artist> GetArtistByIdAsync(string artistId);
         Task<List<Song>> GetSongsByArtistIdAsync(string artistId);
         Task<bool> FollowArtistAsync(string userId, string artistId);
+        Task<bool> IsFollowingArtistAsync(string userId, string artistId);
 
         //通过艺术家姓名得到所有同名艺术家相关信息
         Task<IEnumerable<Artist>> GetArtistsByNameAsync(string name);

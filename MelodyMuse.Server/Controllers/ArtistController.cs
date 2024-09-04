@@ -5,6 +5,8 @@ using MelodyMuse.Server.models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.Services;
 namespace MelodyMuse.Server.Controllers
 {
 [ApiController]
@@ -52,12 +54,31 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("follow")]
         public async Task<IActionResult> FollowArtist([FromBody] FollowArtistRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.UserId) || string.IsNullOrEmpty(request.ArtistId))
+            if (request == null || string.IsNullOrEmpty(request.ArtistId))
             {
                 return BadRequest(new { message = "请求为空" });
             }
 
-            var result = await _artistService.FollowArtistAsync(request.UserId, request.ArtistId);
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            var result = await _artistService.FollowArtistAsync(parsedToken.UserID, request.ArtistId);
+
             if (result)
             {
                 return Ok(new { message = "关注歌手成功" });
@@ -70,7 +91,30 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("unfollow")]
         public async Task<IActionResult> UnfollowArtist([FromBody] FollowArtistRequest model)
         {
-            var result = await _artistService.UnfollowArtistAsync(model.UserId, model.ArtistId);
+            if (model == null || string.IsNullOrEmpty(model.ArtistId))
+            {
+                return BadRequest(new { message = "请求为空" });
+            }
+
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            var result = await _artistService.UnfollowArtistAsync(parsedToken.UserID, model.ArtistId);
 
             if (result)
             {
@@ -95,6 +139,37 @@ namespace MelodyMuse.Server.Controllers
             {
                 return BadRequest(new { Message = "添加失败" });
             }
+        }
+
+        [Authorize]
+        [HttpGet("FollowStatus/{artistId}")]
+        public async Task<IActionResult> IsFollowArtist(string artistId)
+        {
+            // 从请求头中获取 JWT 令牌
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            // 如果没有令牌，返回未授权错误码401
+            if (token == null)
+            {
+                return Unauthorized(new { msg = "未提供令牌" });
+            }
+
+            // 解析 JWT 令牌，得到存储的信息
+            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
+
+            // 检查解析结果是否为空
+            if (parsedToken == null)
+            {
+                return Unauthorized(new { msg = "令牌无效" });
+            }
+
+            var result = await _artistService.IsFollowingArtistAsync(parsedToken.UserID, artistId);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [Authorize]
