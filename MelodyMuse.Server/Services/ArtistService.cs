@@ -17,6 +17,8 @@ namespace MelodyMuse.Server.Services
 
         public async Task<Artist> GetArtistByIdAsync(string artistId)
         {
+            var _artist = await _artistRepository.GetArtistByIdAsync(artistId);
+            _artist.ArtistFansNum = await _artistRepository.GetArtistFansCountAsync(artistId);
             return await _artistRepository.GetArtistByIdAsync(artistId);
         }
 

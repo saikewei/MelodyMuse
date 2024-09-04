@@ -207,12 +207,10 @@ namespace MelodyMuse.Server.Repository
 
         public async Task<int> GetArtistFansCountAsync(string artistId)
         {
-            // 使用艺术家和用户之间的关系表来获取粉丝数
-            var artist = await _context.Artists
-                .Include(a => a.Users)
-                .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+            var ArtistFanCountEntity = await _context.ArtistFanCounts.FirstOrDefaultAsync(u => u.ArtistId == artistId);
 
-            return artist?.Users.Count ?? 0;
+            if (ArtistFanCountEntity == null) return 0;
+            else return (int)ArtistFanCountEntity.FanCount;
         }
         public async Task<bool> IsUserInArtistAsync(string userId)
         {
