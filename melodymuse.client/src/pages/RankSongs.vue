@@ -14,7 +14,7 @@
         <span>热歌榜</span><strong>Top50</strong>
       </h1>
 
-      <button @click="goToPlayPage(topSong.songId)" class="play-all-button">
+      <button @click="goToPlayPage" class="play-all-button">
       ▷播放全部
       </button>
 
@@ -30,9 +30,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(song, index) in songs" :key="song.songId" @click="goToPlayPage(song.songId)">
+            <tr v-for="(song, index) in songs" :key="song.songId">
               <td :class="{'top-three': index < 3}">{{ index + 1 }}</td>
-              <td>{{ song.songName }}</td>
+              <td>
+                <router-link :to="{ name: 'mediaplayer', params: { songId: song.songId, songList: [song.songId] } }" class="song-link">
+                  {{ song.songName }}
+                </router-link>
+              </td>
               <td>{{ song.artistName }}</td>
               <td>{{ formatDuration(song.duration) }}</td>
             </tr>
@@ -60,11 +64,6 @@ export default {
       songs: [],
     };
   },
-  computed: {
-    topSong() {
-      return this.songs[0];
-    }
-  },
   methods: {
     // 两个排行榜互相跳转
     navigateTo(routeName) {
@@ -87,10 +86,26 @@ export default {
       return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     },
     // 跳转到播放页面
-    goToPlayPage(songId) {
-      console.log(`Navigating to play page for song ID: ${songId}`);
-      this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
+    goToPlayPage() {
+    if (this.songs.length > 0) {
+      // 获取歌曲列表的第一首歌的 ID
+      const firstSongId = this.songs[0].songId;
+
+      // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+      const songList = this.songs.map(s => s.songId).join(',');
+
+      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+      this.$router.push({
+        name: 'mediaplayer',
+        params: {
+          songId: firstSongId, // 第一个歌曲的 ID
+          songList: songList   // 所有歌曲 ID 组成的字符串
+        }
+      });
+    } else {
+      console.error('歌曲列表为空，无法播放歌曲');
     }
+  },
   },
   mounted() {
     this.fetchSongs();
@@ -220,5 +235,14 @@ export default {
   text-shadow: 2px 2px 5px rgba(24, 44, 145, 0.2);
   color: #284da0c1;
   font-size: 1.5em;
+}
+.song-link {
+  color: #284da0c1; /* 蓝色文字 */
+  background-color: transparent; /* 透明背景 */
+}
+
+.song-link:hover {
+    text-decoration: underline; /* 下划线 */
+    text-decoration-color: #284da0c1; /* 蓝色下划线 */
 }
 </style>
