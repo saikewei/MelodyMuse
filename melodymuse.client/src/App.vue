@@ -5,14 +5,17 @@
         </div>
     </div>
     <TheFooter></TheFooter>
+    <playBar />
 </template>
 
 <script>
 import TheFooter from './components/TheFooter.vue';
+import playBar from './components/playBar.vue';
 
     export default {
         components:{
-            TheFooter
+            TheFooter,
+            playBar
         }
 }
 </script>

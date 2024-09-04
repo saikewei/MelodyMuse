@@ -103,10 +103,12 @@ var currentImage = ref('');
 var defaultImage = ref("/defaultImage.jpg")
 var currentLine = ref(0);
 var audioElement = ref(null);
-var progress = ref(0);
+
+    var progress = ref(0);
 var duration = ref(0);
 var playing = ref(false);
-var isLoading = ref(true); //当前页面需要的数据加载状态
+    var isLoading = ref(true); //当前页面需要的数据加载状态
+
 const songList = route.params.songList.split(',');
 var songInfoList = [];
 const songListLength = songList.length;
@@ -155,48 +157,48 @@ watch(songIndex.value, (newValue, oldValue) => {
   console.log(`Highlight index changed from ${oldValue} to ${newValue}`);
 });
 
-async function pull_song_data(songId){
-  try {
-    // 并发获取歌曲信息
-    const [songInfo] = await Promise.all([
-      fetchSongInfo(songId)
-    ]);
-    console.log(songInfo)
+    async function pull_song_data(songId) {
+        try {
+            // 并发获取歌曲信息
+            const [songInfo] = await Promise.all([
+                fetchSongInfo(songId)
+            ]);
+            console.log(songInfo)
 
-    // 使用歌曲信息中的数据
-    composerId.value = songInfo.composerId;
-    console.log(songInfo.albumId)
-    albumId.value = songInfo.albumId;
+            // 使用歌曲信息中的数据
+            composerId.value = songInfo.composerId;
+            console.log(songInfo.albumId)
+            albumId.value = songInfo.albumId;
 
 
-    // 并发获取歌词和音频数据
-    const [lyrics_txt, audio , image] = await Promise.all([
-      fetchLyrics(songId, composerId.value),
-      fetchSong(songId, composerId.value),
-      fetch_img(albumId.value)
-    ]);
+            // 并发获取歌词和音频数据
+            const [lyrics_txt, audio, image] = await Promise.all([
+                fetchLyrics(songId, composerId.value),
+                fetchSong(songId, composerId.value),
+                fetch_img(albumId.value)
+            ]);
 
-    // 更新数据
-    songName.value = songInfo.songName;
-    lyrics.value = parseLyrics(lyrics_txt);
-    audioSrc.value = audio;
-    currentImage.value =  image;
+            // 更新数据
+            songName.value = songInfo.songName;
+            lyrics.value = parseLyrics(lyrics_txt);
+            audioSrc.value = audio;
+            currentImage.value = image;
 
-    // 设置加载状态为 false
-    isLoading.value = false;
+            // 设置加载状态为 false
+            isLoading.value = false;
 
-    // 开始更新进度条
-    const update = () => {
-      updateProgress({ target: audioElement.value });
-      requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
-  } catch (error) {
-    console.error('Error loading data:', error);
-    // 处理错误情况，例如显示错误消息
-    isLoading.value = false; // 数据加载失败后也设置为 false
-  }
-}
+            // 开始更新进度条
+            const update = () => {
+                updateProgress({ target: audioElement.value });
+                requestAnimationFrame(update);
+            };
+            requestAnimationFrame(update);
+        } catch (error) {
+            console.error('Error loading data:', error);
+            // 处理错误情况，例如显示错误消息
+            isLoading.value = false; // 数据加载失败后也设置为 false
+        }
+    }
 
 async function fetch_songs_info(songList){
   var songInfoLists=[];
@@ -237,115 +239,116 @@ async function fetch_img(albumId) {
   }
 }
 
+    //从后端获取歌词
+    async function fetchLyrics(songId, artistId) {
+        try {
+            const formData = new FormData();
+            formData.append('songId', songId);
+            formData.append('artistId', artistId);
+            const response = await api.apiClient.get("/api/player/txt", {
+                params: {
+                    'songId': songId,
+                    'artistId': artistId
+                }
+            });
 
-async function fetchLyrics(songId,artistId){
-  try{
-    const formData = new FormData();
-    formData.append('songId', songId);
-    formData.append('artistId', artistId);
-  const response = await api.apiClient.get("/api/player/txt",{
-    params:{'songId' : songId,
-    'artistId' : artistId}
-  });
+            if (response.status === 200) {
+                return response.data;
+            }
+            else {
+                return '[00:00.00] 获取歌词失败'
+            }
 
-  if(response.status === 200)
-  {
-    return response.data;
-  }
-  else{
-    return '[00:00.00] 获取歌词失败'
-  }
-
-}catch(error){
-  console.log(error)
-  return '[00:00.00] 获取歌词失败'
-}
-}
-
-async function fetchSong(songId, artistId) {
-  try {
-    const response = await api.apiClient.get("/api/player/mp3", {
-      params: { 'songId': songId, 'artistId': artistId },
-      responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
-    });
-
-    if (response.status === 200) {
-      // 将二进制数据转换为 Blob 对象
-      const blob = new Blob([response.data], { type: 'audio/mpeg' });  // 假设音频类型是 MP3
-
-      // 创建一个指向 Blob 的 URL
-      const audioUrl = URL.createObjectURL(blob);
-
-      // 返回音频的 URL
-      return audioUrl;
-    } else {
-      ElMessage({
-        message:"音乐加载失败",
-        type:"error"
-      })
-      return null;
+        } catch (error) {
+            console.log(error)
+            return '[00:00.00] 获取歌词失败'
+        }
     }
-  } catch (error) {
-    console.log(error);
-    ElMessage({
-        message:"音乐加载失败",
-        type:"error"
-    })
-    return null;
-  }
-}
+    //从后端获取音源
+    async function fetchSong(songId, artistId) {
+        try {
+            const response = await api.apiClient.get("/api/player/mp3", {
+                params: { 'songId': songId, 'artistId': artistId },
+                responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
+            });
 
+            if (response.status === 200) {
+                // 将二进制数据转换为 Blob 对象
+                const blob = new Blob([response.data], { type: 'audio/mpeg' });  // 假设音频类型是 MP3
 
-// 解析歌词
-function parseLyrics(lyricsText) {
-  return lyricsText.split('\n').flatMap(function (line) {
-    const results = [];
+                // 创建一个指向 Blob 的 URL
+                const audioUrl = URL.createObjectURL(blob);
 
-    let index = 0;
-    while (index < line.length) {
-      // 查找左括号的位置
-      const leftBracketIndex = line.indexOf('[', index);
-      if (leftBracketIndex === -1) break; // 如果没有找到左括号，结束循环
-      
-      // 查找右括号的位置
-      const rightBracketIndex = line.indexOf(']', leftBracketIndex);
-      if (rightBracketIndex === -1) break; // 如果没有找到右括号，结束循环
-      
-      // 提取时间戳
-      const timeStr = line.substring(leftBracketIndex + 1, rightBracketIndex);
-      const minutes = parseInt(timeStr.substring(0, 2), 10);
-      const seconds = parseFloat(timeStr.substring(3));
-      const timestamp = minutes * 60 + seconds;
-      
-      // 提取时间戳后面的文本
-      const textStartIndex = rightBracketIndex + 1;
-      const text = line.substring(textStartIndex).trim();
-      
-      results.push({ time: timestamp, text: text });
-
-      // 更新索引
-      index = textStartIndex;
+                // 返回音频的 URL
+                return audioUrl;
+            } else {
+                ElMessage({
+                    message: "音乐加载失败",
+                    type: "error"
+                })
+                return null;
+            }
+        } catch (error) {
+            console.log(error);
+            ElMessage({
+                message: "音乐加载失败",
+                type: "error"
+            })
+            return null;
+        }
     }
 
-    return results;
-  }).filter(Boolean);
-}
 
-async function fetchSongInfo(songId) {
-  console.log(songId)
-  try {
-    //const response = await axios.get(`https://localhost:7223/api/player/${songId}`);
-    const response = await api.apiClient.get(`/api/player/${songId}`);
-    const songInfo = response.data;
-    return songInfo;
-  } catch (error) {
-    console.error('Error fetching song info:', error);
-    if (error.response && error.response.status === 401) {
-      console.error('Unauthorized access. Please log in again.');
+    // 解析歌词
+    function parseLyrics(lyricsText) {
+        return lyricsText.split('\n').flatMap(function (line) {
+            const results = [];
+
+            let index = 0;
+            while (index < line.length) {
+                // 查找左括号的位置
+                const leftBracketIndex = line.indexOf('[', index);
+                if (leftBracketIndex === -1) break; // 如果没有找到左括号，结束循环
+
+                // 查找右括号的位置
+                const rightBracketIndex = line.indexOf(']', leftBracketIndex);
+                if (rightBracketIndex === -1) break; // 如果没有找到右括号，结束循环
+
+                // 提取时间戳
+                const timeStr = line.substring(leftBracketIndex + 1, rightBracketIndex);
+                const minutes = parseInt(timeStr.substring(0, 2), 10);
+                const seconds = parseFloat(timeStr.substring(3));
+                const timestamp = minutes * 60 + seconds;
+
+                // 提取时间戳后面的文本
+                const textStartIndex = rightBracketIndex + 1;
+                const text = line.substring(textStartIndex).trim();
+
+                results.push({ time: timestamp, text: text });
+
+                // 更新索引
+                index = textStartIndex;
+            }
+
+            return results;
+        }).filter(Boolean);
     }
-    throw error;
-  }
-}
+    //获取歌曲信息
+    async function fetchSongInfo(songId) {
+        console.log(songId)
+        try {
+            //const response = await axios.get(`https://localhost:7223/api/player/${songId}`);
+            const response = await api.apiClient.get(`/api/player/${songId}`);
+            const songInfo = response.data;
+            return songInfo;
+        } catch (error) {
+            console.error('Error fetching song info:', error);
+            if (error.response && error.response.status === 401) {
+                console.error('Unauthorized access. Please log in again.');
+            }
+            throw error;
+        }
+    }
 
 
 function getLineStyle(index) {
@@ -445,75 +448,75 @@ async function playSong(index){
   togglePlaying();
 }
 
-// 播放下一首歌曲
-async function nextSong() {
-  if(playing.value==true){
-    togglePlaying();
-  }
+    // 播放下一首歌曲
+    async function nextSong() {
+        if (playing.value == true) {
+            togglePlaying();
+        }
 
-  var oldSongId = songList[songIndex.value];
-  var songId ;
+        var oldSongId = songList[songIndex.value];
+        var songId;
 
-  if(playmode.value == 'random'){
-    songIndex.value = getRandomInt(0, songListLength-1);
-    songId = songList[songIndex.value];
-  }
-  else if(playmode.value =='repeat'){
-    songId = oldSongId;
-  }
-  else if(playmode.value =='sequence'){
-    if(songIndex.value<songListLength-1){
-      songIndex.value++;
+        if (playmode.value == 'random') {
+            songIndex.value = getRandomInt(0, songListLength - 1);
+            songId = songList[songIndex.value];
+        }
+        else if (playmode.value == 'repeat') {
+            songId = oldSongId;
+        }
+        else if (playmode.value == 'sequence') {
+            if (songIndex.value < songListLength - 1) {
+                songIndex.value++;
+            }
+            else if (songIndex.value == songListLength - 1) {
+                songIndex.value = 0;
+            }
+            songId = songList[songIndex.value];
+        }
+        if (songId == oldSongId) {
+            resetCurrentSong();
+        }
+        else {
+            await pull_song_data(songId);
+        }
+        togglePlaying();
+
+        console.log('Next song');
     }
-    else if(songIndex.value==songListLength-1){
-      songIndex.value = 0;
-    }
-    songId = songList[songIndex.value];
-  }
-  if(songId == oldSongId){
-    resetCurrentSong();
-  }
-  else{
-    await pull_song_data(songId);
-  }
-  togglePlaying();
 
-  console.log('Next song');
-}
+    // 播放上一首歌曲
+    async function prevSong() {
+        if (playing.value == true) {
+            togglePlaying();
+        }
+        var oldSongId = songList[songIndex.value];
+        var songId;
 
-// 播放上一首歌曲
-async function prevSong() {
-  if(playing.value==true){
-    togglePlaying();
-  }
-  var oldSongId = songList[songIndex.value];
-  var songId ;
-
-  if(playmode.value == 'random'){
-    songIndex.value = getRandomInt(0, songListLength-1);
-    songId = songList[songIndex.value];
-  }
-  else if(playmode.value =='repeat'){
-    songId = oldSongId;
-  }
-  else if(playmode.value =='sequence'){
-    if(songIndex.value>0){
-      songIndex.value--;
+        if (playmode.value == 'random') {
+            songIndex.value = getRandomInt(0, songListLength - 1);
+            songId = songList[songIndex.value];
+        }
+        else if (playmode.value == 'repeat') {
+            songId = oldSongId;
+        }
+        else if (playmode.value == 'sequence') {
+            if (songIndex.value > 0) {
+                songIndex.value--;
+            }
+            else if (songIndex.value == 0) {
+                songIndex.value = songListLength - 1;
+            }
+            songId = songList[songIndex.value];
+        }
+        if (songId == oldSongId) {
+            resetCurrentSong();
+        }
+        else {
+            await pull_song_data(songId);
+        }
+        togglePlaying();
+        console.log('Previous song');
     }
-    else if(songIndex.value==0){
-      songIndex.value = songListLength-1;
-    }
-    songId = songList[songIndex.value];
-  }
-  if(songId == oldSongId){
-    resetCurrentSong();
-  }
-  else{
-    await pull_song_data(songId);
-  }
-  togglePlaying();
-  console.log('Previous song');
-}
 </script>
 
 <style scoped>

@@ -264,29 +264,32 @@ export default {
   color: #8b9dcbc1;
 }
 
-.artist-list {
-  height: 400px; /* 调整高度，根据需求更改 */
-  overflow-y: scroll; /* 添加滚动条 */
-  margin-top: 10px;
-  padding-right: 5px; /* 留出空间给滚动条 */
-}
+    .artist-list {
+        height: 400px; /* 调整高度，根据需求更改 */
+        overflow-y: scroll; /* 添加滚动条 */
+        margin-top: 10px;
+        padding-right: 5px; /* 留出空间给滚动条 */
 
-.artist-list ul {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: left;
-  padding: 0;
-  list-style-type: none;
-}
+        z-index: 3000;
+    }
 
-.artist-item {
-  flex: 0 1 calc(25%); /* 每行 4 个，间隔 10px */
-  margin-bottom: 10px;
-  margin-top: 10px;
-  text-align: center;
-  background-color:#fafafaf5;
-  height:30px;
-}
+    .artist-list ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+        padding: 0;
+        list-style-type: none;
+    }
+
+    .artist-item {
+        flex: 0 1 calc(25%); /* 每行 4 个，间隔 10px */
+        margin-bottom: 10px;
+        margin-top: 10px;
+        text-align: center;
+        background-color: #fafafaf5;
+        height: 30px;
+        z-index: 8000;
+    }
 
 .artist-item a {
   cursor: pointer;

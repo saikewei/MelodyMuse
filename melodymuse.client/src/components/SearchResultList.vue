@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a :href="'/artist/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a :href="'/SingerDetail/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
@@ -34,9 +34,7 @@
             </el-table-column>
 
             <!-- 单曲类别显示 -->
-            <el-table-column v-if="category === 'song'"
-                             label="歌曲"
-                             width="500">
+            <el-table-column v-if="category === 'song'" label="歌曲" width="500">
                 <template #default="scope">
                     <el-tooltip content="播放歌曲" placement="bottom">
                         <img :src="scope.row.playing ? playClickedIcon : scope.row.playHover ? playHoverIcon : playIcon"
@@ -46,9 +44,10 @@
                              class="play-icon"
                              alt="播放歌曲" />
                     </el-tooltip>
-                    <a :href="'/mediaplayer/' + scope.row.songId" class="song-link">{{ scope.row.songName }}</a>
+                    <span class="song-name">{{ scope.row.songName }}</span>
                 </template>
             </el-table-column>
+
             <el-table-column v-if="category === 'song'"
                              label="演唱"
                              width="250">
@@ -95,7 +94,7 @@
             抱歉，没有找到相关结果
         </div>
         <el-dialog v-model="dialogAddVisible" width="500px" v-if="dialogAddVisible">
-            <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose"/>
+            <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose" />
         </el-dialog>
     </div>
 </template>
@@ -111,7 +110,7 @@
     import addIcon from '../assets/pics/add.png';
     import addHoverIcon from '../assets/pics/add-cover.png';
     import addClickedIcon from '../assets/pics/add-click.png';
-import AddToSongList from './AddToSongList.vue';
+    import AddToSongList from './AddToSongList.vue';
 
     export default {
         props: {
@@ -140,7 +139,7 @@ import AddToSongList from './AddToSongList.vue';
                 currentSongId: 0,
             };
         },
-        components:{
+        components: {
             AddToSongList
         },
         created() {
@@ -201,14 +200,29 @@ import AddToSongList from './AddToSongList.vue';
             },
             togglePlayIcon(song) {
                 song.playing = !song.playing;
+                /*try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song.songId;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song.songId, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }*/
+                this.$store.commit('setId', song.songId);
+                this.$store.commit('addSongToList', song.songId);
             },
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
             },
             toggleAddIcon(song) {
                 console.log(song);
-                this.currentSongId=song.songId;
-                this.dialogAddVisible=true;
+                this.currentSongId = song.songId;
+                this.dialogAddVisible = true;
             },
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
@@ -258,11 +272,15 @@ import AddToSongList from './AddToSongList.vue';
             }
 
     .search-summary {
-        margin-bottom: 20px;
-        margin-right:1020px;
+        margin-bottom: 10px;
+        margin-left: 0;
         font-size: 15px;
         color: #666;
+        text-align: left;
+        position: relative;
+        left: 0;
     }
+
 
     .result-count {
         color: #CC2C1F;

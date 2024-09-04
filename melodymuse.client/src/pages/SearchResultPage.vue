@@ -10,6 +10,7 @@
 
 <script>
     import TheHeader from "../components/TheHeader.vue";
+    //import playBar from "../components/playBar.vue";
     import SearchResultList from '../components/SearchResultList.vue';
     import { mapGetters, mapActions } from 'vuex';
     import api from '../api/http.js'
