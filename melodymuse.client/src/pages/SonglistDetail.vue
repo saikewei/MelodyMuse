@@ -16,7 +16,7 @@
               <div class="stats">
                 <span>歌曲总数： {{ songCount }}</span>
               </div>
-              <button class="play-button" @click="playFirstSong">▷播放专辑</button>
+              <button class="play-button" @click="playFirstSong">▷播放歌单</button>
               <button 
               class="like-button" 
               :class="{ liked: isLiked }" 
@@ -27,7 +27,7 @@
           </div>
     
           <div class="songs">
-            <h2 style="margin-top: 10px; margin-bottom: 5px; margin-left: 10px; color:#284da0c1;">专辑歌曲</h2>
+            <h2 style="margin-top: 10px; margin-bottom: 5px; margin-left: 10px; color:#284da0c1;">歌曲</h2>
             <div class="songs-table">
               <table>
                 <thead>
@@ -95,6 +95,7 @@
     import addIcon from '../assets/pics/add.png'; 
     import addHoverIcon from '../assets/pics/add-cover.png'; 
     import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+    import { useRouter } from 'vue-router';
     
     export default {
       data() {
@@ -155,7 +156,7 @@
             console.error('获取歌单信息失败:', error);
           }
         },
-        //点击播放专辑按钮，自动播放第一首歌曲
+
         playFirstSong() {
       try {
         // 获取第一首歌的 songId
@@ -180,7 +181,7 @@
     },
         //用户点击歌单任意歌曲，通过songId切换到播放页面
         playSong(songId) {
-          this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
+          useRouter().push(`/mediaplayer/${songId}/${songId}`);
         },
   
         //收藏方法
@@ -215,17 +216,7 @@
         // 获取当前歌曲的 ID
         const songId = song.songId;
   
-        // 生成 songList 参数，格式为 'songId1,songId2,...'
-        const songList = this.songList.songs.map(s => s.songId).join(',');
-  
-        // 跳转到播放页面，并传递 songId 和 songList 参数
-        this.$router.push({ 
-          name: 'mediaplayer', 
-          params: { 
-            songId: songId, 
-            songList: songList 
-          } 
-        });
+        this.$router.push(`/mediaplayer/${songId}/${songId}`);
   
       } catch (error) {
         console.error('跳转播放页面失败:', error);
