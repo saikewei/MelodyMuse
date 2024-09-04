@@ -9,7 +9,6 @@
 </template>
 
 <script>
-    import TheFooter from "../components/TheFooter.vue";
     import TheHeader from "../components/TheHeader.vue";
     import SearchResultList from '../components/SearchResultList.vue';
     import { mapGetters, mapActions } from 'vuex';
@@ -20,7 +19,6 @@
         components: {
             TheHeader,
             SearchResultList,
-            TheFooter
         },
         data() {
             return {

@@ -65,7 +65,6 @@
 </template>
 
 <script>
-import TheFooter from "../components/TheFooter.vue";
 import TheHeader from "../components/TheHeader.vue";
 import { convertToPinyin } from 'tiny-pinyin';
 import api from '../api/http.js'
@@ -73,7 +72,6 @@ export default {
   name: "singer",
   components: {
     TheHeader,
-    TheFooter,
   },
   data() {
     return {

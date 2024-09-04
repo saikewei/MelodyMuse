@@ -8,7 +8,6 @@
 
 <script>
     import Swiper from "../components/Swiper.vue";
-    import TheFooter from "../components/TheFooter.vue";
     import TheHeader from "../components/TheHeader.vue";
     import RecommendedSongs from "../components/RecommendedSongs.vue";
 
@@ -16,7 +15,6 @@
         name: 'Home',
         components: {
             Swiper,
-            TheFooter,
             TheHeader,
             RecommendedSongs
         }
