@@ -66,7 +66,6 @@
     name: "CollectedAlbum",
     components: {
       TheHeader,
-      TheFooter,
     },
     data() {
       return {

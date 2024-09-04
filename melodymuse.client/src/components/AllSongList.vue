@@ -18,7 +18,7 @@
               <p>{{ playlist.description }}</p>
             </div>
             <div class="playlist-footer">
-                <el-button type="success">播放</el-button>
+                <el-button type="success" @click="playSongList(playlist)">播放</el-button>
                 <el-button type="primary" @click="openEditDialog(playlist)">编辑</el-button>
                 <el-button type="primary" @click="viewDetails(playlist)">详情</el-button>
                 <el-button type="danger" @click="confirmDelete(playlist.songlistId)">删除</el-button>
@@ -108,6 +108,30 @@ const openEditDialog = (playlist: Playlist) => {
   currentPlaylist.value = { ...playlist }; // 填充当前歌单数据
   dialogVisible.value = true;
 };
+
+const playSongList = async (playlist: Playlist)=> {
+  try{
+    const songsResponse = await api.apiClient.get(`/api/songlist/${playlist.songlistId}/songs`);
+    if(songsResponse.status < 400){
+      console.log(songsResponse.data);
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = songsResponse.data.map(s => s.songId).join(',');
+
+      console.log(songList);
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
+
+    }
+    else{
+      ElMessage.error("无法播放歌单，歌单没有歌曲");
+    }
+  }catch(error){
+    ElMessage.error("无法播放歌单:"+error);
+  }
+  
+  //router.push(`/mediaplayer/${playlist.songlistId}`)
+}
 
 
 const confirmDelete = async (songlistId: number) => {

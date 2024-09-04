@@ -57,12 +57,10 @@
           </tbody>
         </table>
       </div>
-      <TheFooter />
     </div>
   </template>
   
   <script>
-  import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
   import api from '../api/http.js';
   import axios from 'axios';
@@ -77,7 +75,6 @@
     name: "CollectedSong",
     components: {
       TheHeader,
-      TheFooter,
     },
     data() {
       return {
