@@ -21,8 +21,6 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<ArtistFanCount> ArtistFanCounts { get; set; }
 
-    public virtual DbSet<ArtistidFannum> ArtistidFannums { get; set; }
-
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Playlist> Playlists { get; set; }
@@ -140,21 +138,6 @@ public partial class ModelContext : DbContext
             entity.Property(e => e.FanCount)
                 .HasColumnType("NUMBER")
                 .HasColumnName("FAN_COUNT");
-        });
-
-        modelBuilder.Entity<ArtistidFannum>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("ARTISTID_FANNUM");
-
-            entity.Property(e => e.ArtistId)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("ARTIST_ID");
-            entity.Property(e => e.FollowerCount)
-                .HasColumnType("NUMBER")
-                .HasColumnName("FOLLOWER_COUNT");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
