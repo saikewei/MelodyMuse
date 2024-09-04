@@ -34,8 +34,8 @@
                   <th>歌曲</th>
                   <th>歌手</th>
                   <th>时长</th>
-                  <!-- 添加按钮 -->
-                  <th>操作</th>
+                  <th>收藏</th>
+                <th>加入歌单</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,7 +132,7 @@
           albumProducer: '',
           
           songs: [
-          ///*
+          /*
           {
             "songId": "0c35751f-0",
             "songName": "缓缓",
@@ -154,14 +154,14 @@
             "songDate": null,
             "songGenre": null
         },
-        //*/
+        */
         ],
         isLiked: false,
         currentSong: null, // 当前选择的歌曲
         songlists: [], // 用户的歌单列表
         },
         dialogVisible: false, // 弹窗状态
-         // 添加
+        
         playIcon,
         playClickedIcon,
         playHoverIcon,
@@ -471,11 +471,14 @@
   
   table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* 移除单元格之间的边距 */
   }
   
   thead {
     background-color: #f4f4f4;
+    position: sticky;
+    top: 0;
+    z-index: 1; /* 确保表头在内容之上 */
   }
   
   th, td {
@@ -489,6 +492,7 @@
   .like-icon {
   width: 34px; /* 设置按钮的宽度 */
 }
+
 .add-to-songlist-button {
   padding: 5px 10px;
   border: 1px solid #284da0c1;

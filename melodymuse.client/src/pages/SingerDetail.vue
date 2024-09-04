@@ -34,8 +34,10 @@
                 <th>歌曲</th>
                 <th>专辑</th>
                 <th>时长</th>
-                <!-- 添加按钮 -->
-                <th>操作</th>
+                <!-- <th colspan="2">操作</th>-->
+                
+                <th>收藏</th>
+                <th>加入歌单</th>
               </tr>
             </thead>
             <tbody>
@@ -67,21 +69,22 @@
                            class="like-icon"
                            alt="收藏歌曲" />
                     </el-tooltip>
-                    <!--<el-tooltip content="添加到播放列表" placement="bottom">
-                        <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
-                             @mouseover="song.addHover = true"
-                             @mouseleave="song.addHover = false"
-                             @click="toggleAddIcon(song)"
-                             class="add-icon"
-                             alt="添加到播放列表" />
-                    </el-tooltip>-->
                   </td>
-                   <!-- 加入专辑按钮 -->
-                     <td>
-                     <button class="add-to-songlist-button" @click.stop="showSonglistModal(song)">
-                      ➕ 
-                     </button>
-                  </td>
+
+                    <td>
+                    <el-tooltip content="添加到歌单" placement="bottom">
+                      <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                           @mouseover="song.addHover = true"
+                           @mouseleave="song.addHover = false"
+                           @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
+                           class="add-icon"
+                          alt="添加到歌单" />
+                    </el-tooltip>
+                    </td>
+ <!-- 引用弹窗组件 -->
+ <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+      <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
+    </el-dialog>  
               </tr>
             </tbody>
           </table>
@@ -89,15 +92,7 @@
       </div>
     </div>
   </div>
-   <!-- 弹窗：选择歌单 -->
-   <el-dialog title="选择专辑" :visible.sync="isSonglistModalVisible" width="30%">
-      <div v-for="songlist in songlists" :key="songlist.id" class="songlist-item">
-        <button @click="addToSonglist(currentSong, songlist.id)">
-          {{ songlist.name }}
-        </button>
-      </div>
-      <button class="create-new-songlist-button" @click="createNewSonglist">创建新专辑</button>
-    </el-dialog>
+   
     <TheFooter />
   </div>
   </template>
@@ -116,6 +111,7 @@
   import addIcon from '../assets/pics/add.png'; 
   import addHoverIcon from '../assets/pics/add-cover.png'; 
   import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+  import AddToSongList from '../components/AddToSongList.vue';
 
   export default {
     data() {
@@ -132,8 +128,8 @@
         followersCount: 0, // 数字格式，方便处理加减
         isFollowing: false,
         songs:[
-          
-        /*  { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
+          /*
+          { songId: 1, songName: '圣诞星 (feat. 杨瑞代)',albumName: '圣诞星 (feat. 杨瑞代)', duration: '240' },
           { songId: 2, songName: '晴天', albumName: '叶惠美', duration: '312' },
           { songId: 3, songName: '搁浅', albumName: '七里香', duration: '260' },
           { songId: 4, songName: '青花瓷', albumName: '我很忙', duration: '189' }, 
@@ -161,6 +157,7 @@
         addIcon,
         addHoverIcon,
         addClickedIcon,
+        dialogVisible: false, // 弹窗状态
       };
     },
     computed: {
@@ -181,6 +178,7 @@
     components: {
       TheHeader,
       TheFooter,
+      AddToSongList, 
     },
     methods: {
     //获取艺术家信息，前端已测试成功
@@ -264,6 +262,16 @@
           song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
+      toggleAddIcon(song) {
+    console.log('toggleAddIcon called with song:', song);
+    this.currentSongId = song.songId;
+    this.dialogVisible = true;
+    console.log('dialogVisible:', this.dialogVisible);
+    console.log('currentSongId:', this.currentSongId);
+  },
+      handleDialogClose(isVisible) {
+    this.dialogVisible = isVisible;
+  },
       /*//加入歌单
       async toggleAddIcon(song) {
     try {
@@ -502,6 +510,9 @@ async updateFollowersCount() {
   
   thead {
     background-color: #f4f4f4;
+    position: sticky;
+    top: 0;
+    z-index: 1; /* 确保表头在内容之上 */
   }
   
   th, td {
@@ -509,6 +520,7 @@ async updateFollowersCount() {
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
+ 
   .play-icon {
   width: 34px; /* 设置按钮的宽度 */
 }
@@ -546,6 +558,10 @@ async updateFollowersCount() {
   cursor: pointer;
   margin-top: 10px;
 }
-
+.add-icon {
+  width: 24px; /* 设置图标宽度 */
+  height: 24px; /* 设置图标高度 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
   </style>
   
