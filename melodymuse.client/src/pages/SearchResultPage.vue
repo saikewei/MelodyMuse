@@ -4,13 +4,11 @@
         <div v-if="loading">加载中...</div>
         <div v-else>
             <SearchResultList :results="searchResults" :searchType="searchType" @updateCategory="handleCategoryUpdate" />
-            <TheFooter />
         </div>
     </div>
 </template>
 
 <script>
-    import TheFooter from "../components/TheFooter.vue";
     import TheHeader from "../components/TheHeader.vue";
     import SearchResultList from '../components/SearchResultList.vue';
     import { mapGetters, mapActions } from 'vuex';
@@ -21,7 +19,6 @@
         components: {
             TheHeader,
             SearchResultList,
-            TheFooter
         },
         data() {
             return {

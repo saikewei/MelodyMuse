@@ -77,13 +77,11 @@
      </div>
    </div>
  </div>
-      <TheFooter  />
  </div>
 </template>
   
   <script>
   import albumCover from '../assets/logo2.jpg';
-  import TheFooter from "../components/TheFooter.vue";
   import TheHeader from '../components/TheHeader.vue';
   import api from '../api/http.js';
   import playIcon from '../assets/pics/play.png'; // 添加按钮图片路径↓
@@ -160,7 +158,6 @@
     },
     components: {
       TheHeader,
-      TheFooter,
     },
     methods: {
       async fetchAlbumData() {

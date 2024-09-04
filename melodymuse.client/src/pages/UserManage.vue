@@ -37,6 +37,7 @@
     import TheAside from '@/components/TheAside.vue';
     import SimpleHeader from '@/components/SimpleHeader.vue';
     import api from '../api/http.js'
+    import { useRoute, useRouter } from 'vue-router';
 
     const users = ref([]);
 
@@ -107,7 +108,12 @@
         updateUserStatus(user.userId, newStatus);
     };
 
-    onMounted(fetchUsers);
+    onMounted(()=>{
+        if(useRoute().params['status']!='admin'){
+            useRouter().push("/404");
+        }
+        fetchUsers();
+    });
 </script>
 
 <style scope>

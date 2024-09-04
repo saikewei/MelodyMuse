@@ -15,15 +15,11 @@
 
 <script>
     import newAlbum from "../components/newAlbum.vue";
-    import TheHeader from "@/components/TheHeader.vue";
-    import TheFooter from "@/components/TheFooter.vue";
     import TheAside from "@/components/TheAside.vue";
     import SimpleHeader from "@/components/SimpleHeader.vue";
 
     export default {
         components:{
-            TheHeader,
-            TheFooter,
             newAlbum,
             TheAside,
             SimpleHeader

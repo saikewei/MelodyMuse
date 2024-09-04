@@ -23,6 +23,9 @@ import AlbumDetail from "../pages/AlbumDetail.vue";
 import SonglistDetail from "@/pages/SonglistDetail.vue";
 import RankSongs from "../pages/RankSongs.vue";
 import RankArtists from "../pages/RankArtists.vue";
+import TheAside from "@/components/TheAside.vue";
+import NotFound from "@/pages/NotFound.vue";
+import Statistics from "@/pages/Statistics.vue";
 
 const routes = [
   {
@@ -31,34 +34,49 @@ const routes = [
     component: Home,
   },
   {
+    path: "/user/:status",
+    children: [
+      {
+        path: "personal-info",
+        name: "modify",
+        component: modify,
+      },
+      {
+        path: "check-song",
+        name: "Check",
+        component: Check,
+      },
+      {
+        path: "usermanage",
+        name: "usermanage", //?????????????????????
+        component: UserManage, //?????????????????????
+      },
+      {
+        path: "uploadSong",
+        name: "UploadSong",
+        component: UploadSong,
+      },
+      {
+        path: "song-info",
+        name: "song-info",
+        component: SongInfoEdit,
+      },
+      {
+        path: "statistics",
+        name: "statistics",
+        component: Statistics,
+      },
+    ],
+  },
+  {
     path: "/my-music",
     name: "my-music",
     component: MyMusic,
   },
   {
-    path: "/personal-info",
-    name: "modify",
-    component: modify,
-  },
-  {
     path: "/createAlbum",
     name: "createAlbum",
     component: createAlbum,
-  },
-  {
-    path: "/uploadSong",
-    name: "UploadSong",
-    component: UploadSong,
-  },
-  {
-    path: "/check-song",
-    name: "Check",
-    component: Check,
-  },
-  {
-    path: "/song-info",
-    name: "song-info",
-    component: SongInfoEdit,
   },
   {
     path: "/sign",
@@ -85,11 +103,7 @@ const routes = [
     name: "Register",
     component: Register,
   },
-  {
-    path: "/usermanage",
-    name: "usermanage", //?????????????????????
-    component: UserManage, //?????????????????????
-  },
+
   {
     path: "/mediaplayer/:songId/:songList",
     //eg:  /mediaplayer/1cd134c4-c/1cd134c4-c,6adb0c3a-c
@@ -147,6 +161,11 @@ const routes = [
     path: "/SonglistDetail/:songListId",
     name: "SonglistDetail",
     component: SonglistDetail,
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "404",
+    component: NotFound,
   },
 ];
 

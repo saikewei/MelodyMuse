@@ -2,7 +2,6 @@
     <div>
         <TheHeader />
         <AllSongList />
-        <TheFooter />
     </div>
 </template>
 

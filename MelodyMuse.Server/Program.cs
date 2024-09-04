@@ -49,6 +49,8 @@ builder.Services.AddScoped<ISongEditRepository>(provider =>
     new SongEditRepository());
 builder.Services.AddScoped<ISonglistRepository>(provider =>
     new SonglistRepository());
+builder.Services.AddScoped<IStatisticRepository>(provider =>
+    new StatisticRepository());
 
 //MusicSubmit services
 
@@ -125,6 +127,10 @@ builder.Services.AddScoped<ISongEditService, SongEditService>();
 
 //Songlist services
 builder.Services.AddScoped<ISonglistService, SonglistService>();
+
+//Statistic services
+builder.Services.AddScoped<IStatisticService, StatisticService>();
+
 
 var app = builder.Build();
 
