@@ -33,7 +33,7 @@
             <tr v-for="(song, index) in songs" :key="song.songId">
               <td :class="{'top-three': index < 3}">{{ index + 1 }}</td>
               <td>
-                <router-link :to="{ name: 'mediaplayer', params: { songId: song.songId, songList: [song.songId] } }" class="song-link">
+                <router-link :to="{ name: 'mediaplayer', params: { songId: song.songId, songList: song.songId.toString() } }" class="song-link">
                   {{ song.songName }}
                 </router-link>
               </td>
@@ -242,6 +242,7 @@ export default {
 }
 
 .song-link:hover {
+    background-color: transparent; /* 透明背景 */
     text-decoration: underline; /* 下划线 */
     text-decoration-color: #284da0c1; /* 蓝色下划线 */
 }

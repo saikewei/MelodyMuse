@@ -237,6 +237,7 @@
 }
 
 .album-link:hover {
+    background-color: transparent; /* 透明背景 */
     text-decoration: underline; /* 下划线 */
     text-decoration-color: #284da0c1; /* 蓝色下划线 */
 }
