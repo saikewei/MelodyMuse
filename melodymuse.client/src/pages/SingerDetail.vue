@@ -206,27 +206,27 @@
       }
     },
 
-    //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
-    playFirstSong() {
-    if (this.songs.length > 0) {
-      // 获取歌手歌曲列表的第一首歌曲的 ID
-      const firstSongId = this.songs[0].songId;
-      
-      // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
-      const songList = this.songs.map(s => s.songId).join(',');
+              //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
+              playFirstSong() {
+                  if (this.songs.length > 0) {
+                      // 获取歌手歌曲列表的第一首歌曲的 ID
+                      const firstSongId = this.songs[0].songId;
 
-      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
-      this.$router.push({
-        name: 'mediaplayer',
-        params: {
-          songId: firstSongId, // 第一个歌曲的 ID
-          songList: songList   // 所有歌曲 ID 组成的字符串
-        }
-      });
-    } else {
-      console.error('歌曲列表为空，无法播放第一首歌曲');
-    }
-  },
+                      // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+                      const songList = this.songs.map(s => s.songId).join(',');
+
+                      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+                      this.$router.push({
+                          name: 'mediaplayer',
+                          params: {
+                              songId: firstSongId, // 第一个歌曲的 ID
+                              songList: songList   // 所有歌曲 ID 组成的字符串
+                          }
+                      });
+                  } else {
+                      console.error('歌曲列表为空，无法播放第一首歌曲');
+                  }
+              },
 
     /*  //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
@@ -294,45 +294,45 @@
     }
   },*/
 
-      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-      togglePlayIcon(song) {
-    try {
-      // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
-      const songList = this.songs.map(s => s.songId).join(',');
-      this.$router.push({
-        name: 'mediaplayer',
-        params: {
-          songId: song.songId, // 当前播放的歌曲 ID
-          songList: songList   // 歌曲列表的所有 songId
-        }
-      });
-    } catch (error) {
-      console.error('跳转到播放页面失败:', error);
-    }
-  },
-      
+              // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+              togglePlayIcon(song) {
+                  try {
+                      // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                      const songList = this.songs.map(s => s.songId).join(',');
+                      this.$router.push({
+                          name: 'mediaplayer',
+                          params: {
+                              songId: song.songId, // 当前播放的歌曲 ID
+                              songList: songList   // 歌曲列表的所有 songId
+                          }
+                      });
+                  } catch (error) {
+                      console.error('跳转到播放页面失败:', error);
+                  }
+              },
 
-      //实现关注和取消关注
-      async toggleFollow() {
-    try {
-      if (this.isFollowing) {
-        // 如果已经关注，执行取消关注操作
-        await api.apiClient.post(`/api/artist/unfollow`, {
-          userId: this.userId, artistId: this.artistId
-        });
-        this.isFollowing = false;
-        this.followersCount -= 1;
-      } else {
-        // 如果未关注，执行关注操作
-        await api.apiClient.post(`/api/artist/follow`, {
-          userId: this.userId,
-          artistId: this.artistId
-        });
-        this.isFollowing = true;
-        this.followersCount += 1;
-      }
-      // 更新粉丝人数到后端
-      await this.updateFollowersCount();
+
+              //实现关注和取消关注
+              async toggleFollow() {
+                  try {
+                      if (this.isFollowing) {
+                          // 如果已经关注，执行取消关注操作
+                          await api.apiClient.post(`/api/artist/unfollow`, {
+                              userId: this.userId, artistId: this.artistId
+                          });
+                          this.isFollowing = false;
+                          this.followersCount -= 1;
+                      } else {
+                          // 如果未关注，执行关注操作
+                          await api.apiClient.post(`/api/artist/follow`, {
+                              userId: this.userId,
+                              artistId: this.artistId
+                          });
+                          this.isFollowing = true;
+                          this.followersCount += 1;
+                      }
+                      // 更新粉丝人数到后端
+                      await this.updateFollowersCount();
 
     } catch (error) {
       console.error('切换关注状态失败', error);
@@ -417,14 +417,15 @@ async updateFollowersCount() {
   
   <style scoped>
 
-.page-container {
-  background: linear-gradient(to top, #f0f0f5, #d8dff8); /* 从中心向外的渐变 */
-  min-height: 94vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+      .page-container {
+          margin-top: 10px;
+          background: linear-gradient(to top, #f0f0f5, #d8dff8); /* 从中心向外的渐变 */
+          min-height: 94vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+      }
 
 .profile {
   width: 90%;
@@ -465,13 +466,13 @@ async updateFollowersCount() {
     border: none;
     cursor: pointer;
   }
-  
-  .play-button {
-    background-color: #284da0c1;
-    color: white;
-    border-radius: 8px;
-    margin-right: 2px;
-  }
+
+      .play-button {
+          background-color: #284da0c1;
+          color: white;
+          border-radius: 8px;
+          margin-right: 2px;
+      }
   
   .follow-button {
     background-color: #fff;
@@ -516,13 +517,21 @@ async updateFollowersCount() {
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
- 
+     
   .play-icon {
-  width: 34px; /* 设置按钮的宽度 */
-}
-  .like-icon {
-  width: 34px; /* 设置按钮的宽度 */
-}
+          width: 30px;
+          height: 25px;
+          margin-right: 8px;
+          cursor: pointer;
+          vertical-align: middle;
+      }
+      .like-icon {
+          width: 30px;
+          height: 25px;
+          margin-right: 8px;
+          cursor: pointer;
+          vertical-align: middle;
+      }
 .add-icon{
   width: 34px; /* 设置按钮的宽度 */
  }

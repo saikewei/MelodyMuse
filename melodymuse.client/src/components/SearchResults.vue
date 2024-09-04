@@ -37,6 +37,7 @@
 <style scoped>
     .results-container {
         margin: 20px;
+        margin-top: 10px;
     }
 
     .results-list ul {

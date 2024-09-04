@@ -34,6 +34,9 @@
     import { navMsg } from '../assets/data/header';
     import SearchResults from './SearchResults.vue';
     import api from '../api/http.js';
+    import axios from 'axios';
+
+    let cancelTokenSource; // 定义 cancelTokenSource
 
     export default {
         components: {
@@ -95,6 +98,16 @@
         beforeUnmount() {
             document.removeEventListener('click', this.handleOutsideClick);
         },
+        watch: {
+            '$route.query': {
+                handler(newQuery) {
+                    this.searchQuery = newQuery.query || '';
+                    this.searchType = newQuery.type || 'artists';
+                    this.performSearch();
+                },
+                immediate: true
+            }
+        },
         methods: {
             ...mapActions('search', ['updateSearchResults', 'updateSearchType']),
             async performSearch() {
@@ -104,17 +117,27 @@
                     return;
                 }
 
+                // 取消上一个请求
+                if (cancelTokenSource) {
+                    cancelTokenSource.cancel('Operation canceled due to new request.');
+                }
+
+                // 创建新的 CancelToken
+                cancelTokenSource = axios.CancelToken.source();
+
                 try {
                     let results = [];
 
                     if (this.searchType === 'artist') {
                         const artistResponse = await api.apiClient.get(`/api/search/artists`, {
-                            params: { query: encodeURIComponent(this.inputQuery) }
+                            params: { query: encodeURIComponent(this.inputQuery) },
+                            cancelToken: cancelTokenSource.token
                         });
                         results = artistResponse.data.map(artist => ({ ...artist, type: 'artist' }));
                     } else if (this.searchType === 'song') {
                         const songResponse = await api.apiClient.get(`/api/search/songs`, {
-                            params: { query: encodeURIComponent(this.inputQuery) }
+                            params: { query: encodeURIComponent(this.inputQuery) },
+                            cancelToken: cancelTokenSource.token
                         });
                         results = songResponse.data.map(song => ({ ...song, type: 'song' }));
                     }
@@ -127,9 +150,13 @@
                         this.showPopup = false;
                     }
                 } catch (error) {
-                    console.error('API Error:', error);
-                    this.searchResults = [];
-                    this.showPopup = false;
+                    if (axios.isCancel(error)) {
+                        console.log('Request canceled', error.message);
+                    } else {
+                        console.error('API Error:', error);
+                        this.searchResults = [];
+                        this.showPopup = false;
+                    }
                 }
             },
             async fetchUserInfo()
