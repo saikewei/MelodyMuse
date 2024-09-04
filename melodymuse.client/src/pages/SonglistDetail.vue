@@ -96,6 +96,7 @@
     import addHoverIcon from '../assets/pics/add-cover.png'; 
     import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
     import { useRouter } from 'vue-router';
+    import { ElMessage } from 'element-plus';
     
     export default {
       data() {
@@ -157,27 +158,26 @@
           }
         },
 
-        playFirstSong() {
-      try {
-        // 获取第一首歌的 songId
-        const firstSong = this.songList.songs[0];
-        const firstSongId = firstSong.songId;
-  
-        // 生成 songList 参数，格式为 'songId1,songId2,...'
-        const songList = this.songList.songs.map(s => s.songId).join(',');
-  
-        // 跳转到播放页面，并传递 songId 和 songList 参数
-        this.$router.push({
-          name: 'mediaplayer',
-          params: {
-            songId: firstSongId, // 第一首歌的 songId
-            songList: songList
-          }
-        });
-  
-      } catch (error) {
-        console.error('播放第一首歌曲失败:', error);
-      }
+        async playFirstSong() {
+          try{
+    const songsResponse = await api.apiClient.get(`/api/songlist/${this.songListId}/songs`);
+    if(songsResponse.status < 400){
+      console.log(songsResponse.data);
+      // 生成 songList 参数，格式为 'songId1,songId2,...'
+      const songList = songsResponse.data.map(s => s.songId).join(',');
+
+      console.log(songList);
+
+      // 跳转到播放页面，并传递 songId 和 songList 参数
+      this.$router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
+
+    }
+    else{
+      ElMessage.error("无法播放歌单，歌单没有歌曲");
+    }
+  }catch(error){
+    ElMessage.error("无法播放歌单:"+error);
+  }
     },
         //用户点击歌单任意歌曲，通过songId切换到播放页面
         playSong(songId) {
