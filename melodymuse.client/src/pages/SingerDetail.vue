@@ -174,7 +174,6 @@
     },
     components: {
       TheHeader,
-      TheFooter,
       AddToSongList, 
     },
     methods: {

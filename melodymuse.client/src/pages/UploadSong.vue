@@ -14,8 +14,6 @@
 </template>
   
 <script>
-    import TheHeader from "@/components/TheHeader.vue";
-    import TheFooter from "@/components/TheFooter.vue";
     import newSong from "../components/newSong.vue";
     import TheAside from "@/components/TheAside.vue";
     import SimpleHeader from "@/components/SimpleHeader.vue";
@@ -23,8 +21,6 @@
 
     export default {
         components:{
-            TheFooter,
-            TheHeader,
             newSong,
             TheAside,
             SimpleHeader
