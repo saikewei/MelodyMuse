@@ -10,7 +10,7 @@ using MelodyMuse.Server.Services.Interfaces;
 
 namespace MelodyMuse.Server.Services
 {
-    public class UsersService: IUsersService
+    public class UsersService : IUsersService
     {
         //内部维护一个下层数据库访问服务(Repository)的接口
         private readonly IUsersRepository _usersRepository;
@@ -54,7 +54,7 @@ namespace MelodyMuse.Server.Services
             await _usersRepository.UpdateUserAsync(user);
         }
 
-       public async Task AddUserCollectSongAsync(string userId, string songId)
+        public async Task AddUserCollectSongAsync(string userId, string songId)
         {
 
             // 检查是否已经收藏了该歌曲
@@ -86,8 +86,8 @@ namespace MelodyMuse.Server.Services
 
             await _usersRepository.RemoveUserCollectSongAsync(existingCollect);
         }
-         public async Task AddUserCollectAlbumAsync(string userId, string albumId)
-         {
+        public async Task AddUserCollectAlbumAsync(string userId, string albumId)
+        {
 
             var existingCollect = await _usersRepository.GetUserCollectAlbumAsync(userId, albumId);
             if (existingCollect != null)
@@ -103,7 +103,7 @@ namespace MelodyMuse.Server.Services
             };
 
             await _usersRepository.AddUserCollectAlbumAsync(userCollectAlbum);
-         }
+        }
 
         public async Task RemoveUserCollectAlbumAsync(string userId, string albumId)
         {
@@ -120,8 +120,7 @@ namespace MelodyMuse.Server.Services
         {
             return await _usersRepository.GetUserCollectedAlbumsAsync(userId);
         }
-
-        public async Task<List<Song>> GetCollectedSongsByUserId(string userId)
+        public async Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId)
         {
             return await _usersRepository.GetCollectedSongsByUserId(userId);
         }

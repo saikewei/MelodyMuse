@@ -34,12 +34,12 @@
                   <th>歌曲</th>
                   <th>歌手</th>
                   <th>时长</th>
-                  <!-- 添加按钮 -->
-                  <th>操作</th>
+                  <th>收藏</th>
+                <th>加入歌单</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(song, index) in album.songs" :key="index" @click="playSong(song.songId)">
+                <tr v-for="(song, index) in album.songs" :key="index">
 
                   <td>
                   <!-- 播放按钮 -->
@@ -54,7 +54,6 @@
                   </el-tooltip>
                   {{ index + 1 }}. {{ song.songName }}
                 </td>
-               <!-- togglePlayIcon(song)换成playSong(song.songId) -->
 
                   <td>{{ song.artistName }}</td>
                   <td>{{ formatDuration(song.duration) }}</td>
@@ -70,6 +69,25 @@
                            alt="收藏歌曲" />
                     </el-tooltip>
                   </td>
+
+                  
+                 
+                  <td>
+                    <el-tooltip content="添加到歌单" placement="bottom">
+                      <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                           @mouseover="song.addHover = true"
+                           @mouseleave="song.addHover = false"
+                           @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
+                           class="add-icon"
+                          alt="添加到歌单" />
+                    </el-tooltip>
+                    </td>
+
+
+    <!-- 引用弹窗组件 -->
+    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+      <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
+    </el-dialog>
              </tr>
            </tbody>
          </table>
@@ -78,6 +96,7 @@
    </div>
  </div>
  </div>
+    
 </template>
   
   <script>
@@ -93,11 +112,14 @@
   import addIcon from '../assets/pics/add.png'; 
   import addHoverIcon from '../assets/pics/add-cover.png'; 
   import addClickedIcon from '../assets/pics/add-click.png'; // 添加↑
+  import AddToSongList from '../components/AddToSongList.vue';
   
+
   export default {
     data() {
       return {
-        albumCover,
+        currentSongId: '',
+        albumCover: '',
         userId: '',
         albumId: '',
         album: {
@@ -132,8 +154,11 @@
         */
         ],
         isLiked: false,
+        currentSong: null, // 当前选择的歌曲
+        songlists: [], // 用户的歌单列表
         },
-         // 添加
+        dialogVisible: false, // 弹窗状态
+        
         playIcon,
         playClickedIcon,
         playHoverIcon,
@@ -145,6 +170,7 @@
         addClickedIcon,
       };
     },
+   
     computed: {
       //歌曲计数
       songCount() {
@@ -157,6 +183,7 @@
       }
     },
     components: {
+      AddToSongList, 
       TheHeader,
     },
     methods: {
@@ -164,11 +191,29 @@
         try {
           const albumResponse = await api.apiClient.get(`/api/album/${this.albumId}`);
           this.album = albumResponse.data;
-          await this.fetchArtistName();
+          await this.fetchAlbumCover();//获取专辑封面
+          await this.fetchArtistName();//获取歌手名字
         } catch (error) {
           console.error('获取专辑信息失败:', error);
         }
       },
+
+      async fetchAlbumCover() {
+      try {
+        const coverResponse = await api.apiClient.get(`/api/player/jpg`, {
+          params: {
+            albumId: this.albumId,
+          },
+          responseType: 'blob', // 表明服务器返回的数据是二进制流
+        });
+
+        const imageUrl = URL.createObjectURL(coverResponse.data);
+        this.albumCover = imageUrl;
+      } catch (error) {
+        console.error('获取专辑封面失败:', error);
+        this.albumCover = '../assets/logo2.jpg'; // 如果失败，使用默认封面
+      }
+    },
       async fetchArtistName() {
         try {
           const artistResponse = await api.apiClient.get(`/api/artist/${this.album.artistId}`);
@@ -180,6 +225,7 @@
           console.error('获取歌手信息失败:', error);
         }
       },
+
       //点击播放专辑按钮，自动播放第一首歌曲
       playFirstSong() {
     try {
@@ -203,11 +249,6 @@
       console.error('播放第一首歌曲失败:', error);
     }
   },
-      //用户点击歌单任意歌曲，通过songId切换到播放页面
-      playSong(songId) {
-        this.$router.push({ name: 'PlayerPage', params: { songId: songId } });
-      },
-
       //收藏方法
       async toggleLikeIcon(song) {
         try {
@@ -229,12 +270,22 @@
             song.liked = true;
           }
         } catch (error) {
-          console.error('操作失败,请重试', error);
-          song.liked = !song.liked; // 收藏失败，恢复到之前的状态
+          console.error('切换收藏状态失败,请重试', error);
+          song.liked = !song.liked; // 切换收藏状态失败，恢复到之前的状态
         }
       },
-
-      // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+      toggleAddIcon(song) {
+    console.log('toggleAddIcon called with song:', song);
+    this.currentSongId = song.songId;
+    this.dialogVisible = true;
+    console.log('dialogVisible:', this.dialogVisible);
+    console.log('currentSongId:', this.currentSongId);
+  },
+      handleDialogClose(isVisible) {
+    this.dialogVisible = isVisible;
+  },
+     
+  // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
       togglePlayIcon(song) {
     try {
       // 获取当前歌曲的 ID
@@ -256,7 +307,8 @@
       console.error('跳转播放页面失败:', error);
     }
   },
-      
+
+
       // 将毫秒转换为分钟和秒
       formatDuration(duration) {
         const minutes = Math.floor(duration / 60);
@@ -289,6 +341,26 @@
       }
     },
   },
+
+  //以下为加入专辑歌单（包括创建新专辑）
+
+    // 显示弹窗和歌单列表
+    async showSonglistModal(song) {
+    this.currentSong = song; // 存储当前正在添加的歌曲
+    await this.fetchUserSonglists(); // 从后端获取用户歌单
+    this.isSonglistModalVisible = true;
+  },
+
+  // 从后端获取用户歌单
+  async fetchUserSonglists() {
+    try {
+      const response = await api.apiClient.get(`/api/songlist/user/{userId}`);
+      this.songlists = response.data;
+    } catch (error) {
+      console.error('获取用户歌单失败:', error);
+    }
+  },
+
     async created() {
       this.albumId = this.$route.params.albumId;
       if (this.albumId) {
@@ -326,12 +398,21 @@
     align-items: center;
     padding: 20px;
   }
-  
+  /*
+  .album-cover {
+  width: 200px;
+  height: 200px;
+  margin-right: 20px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+  */
   .album-cover {
     width: 150px;
     height: 150px;
     border-radius: 8px;
     margin-right: 30px;
+    object-fit: cover;
   }
   
   .album-info {
@@ -386,11 +467,14 @@
   
   table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* 移除单元格之间的边距 */
   }
   
   thead {
     background-color: #f4f4f4;
+    position: sticky;
+    top: 0;
+    z-index: 1; /* 确保表头在内容之上 */
   }
   
   th, td {
@@ -404,5 +488,39 @@
   .like-icon {
   width: 34px; /* 设置按钮的宽度 */
 }
+
+.add-to-songlist-button {
+  padding: 5px 10px;
+  border: 1px solid #284da0c1;
+  background-color: white;
+  color: #284da0c1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.songlist-item button {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  text-align: left;
+}
+
+.create-new-songlist-button {
+  padding: 8px 12px;
+  background-color: #284da0c1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.add-icon {
+  width: 24px; /* 设置图标宽度 */
+  height: 24px; /* 设置图标高度 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
+ 
   </style>
   

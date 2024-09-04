@@ -139,12 +139,18 @@ namespace MelodyMuse.Server.Repository
 
             return albums;
         }
-        // 获取指定用户关注的所有歌曲
-        public async Task<List<Song>> GetCollectedSongsByUserId(string userId)
+ // 获取指定用户关注的所有歌曲，并返回DTO对象
+        public async Task<List<UserCollectedSongDto>> GetCollectedSongsByUserId(string userId)
         {
             return await _context.UserCollectSongs
                 .Where(u => u.UserId == userId)
-                .Select(u => u.Song)
+                .Select(u => new UserCollectedSongDto
+                {
+                    SongId = u.Song.SongId,
+                    SongName = u.Song.SongName,
+                    Duration = u.Song.Duration ?? 0, // 如果为 null，返回 0
+                    ArtistName = u.Song.Artists.FirstOrDefault().ArtistName // 获取第一个关联的艺术家的名字
+                })
                 .ToListAsync();
         }
 

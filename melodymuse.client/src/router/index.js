@@ -20,6 +20,8 @@ import FollowedArtist from "../pages/FollowedArtist.vue";
 import ForgottenPassword from "../pages/ForgottenPassword.vue";
 import Test from "@/pages/test.vue";
 import AlbumDetail from "../pages/AlbumDetail.vue";
+import CollectedSong from "../pages/CollectedSong.vue";
+import CollectedAlbum from "../pages/CollectedAlbum.vue";
 import SonglistDetail from "@/pages/SonglistDetail.vue";
 import RankSongs from "../pages/RankSongs.vue";
 import RankArtists from "../pages/RankArtists.vue";
@@ -158,6 +160,16 @@ const routes = [
     component: AlbumDetail,
   },
   {
+    path: "/CollectedSong",
+    name: "CollectedSong",
+    component: CollectedSong,
+  },
+  {
+    path: "/CollectedAlbum",
+    name: "CollectedAlbum",
+    component: CollectedAlbum,
+  },
+{
     path: "/SonglistDetail/:songListId",
     name: "SonglistDetail",
     component: SonglistDetail,
