@@ -15,7 +15,8 @@ const song = {
         tempList: {},        //单个歌单信息或歌手信息
         listIndex: null,     //当前歌曲在歌单中的位置
         volume: 50,           //音量
-        songInfoLists: []
+        songInfoLists: [],
+        composerId: 0
     },
     getters: {
         listOfSongs: state => {
@@ -129,7 +130,15 @@ const song = {
                 songInfoLists = JSON.parse(window.sessionStorage.getItem('songInfoLists') || '[]');
             }
             return songInfoLists;
-        }
+        },
+        composerId: state => {
+            let composerId = state.composerId;
+            if (!composerId) {
+                composerId = JSON.parse(window.sessionStorage.getItem('composerId') || 'null');
+            }
+            console.log('gettsong.js', state.composerId);
+            return composerId;
+        },
     },
     mutations: {
         setListOfSongs: (state, listOfSongs) => {
@@ -224,12 +233,23 @@ const song = {
                 state.listIndex = state.listOfSongs.length - 1;
                 window.sessionStorage.setItem('listIndex', JSON.stringify(state.listIndex));
             }
-        }
+        },
+        setComposerId: (state, composerId) => {
+            state.composerId = composerId;
+            window.sessionStorage.setItem('composerId', JSON.stringify(composerId));
+            //console.log('song.js', state.composerId);
+        },
     },
     actions: {
         // 添加歌曲到列表
         addSong({ commit }, song) {
             commit('addSongToList', song);
+        },
+        loadState({ commit }) {
+            const song = JSON.parse(window.localStorage.getItem('currentSong'));
+            const time = JSON.parse(window.sessionStorage.getItem('curTime') || '0');
+            if (song) commit('setCurrentSong', song);
+            if (time) commit('setCurTime', parseFloat(time));
         }
     }
 }

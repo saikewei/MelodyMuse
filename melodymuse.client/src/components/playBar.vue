@@ -172,6 +172,8 @@
 
             // 更新数据
             songName.value = songInfo.songName;
+            store.commit('setTitle', songInfo.songName);
+            store.commit('setLyric', lyrics_txt);
             //lyrics.value = parseLyrics(lyrics_txt);
             audioSrc.value = audio;
             //currentImage.value = image;
@@ -218,6 +220,8 @@
         try {
             const response = await api.apiClient.get(`/api/player/${songId}`);
             const songInfo = response.data;
+            store.commit('setComposerId', songInfo.composerId);
+            console.log('播放条', songInfo.composerId);
             return songInfo;
         } catch (error) {
             console.error('Error fetching song info:', error);

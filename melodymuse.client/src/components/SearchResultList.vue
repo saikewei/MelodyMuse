@@ -205,6 +205,10 @@
                 this.$store.commit('setId', song.songId);
             },
             gotoPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
                 try {
                     // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
                     const songList = song;
@@ -218,10 +222,6 @@
                 } catch (error) {
                     console.error('跳转到播放页面失败:', error);
                 }
-                this.$store.commit('addSongToList', song);
-
-                // 更新当前播放的歌曲 ID
-                this.$store.commit('setId', song);
             },
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
