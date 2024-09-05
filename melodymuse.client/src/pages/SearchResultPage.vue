@@ -6,12 +6,11 @@
             <SearchResultList :results="searchResults" :searchType="searchType" @updateCategory="handleCategoryUpdate" />
         </div>
     </div>
-    <playBar/>
 </template>
 
 <script>
     import TheHeader from "../components/TheHeader.vue";
-    import playBar from "../components/playBar.vue";
+    //import playBar from "../components/playBar.vue";
     import SearchResultList from '../components/SearchResultList.vue';
     import { mapGetters, mapActions } from 'vuex';
     import api from '../api/http.js'
@@ -21,7 +20,6 @@
         components: {
             TheHeader,
             SearchResultList,
-            playBar
         },
         data() {
             return {
@@ -100,7 +98,7 @@
     .search-result-page {
         padding: 20px;
         text-align: center;
-        margin-bottom: 50px;
+        margin-bottom: 50px !important;
     }
 
     h1 {

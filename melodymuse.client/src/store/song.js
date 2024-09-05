@@ -210,6 +210,7 @@ const song = {
         // 添加歌曲到列表
         // 添加歌曲到列表
         addSongToList: (state, songId) => {
+            state.listOfSongs  = JSON.parse(window.sessionStorage.getItem('listOfSongs') || '[]');
             // 如果歌曲列表中已存在该歌曲 ID，则不再重复添加
             let list = state.listOfSongs;
             const songExists = state.listOfSongs.includes(songId);

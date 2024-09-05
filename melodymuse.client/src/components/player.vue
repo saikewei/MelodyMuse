@@ -73,13 +73,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted ,watch} from 'vue';
-import api from '../api/http.js'
-import { useRouter, useRoute } from 'vue-router';
-import playListWindow from './playListWindow.vue';
-import {ElMessage} from 'element-plus'
-import TheHeader from '../components/TheHeader.vue';
-import TheFooter from '../components/TheFooter.vue';
+    import { ref, onMounted, watch } from 'vue';
+    import api from '../api/http.js';
+    import { useRouter, useRoute } from 'vue-router';
+    import playListWindow from './playListWindow.vue';
+    import { ElMessage } from 'element-plus';
+    import TheHeader from '../components/TheHeader.vue';
+    import TheFooter from '../components/TheFooter.vue';
 
 const route = useRoute(); 
 

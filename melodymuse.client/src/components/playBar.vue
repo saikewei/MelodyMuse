@@ -68,9 +68,9 @@
     const showPlayList = ref(false);  // 控制播放列表窗口的显示状态
 
     //待连js
-    var progress = ref(0);
-    var duration = ref(0);
-    var playing = ref(false);
+    var progress = computed(() => store.getters.curTime);
+    var duration = computed(() => store.getters.duration);
+    var playing = computed(() => store.getters.isPlay);
 
     const songList = computed(() => store.getters.listOfSongs);
     const songListLength = computed(() => songList.value.length);
@@ -117,7 +117,6 @@
             showVolumeControl.value = false;
         }
     };
-
     watch([songId, songIndex], async ([newId, newIndex], [oldId, oldIndex]) => {
         // 检查 songId 是否发生变化
         if (newId !== oldId) {
@@ -132,8 +131,11 @@
 
 
     onMounted(async () => {
+        // 加载上次播放的状态
         await Promise.all([pull_song_data(songId.value)]);
         document.addEventListener('click', handleClickOutside);
+        playing = computed(() => store.getters.isPlay);
+        togglePlaying()
     });
     onBeforeUnmount(() => {
         document.removeEventListener('click', handleClickOutside);
@@ -260,6 +262,8 @@
     //从后端获取音源
     async function fetchSong(songId, artistId) {
         try {
+
+            console.log('songId',songId);
             const response = await api.apiClient.get("/api/player/mp3", {
                 params: { 'songId': songId, 'artistId': artistId },
                 responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
@@ -315,16 +319,14 @@
 
     // 更新音频播放进度
     function updateProgress(event) {
-        progress.value = event.target.currentTime;
-
+        store.commit('setCurTime', event.target.currentTime);
         // 根据当前播放时间更新歌词显示
         //updateLyricDisplay(event.target.currentTime);
     }
 
     // 更新音频总时长
     function updateDuration(event) {
-        duration.value = event.target.duration;
-        store.commit('setDuration', duration.value);
+        store.commit('setDuration', event.target.duration);
     }
 
     // 跳转到指定时间
@@ -358,10 +360,10 @@
             audioElement.value.pause();
             store.commit('setIsPlay', 0);
         } else {
+            progress = computed(() => store.getters.curTime);
             audioElement.value.play();
             store.commit('setIsPlay', 1);
         }
-        playing.value = !playing.value;
     }
 
     function getRandomInt(min, max) {
@@ -371,7 +373,7 @@
     function resetCurrentSong() {
         //currentLine.value = 0;
         audioElement.value.currentTime = 0;
-        progress.value = 0;
+        store.commit('setCurTime', 0);
     }
 
     // 播放下一首歌曲
@@ -492,7 +494,11 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        z-index: 0;
+        pointer-events: auto; /* 确保播放条可交互 */
+        z-index: 8000;
+    }
+    .main-content {
+        pointer-events: auto; /* 确保页面其他部分正常交互 */
     }
 
     .player-controls {
@@ -501,7 +507,7 @@
         justify-content: center;
         position: fixed;
         width: 100%; /* 控制器宽度与父级相同 */
-        height: 100%; /* 控制器高度 */
+        height: 70px; /* 控制器高度 */
         padding: 10px 0;
         align-items: center;
         margin-left: -100px;
