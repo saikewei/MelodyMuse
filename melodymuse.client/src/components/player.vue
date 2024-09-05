@@ -171,19 +171,22 @@
         align-items: center;
         padding: 20px;
     }
-
     .music-player {
         display: flex;
-        flex-direction: column; /* 修改为column布局 */
-        align-items: center;
-        justify-content: space-between;
-        height: 80vh;
+        flex-direction: column;
+        justify-content: center; /* 垂直居中 */
+        align-items: center; /* 水平居中 */
+        min-height: 94vh; /* 确保播放器区域的高度 */
+        padding: 20px;
     }
 
     .content {
         display: flex;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
         width: 100%;
-        height: 80%; /* 占据80%的高度 */
+        height: 83%; /* 占据80%的高度 */
+        margin-top:-80px;
     }
 
     .image-container {
@@ -207,46 +210,38 @@
         justify-content: center;
         align-items: center;
         height: 100%; /* 占据内容容器的全部高度 */
-        overflow: hidden; /* 防止歌词超出容器 */
+        overflow: hidden;  /*防止歌词超出容器 */
     }
 
 
     .songName {
-        font-size: 2.0em;
-        font-weight: bold;
-        color: #110ad9;
-        height: 20%;
+        font-size: 1.8em; /* 字体大小 */
+        font-weight: bold; /* 字体粗细 */
+        color: #555; /* 字体颜色 */
+        margin-top: 50px;
     }
-
 
     .lyrics-wrapper {
         text-align: center;
         width: 100%;
         flex-direction: column;
         justify-content: center;
-        height: 60%;
+        height: 90%; /* 调整歌词区域的高度 */
+        margin-top:30px;
     }
 
     .lyrics-line {
-        transition: transform 0.3s ease, opacity 0.3s ease; /* 添加过渡效果 */
-        margin-top: 10px;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        margin-top: 20px; /* 增加行间距 */
+        font-size: 1.4em; /* 非当前歌词字体大小 */
+        color: #555; /* 非当前歌词的颜色 */
     }
-
 
     .current-line {
-        font-size: 1.5em; /* 当前歌词行字体稍大 */
+        font-size: 1.8em; /* 当前歌词字体更大 */
         font-weight: bold;
-        color: #42b983; /* 使用你喜欢的颜色 */
-    }
-
-    .player-controls {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        width: 100%; /* 控制器宽度与父级相同 */
-        height: 20%; /* 控制器高度 */
-        padding: 10px 0;
+        color: #284da0c1;
+        line-height: 1.8; /* 调整行间距 */
     }
 
     /* 隐藏默认的播放器控件 */
@@ -255,19 +250,6 @@
         position: absolute;
     }
 
-    .play-pause-button,
-    .prev-song-button,
-    .next-song-button {
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        margin: 0 10px;
-    }
-
-    .progress-slider {
-        width: 100%;
-        margin: 0 30px;
-    }
 
     svg {
         width: 24px;
@@ -275,65 +257,6 @@
         fill: currentColor;
     }
 
-    .progress-display {
-        margin-left: 10px;
-        font-size: 0.8em;
-        color: #999;
-    }
-
-    .control-button-warpper {
-        display: flex; /* 使用 flexbox 布局 */
-        justify-content: center; /* 水平居中 */
-        align-items: center; /* 垂直居中 */
-    }
-
-    .prev-song-button {
-        transform: scale(0.1); /* 缩小到原大小的一半 */
-        transition: transform 0.3s ease; /* 添加平滑过渡效果 */
-        width: 30px;
-        height: 10px;
-    }
-
-    .next-song-button {
-        transform: scale(0.1);
-        transition: transform 0.3s ease; /* 添加平滑过渡效果 */
-        width: 30px;
-        height: 10px;
-    }
-
-    .play-pause-button {
-        transform: scale(0.1);
-        transition: transform 0.3s ease; /* 添加平滑过渡效果 */
-        width: 30px;
-        height: 10px;
-    }
-
-
-    .volume-slider {
-        width: 200px;
-        height: 0px;
-        margin-left: 30px;
-    }
-
-    .play-mode-button {
-        transform: scale(0.1);
-        transition: transform 0.3s ease; /* 添加平滑过渡效果 */
-        width: 30px;
-        height: 10px;
-        margin-left: 300px; /* 增加右侧的外边距 */
-    }
-
-        .play-mode-button :hover {
-            transform: scale(0.9);
-        }
-
-    .play-list-button {
-        transition: transform 0.3s ease; /* 添加平滑过渡效果 */
-        width: 70px;
-        height: 20px;
-        margin-top: 25px;
-        margin-left: 50px; /* 增加右侧的外边距 */
-    }
 
     .sonPlayList {
         display: flex;
