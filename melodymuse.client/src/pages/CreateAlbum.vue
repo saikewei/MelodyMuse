@@ -2,10 +2,6 @@
     <header>
         <SimpleHeader />
     </header>
-    <aside>
-        <TheAside />
-
-    </aside>
     <main>
         <newAlbum />
     </main>
@@ -15,16 +11,12 @@
 
 <script>
     import newAlbum from "../components/newAlbum.vue";
-    import TheAside from "@/components/TheAside.vue";
-    import SimpleHeader from "@/components/SimpleHeader.vue";
+    import SimpleHeader from "../components/SimpleHeader.vue";
 
     export default {
         components:{
             newAlbum,
-            TheAside,
             SimpleHeader
-
-
         },
         data(){
             return{
@@ -56,7 +48,4 @@ main {
     margin-bottom: 40px; /* 或者 padding-bottom: 40px; */
 }
 
-aside{
-
-}
 </style>
