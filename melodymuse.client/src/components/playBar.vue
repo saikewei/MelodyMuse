@@ -118,22 +118,18 @@
         }
     };
 
-    watch(songList, async (newList, oldList) => {
-        // 检查播放列表是否发生了变化
-        if (newList !== oldList) {
-            // 如果当前播放的歌曲已不在新列表中，可以选择播放新的歌曲，或者保持当前状态
-            if (!newList.includes(songId.value)) {
-                // 停止当前播放的歌曲并清空播放条信息
-                resetCurrentSong();
-                songName.value = '';
-                audioSrc.value = '';
-            } else {
-                // 如果当前歌曲仍在列表中，可能需要重新拉取歌曲数据
-                songId = computed(() => store.getters.id);
-                await pull_song_data(songId.value);
-            }
+    watch([songId, songIndex], async ([newId, newIndex], [oldId, oldIndex]) => {
+        // 检查 songId 是否发生变化
+        if (newId !== oldId) {
+            playSong(songId.value); // 当 songId 发生变化时播放当前索引的歌曲
         }
-    }, { immediate: true }); // immediate确保在组件挂载时也能触发watch
+
+        // 检查 songIndex 是否发生变化
+        if (newIndex !== oldIndex) {
+            playSong(songId.value); // 当 songIndex 发生变化时播放相应的歌曲
+        }
+    }, { immediate: true });
+
 
     onMounted(async () => {
         await Promise.all([pull_song_data(songId.value)]);
@@ -142,6 +138,14 @@
     onBeforeUnmount(() => {
         document.removeEventListener('click', handleClickOutside);
     });
+
+
+    //点击播放列表播放歌曲
+    async function playSong(index) {
+        togglePlaying();
+        await pull_song_data(songId.value);
+        togglePlaying();
+    }
 
     async function pull_song_data(songId) {
         try {
@@ -203,6 +207,7 @@
             }
             songInfoLists.push(usedSongInfo);
         }
+        store.commit('setSongInfoLists', songInfoLists);
         return songInfoLists;
     }
     //获取歌曲信息
@@ -333,7 +338,6 @@
 
     //切换播放顺序
     function togglePlayMode() {
-        console.log(playmode.value)
         if (playmode.value == 'sequence') {
             playmode.value = 'random';
             playModeSrc.value = '/random.png';
@@ -346,6 +350,7 @@
             playmode.value = 'sequence';
             playModeSrc.value = '/circle.png';
         }
+        console.log(playmode.value)
     }
     // 切换播放/暂停状态
     function togglePlaying() {
@@ -368,20 +373,6 @@
         audioElement.value.currentTime = 0;
         progress.value = 0;
     }
-    //点击播放列表播放歌曲
-    /*async function playSong(index) {
-        togglePlaying();
-        var oldSongId = songList[songIndex.value];
-        songIndex.value = index;
-        var songId = songList[index];
-
-        if (oldSongId == songId) {
-        }
-        else {
-            await pull_song_data(songId);
-        }
-        togglePlaying();
-    }*/
 
     // 播放下一首歌曲
     async function nextSong() {
@@ -389,38 +380,46 @@
             togglePlaying();
         }
 
-        var oldSongId = songList[songIndex.value];
+        var oldSongId = songList.value[songIndex.value];
         var curIndex;
         var songId;
+
+        console.log(playmode.value);
 
         if (playmode.value == 'random') {
             curIndex = getRandomInt(0, songListLength.value - 1);
             store.commit('setListIndex', curIndex);
-            songIndex = computed(() => store.getters.listIndex);
-            songId = songList[songIndex.value];
+            songId = songList.value[songIndex.value];
+            store.commit('setId', songId);
         }
         else if (playmode.value == 'repeat') {
             songId = oldSongId;
+            resetCurrentSong();
         }
         else if (playmode.value == 'sequence') {
             if (songIndex.value < songListLength.value - 1) {
+                console.log(songIndex.value);
                 curIndex = songIndex.value + 1;
                 store.commit('setListIndex', curIndex);
-                songIndex = computed(() => store.getters.listIndex);
+                console.log(songIndex.value);
             }
             else if (songIndex.value == songListLength.value - 1) {
                 curIndex = 0;
                 store.commit('setListIndex', curIndex);
-                songIndex = computed(() => store.getters.listIndex);
+
+                console.log(songIndex.value);
             }
-            songId = songList[songIndex.value];
-        }
+            songId = songList.value[songIndex.value];
+            console.log('原本：', oldSongId);
+            console.log('下一首：', songId);
+            store.commit('setId', songId);
+        }/*
         if (songId == oldSongId) {
             resetCurrentSong();
         }
         else {
             await pull_song_data(songId);
-        }
+        }*/
         togglePlaying();
 
         console.log('Next song');
@@ -431,40 +430,49 @@
         if (playing.value == true) {
             togglePlaying();
         }
-        var oldSongId = songList[songIndex.value];
+
+        var oldSongId = songList.value[songIndex.value];
         var curIndex;
         var songId;
+
+        console.log(playmode.value);
 
         if (playmode.value == 'random') {
             curIndex = getRandomInt(0, songListLength.value - 1);
             store.commit('setListIndex', curIndex);
-            songIndex = computed(() => store.getters.listIndex);
-            songId = songList[songIndex.value];
+            songId = songList.value[songIndex.value];
+            store.commit('setId', songId);
         }
         else if (playmode.value == 'repeat') {
             songId = oldSongId;
         }
         else if (playmode.value == 'sequence') {
-            if (songIndex.value < songListLength.value - 1) {
+            if (songIndex.value > 0) {
+                console.log(songIndex.value);
                 curIndex = songIndex.value - 1;
                 store.commit('setListIndex', curIndex);
-                songIndex = computed(() => store.getters.listIndex);
+                console.log(songIndex.value);
             }
-            else if (songIndex.value == songListLength.value - 1) {
-                curIndex = 0;
+            else if (songIndex.value == 0) {
+                curIndex = songListLength.value - 1;
                 store.commit('setListIndex', curIndex);
-                songIndex = computed(() => store.getters.listIndex);
+
+                console.log(songIndex.value);
             }
-            songId = songList[songIndex.value];
-        }
+            songId = songList.value[songIndex.value];
+            console.log('原本：', oldSongId);
+            console.log('下一首：', songId);
+            store.commit('setId', songId);
+        }/*
         if (songId == oldSongId) {
             resetCurrentSong();
         }
         else {
             await pull_song_data(songId);
-        }
+        }*/
         togglePlaying();
-        console.log('Previous song');
+
+        console.log('Prev song');
     }
 
 
@@ -500,7 +508,7 @@
     }
 
     .song-name {
-        margin-right: 550px;
+        margin-right: 620px;
     }
 
     .player-time {

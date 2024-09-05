@@ -5,17 +5,15 @@
         </div>
     </div>
     <TheFooter></TheFooter>
-    <playBar />
 </template>
 
 <script>
 import TheFooter from './components/TheFooter.vue';
-import playBar from './components/playBar.vue';
+//import playBar from './components/playBar.vue';
 
     export default {
         components:{
-            TheFooter,
-            playBar
+            TheFooter
         }
 }
 </script>

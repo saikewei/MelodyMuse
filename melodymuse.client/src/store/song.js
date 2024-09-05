@@ -14,7 +14,8 @@ const song = {
         lyric: [],           //未处理的歌词数据
         tempList: {},        //单个歌单信息或歌手信息
         listIndex: null,     //当前歌曲在歌单中的位置
-        volume: 50           //音量
+        volume: 50,           //音量
+        songInfoLists: []
     },
     getters: {
         listOfSongs: state => {
@@ -121,6 +122,13 @@ const song = {
                 volume = JSON.parse(window.sessionStorage.getItem('volume') || '50');
             }
             return volume;
+        },
+        songInfoLists: state => {
+            let songInfoLists = state.songInfoLists;
+            if (!songInfoLists.length) {
+                songInfoLists = JSON.parse(window.sessionStorage.getItem('songInfoLists') || '[]');
+            }
+            return songInfoLists;
         }
     },
     mutations: {
@@ -177,17 +185,44 @@ const song = {
             window.sessionStorage.setItem('tempList', JSON.stringify(tempList));
         },
         setListIndex: (state, listIndex) => {
+            // 更新 listIndex
             state.listIndex = listIndex;
             window.sessionStorage.setItem('listIndex', JSON.stringify(listIndex));
+
+            // 更新 id 为对应位置的歌曲 ID
+            if (state.listOfSongs && state.listOfSongs.length > 0) {
+                const songAtIndex = state.listOfSongs[listIndex]; // 获取对应位置的歌曲
+                if (songAtIndex && songAtIndex.songId) {
+                    state.id = songAtIndex.songId; // 更新 id 为该歌曲的 ID
+                    window.sessionStorage.setItem('id', songAtIndex.songId); // 同时保存到 sessionStorage
+                }
+            }
         },
+
         setVolume: (state, volume) => {
             state.volume = volume;
             window.sessionStorage.setItem('volume', JSON.stringify(volume));
         },
+        setSongInfoLists: (state, songInfoLists) => {
+            state.songInfoLists = songInfoLists;
+            window.sessionStorage.setItem('songInfoLists', JSON.stringify(songInfoLists));
+        },
         // 添加歌曲到列表
-        addSongToList: (state, song) => {
-            state.listOfSongs.push(song);
-            window.sessionStorage.setItem('listOfSongs', JSON.stringify(state.listOfSongs));
+        // 添加歌曲到列表
+        addSongToList: (state, songId) => {
+            // 如果歌曲列表中已存在该歌曲 ID，则不再重复添加
+            let list = state.listOfSongs;
+            const songExists = state.listOfSongs.includes(songId);
+
+            if (!songExists) {
+                list.push(songId);
+                state.listOfSongs = list;
+                window.sessionStorage.setItem('listOfSongs', JSON.stringify(state.listOfSongs));
+
+                // 更新当前播放列表的索引
+                state.listIndex = state.listOfSongs.length - 1;
+                window.sessionStorage.setItem('listIndex', JSON.stringify(state.listIndex));
+            }
         }
     },
     actions: {
