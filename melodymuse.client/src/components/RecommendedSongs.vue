@@ -1,7 +1,7 @@
 <template>
     <el-dialog v-model="dialogAddVisible" width="500px" v-if="dialogAddVisible">
-                        <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose"/>
-        </el-dialog>
+        <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose" />
+    </el-dialog>
     <div class="recommended-songs">
         <!-- 常听流派推荐歌曲 -->
         <h2>根据常听流派推荐以下歌曲</h2>
@@ -41,7 +41,7 @@
                              class="icon"
                              alt="添加到歌单" />
                     </el-tooltip>
-                    
+
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@
             try {
                 // 获取流派推荐歌曲
                 const genreResponse = await api.apiClient.get(`/api/recommend/bygenre`);
-                this.genreSongs = genreResponse.data.result; 
+                this.genreSongs = genreResponse.data.result;
                 // 获取每个专辑的封面图
                 for (const song of this.genreSongs) {
                     const albumId = song.albumId;
@@ -187,7 +187,7 @@
                 console.error('Error fetching recommended songs:', error);
             }
         },
-        components:{
+        components: {
             AddToSongList,
         },
         methods: {
@@ -205,29 +205,29 @@
                 this.$router.push({ path: `/mediaplayer/${song.songId}/${song.songId}` })
             },
             async toggleLikeIcon(song) {
-          try {
-            if (song.liked) {
-              // 如果已收藏，发送请求删除收藏
-              await api.apiClient.delete(`/api/users/remove`, {
-                data: {
-                userId: '001',
-                songId: song.songId
+                try {
+                    if (song.liked) {
+                        // 如果已收藏，发送请求删除收藏
+                        await api.apiClient.delete(`/api/users/remove`, {
+                            data: {
+                                userId: '001',
+                                songId: song.songId
+                            }
+                        });
+                        song.liked = false;
+                    } else {
+                        // 如果未收藏，发送请求添加收藏
+                        await api.apiClient.post(`/api/users/add`, {
+                            userId: '001',
+                            songId: song.songId
+                        });
+                        song.liked = true;
+                    }
+                } catch (error) {
+                    console.error('操作失败,请重试', error);
+                    song.liked = !song.liked; // 收藏失败，恢复到之前的状态
                 }
-              });
-              song.liked = false;
-            } else {
-              // 如果未收藏，发送请求添加收藏
-              await api.apiClient.post(`/api/users/add`, {
-                userId: '001',
-                songId: song.songId
-              });
-              song.liked = true;
-            }
-          } catch (error) {
-            console.error('操作失败,请重试', error);
-            song.liked = !song.liked; // 收藏失败，恢复到之前的状态
-          }
-        },
+            },
             toggleAddIcon(song) {
                 this.currentSongId = song.songId;
                 this.dialogAddVisible = true;

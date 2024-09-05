@@ -48,22 +48,15 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("Album cover is required.");
             }
 
-            try
+            // 调用服务层方法创建专辑
+            var result = await _albumService.CreateAlbumAsync(albumCreateDto);
+            if (result)
             {
-                // 调用服务层方法创建专辑
-                var result = await _albumService.CreateAlbumAsync(albumCreateDto);
-                if (result)
-                {
-
-                    return Ok("Album created successfully.");
-                }
-
-                return BadRequest("Error create album.");
+                
+                return Ok("Album created successfully.");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = "A specific error occurred.", details = ex.Message });
-            }
+
+            return BadRequest("Error create album.");
 
 
         }
@@ -89,21 +82,14 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("Song file is required.");
             }
 
-            try
+            // 调用服务层方法上传歌曲
+            var result = await _songService.UploadSongAsync(songUploadDto);
+            if (result)
             {
-                // 调用服务层方法上传歌曲
-                var result = await _songService.UploadSongAsync(songUploadDto);
-                if (result)
-                {
-                    return Ok(new { message = "Song uploaded successfully." });
-                }
+                return Ok(new { message = "Song uploaded successfully." });
+            }
 
-                return BadRequest("Error uploading song.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = "A specific error occurred.", details = ex.Message });
-            }
+            return BadRequest("Error uploading song.");
         }
 
         /// <summary>
