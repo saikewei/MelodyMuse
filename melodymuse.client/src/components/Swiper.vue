@@ -66,6 +66,7 @@
 
 <style scoped>
     .swiper {
+        margin-top: 20px;
         position: relative;
         width: 90vw;
         height: 70vh;
@@ -89,8 +90,8 @@
     }
 
         .carousel-item img {
-            width: auto;
-            height: 100%; /* 让图片高度填满容器 */
+            width: 1000px;
+            height: 500px; /* 让图片高度填满容器 */
             object-fit: cover; /* 保持图片比例，裁剪多余部分 */
         }
 

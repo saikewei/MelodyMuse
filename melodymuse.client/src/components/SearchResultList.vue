@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a :href="'/SingerDetail/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a @click="goToArtistPage(artist.artistId)" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
@@ -44,7 +44,7 @@
                              class="play-icon"
                              alt="播放歌曲" />
                     </el-tooltip>
-                    <span class="song-name">{{ scope.row.songName }}</span>
+                    <a @click.prevent="gotoPlay(scope.row.songId)" class="song-link">{{ scope.row.songName }}</a>
                 </template>
             </el-table-column>
 
@@ -53,7 +53,7 @@
                              width="250">
                 <template #default="scope">
                     <span v-for="(artist, index) in scope.row.artist" :key="index">
-                        <a :href="'/SingerDetail/' + artist.artistId" class="artist-link">{{ artist.artistName}}</a>
+                        <a @click="goToArtistPage(artist.artistId)" class="artist-link">{{ artist.artistName}}</a>
                         <span v-if="index < scope.row.artist.length - 1">, </span>
                     </span>
                 </template>
@@ -94,7 +94,7 @@
             抱歉，没有找到相关结果
         </div>
         <el-dialog v-model="dialogAddVisible" width="500px" v-if="dialogAddVisible">
-            <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose"/>
+            <AddToSongList :songId="currentSongId" :dialogVisible="dialogAddVisible" @update:dialogVisible="handleDialogClose" />
         </el-dialog>
     </div>
 </template>
@@ -199,14 +199,23 @@
                 console.log('添加歌曲:', song.songName);
             },
             togglePlayIcon(song) {
-                song.playing = !song.playing;
+                this.$store.commit('addSongToList', song.songId);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song.songId);
+            },
+            gotoPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
                 try {
                     // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
-                    const songList = song.songId;
+                    const songList = song;
                     this.$router.push({
                         name: 'mediaplayer',
                         params: {
-                            songId: song.songId, // 当前播放的歌曲 ID
+                            songId: song, // 当前播放的歌曲 ID
                             songList: songList  // 歌曲列表的所有 songId
                         }
                     });
@@ -224,7 +233,11 @@
             },
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
-            }
+            },
+            // 跳转到艺术家详情
+            goToArtistPage(artistId) {
+                this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
+            },
         }
     }
 </script>
@@ -271,12 +284,12 @@
 
     .search-summary {
         margin-bottom: 10px;
-        margin-left: 0; 
+        margin-left: 0;
         font-size: 15px;
         color: #666;
-        text-align: left; 
-        position: relative; 
-        left: 0; 
+        text-align: left;
+        position: relative;
+        left: 0;
     }
 
 
@@ -307,6 +320,7 @@
     .artist-link {
         color: #284da0c1;
         text-decoration: none;
+        cursor: pointer;
     }
 
         .artist-link:hover {
@@ -317,6 +331,7 @@
     .song-link {
         color: #284da0c1;
         text-decoration: none;
+        cursor: pointer;
     }
 
         .song-link:hover {
