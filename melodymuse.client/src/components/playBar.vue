@@ -280,40 +280,51 @@
         }
     }
     //从后端获取音源
-    async function fetchSong(songId, artistId) {
+    async function fetchSong(songId, artistId, retryCount = 10) {
         try {
-
-            console.log('songId',songId);
+            console.log('songId', songId);
             const response = await api.apiClient.get("/api/player/mp3", {
                 params: { 'songId': songId, 'artistId': artistId },
-                responseType: 'arraybuffer'  // 关键：将响应类型设为 arraybuffer 以获取二进制数据
+                responseType: 'arraybuffer' // 获取二进制数据
             });
 
             if (response.status === 200) {
                 // 将二进制数据转换为 Blob 对象
-                const blob = new Blob([response.data], { type: 'audio/mpeg' });  // 假设音频类型是 MP3
-
+                const blob = new Blob([response.data], { type: 'audio/mpeg' }); // 假设音频类型是 MP3
                 // 创建一个指向 Blob 的 URL
                 const audioUrl = URL.createObjectURL(blob);
-
                 // 返回音频的 URL
                 return audioUrl;
+            } else {
+                // 状态码不为200时，重试
+                if (retryCount > 0) {
+                    console.log(`音乐加载失败，重试中... 剩余重试次数: ${retryCount}`);
+                    await new Promise((resolve) => setTimeout(resolve, 1000)); // 等待2秒
+                    return fetchSong(songId, artistId, retryCount - 1); // 重试请求
+                } else {
+                    ElMessage({
+                        message: "音乐加载失败",
+                        type: "error"
+                    });
+                    return null;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            if (retryCount > 0) {
+                console.log(`请求错误，重试中... 剩余重试次数: ${retryCount}`);
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // 等待2秒
+                return fetchSong(songId, artistId, retryCount - 1); // 重试请求
             } else {
                 ElMessage({
                     message: "音乐加载失败",
                     type: "error"
-                })
+                });
                 return null;
             }
-        } catch (error) {
-            console.log(error);
-            ElMessage({
-                message: "音乐加载失败",
-                type: "error"
-            })
-            return null;
         }
     }
+
     //从后端获取图片
     async function fetch_img(albumId) {
         try {
