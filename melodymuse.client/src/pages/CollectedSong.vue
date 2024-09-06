@@ -208,7 +208,7 @@
   .collected-songs-list {
     margin-top: 20px;
     padding-right: 5px;
-    max-height: 400px;
+    max-height: 600px;
     overflow-y: auto;
   }
   
