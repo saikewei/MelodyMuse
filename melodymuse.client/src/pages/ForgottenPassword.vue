@@ -52,7 +52,7 @@ export default {
 
     async checkPhoneExists() {
   try {
-    const response = await api.apiClient.post(`/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phoneNumber)}`);
+    const response = await api.apiClientWithoutToken.post(`/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phoneNumber)}`);
     return response.status === 200;
   } catch (error) {
     console.error(error);
@@ -79,7 +79,7 @@ export default {
 
       try {
         // 此处是发送验证码的API
-        const response = await api.apiClient.post('/api/sms/sendsms', {
+        const response = await api.apiClientWithoutToken.post('/api/sms/sendsms', {
           phoneNumber: this.phoneNumber,
           event: this.event
         });
@@ -98,7 +98,7 @@ export default {
 
     async verifyCode() {
       try {
-        const response = await api.apiClient.post('/api/sms/verifycode', {
+        const response = await api.apiClientWithoutToken.post('/api/sms/verifycode', {
           phoneNumber: this.phoneNumber,
           event: this.event,
           verificationCode: this.verificationCode
@@ -144,7 +144,7 @@ export default {
       }
 
       try {
-        const response = await api.apiClient.post('/api/account/reset-password', {
+        const response = await api.apiClientWithoutToken.post('/api/account/reset-password', {
           phoneNumber: this.phoneNumber,
           Password: this.newPassword
         });
