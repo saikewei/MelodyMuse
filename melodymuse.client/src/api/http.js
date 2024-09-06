@@ -3,21 +3,28 @@ import router from "../router"; // 导入你的 Vue Router 实例
 
 // 创建一个 axios 实例
 const apiClient = axios.create({
-  baseURL: "https://localhost:7223", // 替换为你的 API 基础 URL
+  baseURL: "http://api.tongji.store", // 线上
+  // baseURL: "http://localhost:5000", // 本地
   timeout: 10000,
 });
 
 // 请求拦截器
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // 假设你的 token 存储在 localStorage 中
-    if (!token) {
-      // 如果没有 token，跳转到登录页面
-      alert("请先登录！");
-      router.push("/login"); // 替换为你的登录页面路径
-      return Promise.reject(new Error("No token, redirecting to login."));
+    //那这里是不是就不能强行带token了，可以设置参数
+    const { auth = true } = config.query || config.data || {}
+    if (auth) {
+      const token = localStorage.getItem("token"); // 假设你的 token 存储在 localStorage 中
+      if (!token) {
+        // 如果没有 token，跳转到登录页面
+        alert("请先登录！");
+        router.push("/login"); // 替换为你的登录页面路径
+        return Promise.reject(new Error("No token, redirecting to login."));
+      }
+
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    config.headers.Authorization = `Bearer ${token}`;
+    
     return config;
   },
   (error) => {
@@ -40,10 +47,4 @@ apiClient.interceptors.response.use(
   }
 );
 
-// 创建不需要 token 的 Axios 实例
-const apiClientWithoutToken = axios.create({
-  baseURL: "https://localhost:7223",
-  timeout: 10000,
-});
-
-export default { apiClient, apiClientWithoutToken };
+export default { apiClient };

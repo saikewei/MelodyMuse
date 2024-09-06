@@ -80,10 +80,11 @@ export default {
       
       
       try {
-        const response = await api.apiClientWithoutToken.post ('/api/account/register', {
+        const response = await api.apiClient.post ('/api/account/register', {
           userphone: this.phonenumber,
           username: this.username,
-          password: this.password
+          password: this.password,
+          auth: false
         });
        
         if (response.status === 200) {

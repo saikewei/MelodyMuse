@@ -57,14 +57,16 @@ export default {
       }
 
       try {
-      const response = await api.apiClientWithoutToken.post('/api/account/login', {
+      const response = await api.apiClient.post('/api/account/login', {
         PhoneNumber: this.username,
-        Password: this.password
+        Password: this.password,
+        auth: false
       });
 
       if (response.status === 200 && response.data.token) {
         ElMessage.success('登录成功');
         localStorage.setItem('token', response.data.token);
+        console.log(response.data.token)
         this.$router.push('/');
       } else {
         this.loginError = typeof response.data === 'string' 

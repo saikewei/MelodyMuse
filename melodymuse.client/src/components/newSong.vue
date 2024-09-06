@@ -136,7 +136,7 @@ export default {
     fetchArtists(query) {
       if (query !== '') {
         this.loadingArtists = true;
-        api.apiClientWithoutToken.get(`/search/${query}`)
+        api.apiClient.get(`/search/${query}`)
           .then(response => {
             this.artists = response.data.map(artist => ({
               id: artist.artistId,
@@ -155,7 +155,7 @@ export default {
       }
     },
     fetchAlbumsByArtistId(artistId) {
-      api.apiClientWithoutToken.get(`/albums/${artistId}`)
+      api.apiClient.get(`/albums/${artistId}`)
         .then(response => {
           this.albums = response.data.map(album => ({
             id: album.albumId,

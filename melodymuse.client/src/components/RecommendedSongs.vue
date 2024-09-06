@@ -136,6 +136,7 @@
         },
         async created() {
             try {
+                console.log("111")
                 // 获取流派推荐歌曲
                 const genreResponse = await api.apiClient.get(`/api/recommend/bygenre`);
                 this.genreSongs = genreResponse.data.result; 
