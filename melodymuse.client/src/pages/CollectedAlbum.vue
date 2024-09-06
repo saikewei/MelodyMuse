@@ -51,13 +51,11 @@
           </tbody>
         </table>
       </div>
-      <TheFooter />
     </div>
   </template>
   
   
   <script>
-  import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
   //import axios from 'axios';
   import api from '../api/http.js';
@@ -68,7 +66,6 @@
     name: "CollectedAlbum",
     components: {
       TheHeader,
-      TheFooter,
     },
     data() {
       return {
@@ -240,6 +237,7 @@
 }
 
 .album-link:hover {
+    background-color: transparent; /* 透明背景 */
     text-decoration: underline; /* 下划线 */
     text-decoration-color: #284da0c1; /* 蓝色下划线 */
 }

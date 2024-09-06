@@ -1,4 +1,4 @@
-using MelodyMuse.Server.models;
+﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -199,20 +199,23 @@ namespace MelodyMuse.Server.Repository
 
         public async Task<List<Artist>> GetArtistsByUserIdAsync(string userId)
         {
-            return await _context.Users
-                .Where(u => u.UserId == userId)
-                .SelectMany(u => u.Artists)
-                .ToListAsync();
+            
+        // 查询USER_FOLLOW_ARTIST表，获取用户关注的歌手
+        var followedArtists = await _context.Artists
+            .FromSqlRaw(@"SELECT a.* FROM ARTIST a
+                          JOIN USER_FOLLOW_ARTIST ufa ON ufa.ARTIST_ID = a.ARTIST_ID
+                          WHERE ufa.USER_ID = {0}", userId)
+            .ToListAsync();
+
+        return followedArtists;
         }
 
         public async Task<int> GetArtistFansCountAsync(string artistId)
         {
-            // 使用艺术家和用户之间的关系表来获取粉丝数
-            var artist = await _context.Artists
-                .Include(a => a.Users)
-                .FirstOrDefaultAsync(a => a.ArtistId == artistId);
+            var ArtistFanCountEntity = await _context.ArtistFanCounts.FirstOrDefaultAsync(u => u.ArtistId == artistId);
 
-            return artist?.Users.Count ?? 0;
+            if (ArtistFanCountEntity == null) return 0;
+            else return (int)ArtistFanCountEntity.FanCount;
         }
         public async Task<bool> IsUserInArtistAsync(string userId)
         {

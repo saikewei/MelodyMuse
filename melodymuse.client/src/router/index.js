@@ -71,11 +71,6 @@ const routes = [
     ],
   },
   {
-    path: "/my-music",
-    name: "my-music",
-    component: MyMusic,
-  },
-  {
     path: "/createAlbum",
     name: "createAlbum",
     component: createAlbum,
@@ -144,7 +139,7 @@ const routes = [
     component: RankArtists,
   },
   {
-    path: "/userSongShow",
+    path: "/my-music",
     name: "userSongShow",
     component: userSongShow,
   },

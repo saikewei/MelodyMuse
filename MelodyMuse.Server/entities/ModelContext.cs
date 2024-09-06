@@ -19,6 +19,8 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<Artist> Artists { get; set; }
 
+    public virtual DbSet<ArtistFanCount> ArtistFanCounts { get; set; }
+
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Playlist> Playlists { get; set; }
@@ -93,7 +95,7 @@ public partial class ModelContext : DbContext
             entity.ToTable("ARTIST");
 
             entity.Property(e => e.ArtistId)
-                .HasMaxLength(10)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ARTIST_ID");
             entity.Property(e => e.ArtistBirthday)
@@ -121,6 +123,21 @@ public partial class ModelContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Artists)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_USERID");
+        });
+
+        modelBuilder.Entity<ArtistFanCount>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("ARTIST_FAN_COUNT");
+
+            entity.Property(e => e.ArtistId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ARTIST_ID");
+            entity.Property(e => e.FanCount)
+                .HasColumnType("NUMBER")
+                .HasColumnName("FAN_COUNT");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
@@ -223,7 +240,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("SONG_ID");
             entity.Property(e => e.ComposerId)
-                .HasMaxLength(10)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("COMPOSER_ID");
             entity.Property(e => e.Duration)
@@ -296,7 +313,7 @@ public partial class ModelContext : DbContext
                             .IsUnicode(false)
                             .HasColumnName("SONG_ID");
                         j.IndexerProperty<string>("ArtistId")
-                            .HasMaxLength(10)
+                            .HasMaxLength(50)
                             .IsUnicode(false)
                             .HasColumnName("ARTIST_ID");
                     });
@@ -428,7 +445,7 @@ public partial class ModelContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("USER_ID");
             entity.Property(e => e.Password)
-                .HasMaxLength(100)
+                .HasMaxLength(256)
                 .IsUnicode(false)
                 .HasColumnName("PASSWORD");
             entity.Property(e => e.UserAge)

@@ -57,12 +57,10 @@
           </tbody>
         </table>
       </div>
-      <TheFooter />
     </div>
   </template>
   
   <script>
-  import TheFooter from "../components/TheFooter.vue";
   import TheHeader from "../components/TheHeader.vue";
   import api from '../api/http.js';
   import axios from 'axios';
@@ -77,7 +75,6 @@
     name: "CollectedSong",
     components: {
       TheHeader,
-      TheFooter,
     },
     data() {
       return {
@@ -94,6 +91,10 @@
       };
     },
     methods: {
+        togglePlayIcon(song) {
+            console.log(song);
+            this.$router.push({ path: `/mediaplayer/${song.songId}/${song.songId}` })
+        },
         // 页面跳转
     navigateTo(page) {
       if (page === 'CollectedSong') {
@@ -106,7 +107,7 @@
       // 获取收藏的歌曲信息
       async fetchCollectedSongs() {
         try {
-          const response = await api.apiClient.get(`/api/users/collectsong/${this.userId}`);
+          const response = await api.apiClient.get(`/api/users/collectsong`);
          // const response = await axios.get(`https://localhost:7223/api/songs/user/${this.userId}/collected`);
           const songs = response.data.map(song => ({ ...song, liked: true }));
           // 获取每首歌的专辑名称并更新数据
@@ -123,29 +124,6 @@
         }
       },
 
-          
-      // 切换播放状态
-      togglePlayIcon(song) {
-      try {
-      // 获取当前歌曲的 ID
-      const songId = song.songId;
-
-      // 生成 songList 参数，格式为 'songId1,songId2,...'
-      const songList = this.album.songs.map(s => s.songId).join(',');
-
-      // 跳转到播放页面，并传递 songId 和 songList 参数
-      this.$router.push({ 
-        name: 'mediaplayer', 
-        params: { 
-          songId: songId, 
-          songList: songList 
-        } 
-      });
-
-    } catch (error) {
-      console.error('跳转播放页面失败:', error);
-    }
-    },
       // 切换收藏状态
       async toggleLikeIcon(song) {
       song.liked = !song.liked;
