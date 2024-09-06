@@ -11,7 +11,6 @@ using MelodyMuse.Server.OuterServices;
 using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,12 +20,29 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("http://orcl.tongji.store") // 前端应用的URL
+            builder.WithOrigins("http://localhost:5173") // 前端应用的URL
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials(); // 如果你需要发送带有凭据的请求，如Cookies等
         });
 });
+
+// Add services to the container.
+//builder.Services.AddControllers();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//        builder =>
+//        {
+//            builder.WithOrigins("http://orcl.tongji.store") // 前端应用的URL
+//                   .AllowAnyHeader()
+//                   .AllowAnyMethod()
+//                   .AllowCredentials(); // 如果你需要发送带有凭据的请求，如Cookies等
+//        });
+//});
 
 
 //builder.Services.AddCors(options =>
