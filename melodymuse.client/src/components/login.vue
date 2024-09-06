@@ -22,7 +22,8 @@
       </div>
       <!-- 右侧盒子 -->
       <div class="background">
-       <div class="title">欢迎来到MelodyMuse！请先登录到您的账户</div>
+        
+          <div class="title"><h3>欢迎来到MelodyMuse！请先登录</h3></div>
       </div>
     </div>
   </div>
@@ -31,6 +32,7 @@
 <script>
 import api from '../api/http.js'
 import { ElMessage } from 'element-plus';
+
 export default {
   data() {
     return {
@@ -203,8 +205,8 @@ html, body {
 }
 .title {
     position:absolute;
-    top: 70%;
-    left:48%;
+    top: 50%;
+    left:46%;
     font-size:22px;
     color:#284da0c1;
 }
@@ -213,6 +215,7 @@ html, body {
   transition: all 0.4s ease-in-out;
   cursor: pointer;
 }
+
 .iconfont {
   font-family: "iconfont" !important;
   font-size: 20px;

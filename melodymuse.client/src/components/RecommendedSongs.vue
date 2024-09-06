@@ -8,13 +8,13 @@
         <hr class="separator-line" />
         <div class="songs-list">
             <div v-for="song in displayedGenreSongs" :key="song.SongId" class="song-card">
-                <a :href="'/song/' + song.SongId" class="song-link">
+            
                     <img :src="song.coverUrl" alt="Song Cover" class="song-cover" />
                     <div class="song-info">
                         <h3>{{ song.songName }}</h3>
                         <p>{{ song.artists.map(artist => artist.artistName).join(', ') }}</p>
                     </div>
-                </a>
+              
                 <!-- 操作按钮 -->
                 <div class="song-actions">
                     <el-tooltip content="播放歌曲" placement="bottom">
@@ -55,13 +55,13 @@
         <hr class="separator-line" />
         <div class="songs-list">
             <div v-for="song in displayedArtistSongs" :key="song.SongId" class="song-card">
-                <a :href="'/song/' + song.SongId" class="song-link">
+                
                     <img :src="song.coverUrl" alt="Song Cover" class="song-cover" />
                     <div class="song-info">
                         <h3>{{ song.songName }}</h3>
                         <p>{{ song.artists.map(artist => artist.artistName).join(', ') }}</p>
                     </div>
-                </a>
+               
                 <!-- 操作按钮 -->
                 <div class="song-actions">
                     <el-tooltip content="播放歌曲" placement="bottom">

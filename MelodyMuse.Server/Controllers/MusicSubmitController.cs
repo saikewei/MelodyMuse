@@ -15,7 +15,7 @@ namespace MelodyMuse.Server.Controllers
         private readonly IUploadSongService _songService;
         private readonly IArtistService _artistService;
         private readonly IAlbumService _albumInfoService;
-        
+
 
         // 构造函数注入ICreateAlbumService、IUploadSongService、IArtistService和IAlbumService
         public MusicSubmitController(ICreateAlbumService albumService, IUploadSongService songService, IArtistService artistService, IAlbumService albumInfoService)
@@ -24,7 +24,7 @@ namespace MelodyMuse.Server.Controllers
             _songService = songService;
             _artistService = artistService;
             _albumInfoService = albumInfoService;
-          
+
         }
 
         /// <summary>
@@ -48,15 +48,22 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("Album cover is required.");
             }
 
-            // 调用服务层方法创建专辑
-            var result = await _albumService.CreateAlbumAsync(albumCreateDto);
-            if (result)
+            try
             {
-                
-                return Ok("Album created successfully.");
-            }
+                // 调用服务层方法创建专辑
+                var result = await _albumService.CreateAlbumAsync(albumCreateDto);
+                if (result)
+                {
 
-            return BadRequest("Error create album.");
+                    return Ok("Album created successfully.");
+                }
+
+                return BadRequest("Error create album.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "A specific error occurred.", details = ex.Message });
+            }
 
 
         }
@@ -82,14 +89,21 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("Song file is required.");
             }
 
-            // 调用服务层方法上传歌曲
-            var result = await _songService.UploadSongAsync(songUploadDto);
-            if (result)
+            try
             {
-                return Ok(new { message = "Song uploaded successfully." });
-            }
+                // 调用服务层方法上传歌曲
+                var result = await _songService.UploadSongAsync(songUploadDto);
+                if (result)
+                {
+                    return Ok(new { message = "Song uploaded successfully." });
+                }
 
-            return BadRequest("Error uploading song.");
+                return BadRequest("Error uploading song.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "A specific error occurred.", details = ex.Message });
+            }
         }
 
         /// <summary>
@@ -137,7 +151,7 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("The song list is empty or null.");
             }
 
-            foreach (var song in songs)                 
+            foreach (var song in songs)
             {
                 var result = await _songService.CreateSongAsync(song);
                 if (!result)
