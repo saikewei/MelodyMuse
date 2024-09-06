@@ -15,7 +15,7 @@ namespace MelodyMuse.Server.Controllers
         private readonly IUploadSongService _songService;
         private readonly IArtistService _artistService;
         private readonly IAlbumService _albumInfoService;
-        
+
 
         // 构造函数注入ICreateAlbumService、IUploadSongService、IArtistService和IAlbumService
         public MusicSubmitController(ICreateAlbumService albumService, IUploadSongService songService, IArtistService artistService, IAlbumService albumInfoService)
@@ -24,7 +24,7 @@ namespace MelodyMuse.Server.Controllers
             _songService = songService;
             _artistService = artistService;
             _albumInfoService = albumInfoService;
-          
+
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace MelodyMuse.Server.Controllers
                 return BadRequest("The song list is empty or null.");
             }
 
-            foreach (var song in songs)                 
+            foreach (var song in songs)
             {
                 var result = await _songService.CreateSongAsync(song);
                 if (!result)

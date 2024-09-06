@@ -41,7 +41,7 @@ namespace MelodyMuse.Server.Services
         public async Task<bool> RegisterAsync(RegisterModel _registerModel)
         {
             //替换哈希值
-            _registerModel.Password =caculateSha256Hash(_registerModel.Password);
+            _registerModel.Password = caculateSha256Hash(_registerModel.Password);
 
             return await _accountRepository.RegisterAsync(_registerModel);
         }

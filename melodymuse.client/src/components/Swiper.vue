@@ -3,8 +3,9 @@
         <div class="carousel-container" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
             <div class="carousel-item" v-for="(slide, index) in slides" :key="index">
                 <a :href="slide.link">
-                    <!-- 添加链接 -->
-                    <img :src="slide.src" :alt="slide.alt">
+                    <router-link :to="`/mediaplayer/${slide.songId}/${slide.songList}`">
+                        <img :src="slide.src" :alt="slide.alt">
+                    </router-link>
                 </a>
             </div>
         </div>
@@ -66,6 +67,7 @@
 
 <style scoped>
     .swiper {
+        margin-top: 20px;
         position: relative;
         width: 90vw;
         height: 70vh;
@@ -89,8 +91,8 @@
     }
 
         .carousel-item img {
-            width: auto;
-            height: 100%; /* 让图片高度填满容器 */
+            width: 1000px;
+            height: 500px; /* 让图片高度填满容器 */
             object-fit: cover; /* 保持图片比例，裁剪多余部分 */
         }
 

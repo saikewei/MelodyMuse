@@ -15,11 +15,11 @@ namespace MelodyMuse.Server.Controllers
     public class UserUploadController : Controller
     {
         private readonly IUploadSongService _uploadsongService;
-       
+
         public UserUploadController(IUploadSongService songService)
         {
             _uploadsongService = songService;
-           
+
         }
 
         [HttpPost("uploadsong")]
@@ -62,7 +62,7 @@ namespace MelodyMuse.Server.Controllers
 
                 return BadRequest("Error uploading song.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { error = "A specific error occurred.", details = ex.Message });
             }
@@ -94,11 +94,10 @@ namespace MelodyMuse.Server.Controllers
 
                 return Ok(new { message = "Song delete successfully." });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
     }
 }
-//af8dd101-e
