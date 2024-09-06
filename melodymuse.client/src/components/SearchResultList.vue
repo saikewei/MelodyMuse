@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a @click="goToArtistPage(artist.artistId)" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a @click="goToArtistPage(scope.row.artistId)" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
