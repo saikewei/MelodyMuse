@@ -29,7 +29,13 @@
                              label="操作"
                              width="200">
                 <template #default="scope">
-                    <el-button @click="followArtist(scope.row)" type="primary" class=" artistButton">+ 关注 </el-button>
+                    <el-button 
+            :disabled="artistFollowStatus[scope.row.artistId]" 
+            @click="followArtist(scope.row)" 
+            type="primary" 
+            class="artistButton">
+            {{ artistFollowStatus[scope.row.artistId] ? '已关注' : '+ 关注' }}
+        </el-button>
                 </template>
             </el-table-column>
 
@@ -111,6 +117,9 @@
     import addHoverIcon from '../assets/pics/add-cover.png';
     import addClickedIcon from '../assets/pics/add-click.png';
     import AddToSongList from './AddToSongList.vue';
+    import api from '../api/http.js';
+    import { ElMessage } from 'element-plus';
+
 
     export default {
         props: {
@@ -137,13 +146,23 @@
                 addClickedIcon,
                 dialogAddVisible: false,
                 currentSongId: 0,
+                artistFollowStatus: [],
             };
         },
         components: {
             AddToSongList
         },
-        created() {
+        async created() {
             this.query = this.$route.query.query || ''; // 从路由中获取查询参数
+            this.results.forEach(async artist => {
+            if (this.category === 'artist') {
+                await this.checkIsFollowed(artist.artistId);
+                // console.log("created");
+            }
+
+            console.log(this.artistFollowStatus);
+        });
+        console.log(this.results);
         },
         computed: {
             ...mapGetters('search', ['searchType']), // 从Vuex获取当前的搜索类型
@@ -162,11 +181,13 @@
             filteredResults() {
                 return this.results.map(result => {
                     if (this.category === 'artist') {
+                        console.log(result) ;
                         return {
                             artistName: result.artistName,
                             artistId: result.artistId,
-                            artistIntro: result.artistIntro
-                        };
+                            artistIntro: result.artistIntro,
+                            isFollowing: result.isFollowing,
+                                                };
                     } else {
                         return {
                             songName: result.songName,
@@ -192,9 +213,19 @@
                 const remainingSeconds = seconds % 60;
                 return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
             },
-            followArtist(artist) {
-                console.log('关注歌手:', artist.artistName);
-            },
+            async followArtist(artist) {
+            try {
+                // 调用关注API
+                await api.apiClient.post(`/api/artist/follow`, {
+                              userId: '001',
+                              artistId: artist.artistId
+                          });
+                this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
+            } catch (error) {
+                ElMessage.error('关注失败:'+error);
+            }
+            console.log(artist);
+        },
             addSong(song) {
                 console.log('添加歌曲:', song.songName);
             },
@@ -214,6 +245,16 @@
                     console.error('跳转到播放页面失败:', error);
                 }
             },
+            async checkIsFollowed(artistId) {
+            try {
+                const response = await api.apiClient.get(`/api/artist/FollowStatus/${artistId}`);
+                this.artistFollowStatus[artistId] = true;
+                console.log(response.status);
+            } catch (error) {
+                console.error('获取关注状态失败:', error);
+                this.artistFollowStatus[artistId] = false;
+            }
+        },
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
             },
@@ -225,7 +266,7 @@
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
             }
-        }
+        },
     }
 </script>
 
