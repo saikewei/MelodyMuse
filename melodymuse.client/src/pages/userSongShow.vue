@@ -118,8 +118,123 @@ export default{
           const response= await api.apiClient.get("api/userinfo/info");
             this.userInfo = response.data;
 
+<<<<<<< Updated upstream
             if(this.userInfo.isArtist){
               await this.fetchSongs(this.userInfo.artistId);
+=======
+                    if (this.userInfo.isArtist) {
+                        await this.fetchSongs(this.userInfo.artistId);
+                    }
+                } catch (error) {
+                    ElMessage({
+                        message: "获取用户信息失败，请稍后再试",
+                        type: "error"
+                    })
+                    console.error("获取用户信息失败:" + error);
+                }
+            },
+
+            async fetchSongs(artistId) {
+                try {
+                    const songsResponse = await api.apiClient.get(`/api/artist/${artistId}/songs`);
+                    console.log(songsResponse)
+                    this.songs = await Promise.all(
+                        songsResponse.data.map(async (song) => {
+                            const albumResponse = await api.apiClient.get(`/api/songs/${song.songId}/album`);
+                            return { ...song, albumName: albumResponse.data };
+                        })
+                    )
+                } catch (error) {
+                    // ElMessage({
+                    //     message:"获取歌曲信息失败,请稍后再试",
+                    //     type:"error"
+                    //   })
+                    console.error("歌曲信息获取失败:" + error);
+                }
+            },
+
+            playSong(songId) {
+                this.$store.commit('addSongToList', songId);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', songId);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = songId;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: songId, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+                /*var songs = ""
+                this.songs.forEach(song => {
+                    songs += song.songId
+                    songs += ","
+                })
+                songs = songs.slice(0, -1);
+                router.push(`/mediaplayer/${songId}/${songs}`)*/
+            },
+            async deleteSong(songId) {
+                console.log(songId)
+                try {
+                    const response = await api.apiClient.post(`/api/usersub/deletesong?songId=${songId}`);
+                    ElMessage({
+                        message: "删除成功",
+                        type: "success"
+                    })
+                    location.reload()
+                } catch (error) {
+                    ElMessage({
+                        message: "删除失败",
+                        type: "error"
+                    })
+                    console.error("删除歌曲失败:" + error)
+                }
+            },
+            showPlayList(songId) {
+
+            },
+
+            newSong() {
+                this.uploadWindowVisibility = true;
+            },
+
+            handleCancelEvent() {
+                this.uploadWindowVisibility = false;
+            },
+            handleSubmitSuccess() {
+                this.uploadWindowVisibility = false;
+                ElMessage({
+                    message: "上传成功",
+                    type: "success",
+                })
+                location.reload();
+            },
+            handleSubmitFail() {
+                ElMessage({
+                    message: "上传失败",
+                    type: "error",
+                })
+            },
+
+            formatDuration(duration) {
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+        },
+
+        async created() {
+            try {
+                await this.fetchUserInfo();
+            } catch (error) {
+                console.error("加载页面失败" + error)
+>>>>>>> Stashed changes
             }
         }
         catch(error){

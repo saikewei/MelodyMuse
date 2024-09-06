@@ -548,6 +548,10 @@
         pointer-events: auto; /* 确保播放条可交互 */
         z-index: 8000;
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     .main-content {
         pointer-events: auto; /* 确保页面其他部分正常交互 */
     }
@@ -566,7 +570,11 @@
 
     .song-name {
         margin-right: 460px;
+<<<<<<< Updated upstream
         width:200px;
+=======
+        width: 200px;
+>>>>>>> Stashed changes
     }
 
     .player-time {
@@ -578,7 +586,11 @@
     .prev-song-button,
     .next-song-button {
         background-color: transparent;
+<<<<<<< Updated upstream
         position:fixed;
+=======
+        position: fixed;
+>>>>>>> Stashed changes
         border: none;
         cursor: pointer;
         margin: 0 10px;
@@ -599,7 +611,11 @@
         width: 30px;
         height: 10px;
         margin-right: 12px;
+<<<<<<< Updated upstream
         left:180px;
+=======
+        left: 180px;
+>>>>>>> Stashed changes
     }
 
     .next-song-button {
@@ -608,7 +624,11 @@
         width: 30px;
         height: 10px;
         margin-left: 10px;
+<<<<<<< Updated upstream
         left:300px;
+=======
+        left: 300px;
+>>>>>>> Stashed changes
     }
 
     .play-pause-button {
@@ -674,6 +694,10 @@
             width: 40px;
             height: 39px;
         }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     .play-list-button {
         display: flex;
         align-items: center;
@@ -682,6 +706,10 @@
         bottom: 22px;
         right: 230px;
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     .song-link {
         color: #808080;
         text-decoration: none;

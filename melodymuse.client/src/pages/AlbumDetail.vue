@@ -227,28 +227,33 @@
       },
 
       //点击播放专辑按钮，自动播放第一首歌曲
-      playFirstSong() {
-    try {
-      // 获取第一首歌的 songId
-      const firstSong = this.album.songs[0];
-      const firstSongId = firstSong.songId;
+        playFirstSong() {
+            try {
+                // 获取第一首歌的 songId
+                const firstSong = this.album.songs[0];
+                const firstSongId = firstSong.songId;
 
-      // 生成 songList 参数，格式为 'songId1,songId2,...'
-      const songList = this.album.songs.map(s => s.songId).join(',');
+                // 生成 songList 参数，格式为 'songId1,songId2,...'
+                const songList = this.album.songs.map(s => s.songId);
 
-      // 跳转到播放页面，并传递 songId 和 songList 参数
-      this.$router.push({
-        name: 'mediaplayer',
-        params: {
-          songId: firstSongId, // 第一首歌的 songId
-          songList: songList
-        }
-      });
+                this.$store.commit('setListOfSongs', songList);
 
-    } catch (error) {
-      console.error('播放第一首歌曲失败:', error);
-    }
-  },
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', firstSongId);
+
+                // 跳转到播放页面，并传递 songId 和 songList 参数
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: firstSongId, // 第一首歌的 songId
+                        songList: firstSongId
+                    }
+                });
+
+            } catch (error) {
+                console.error('播放第一首歌曲失败:', error);
+            }
+        },
       //收藏方法
       async toggleLikeIcon(song) {
         try {
@@ -286,27 +291,30 @@
   },
      
   // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-      togglePlayIcon(song) {
-    try {
-      // 获取当前歌曲的 ID
-      const songId = song.songId;
+        togglePlayIcon(song) {
+            try {
+                // 获取当前歌曲的 ID
+                const songId = song.songId;
+                this.$store.commit('addSongToList', song.songId);
 
-      // 生成 songList 参数，格式为 'songId1,songId2,...'
-      const songList = this.album.songs.map(s => s.songId).join(',');
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song.songId);
+                // 生成 songList 参数，格式为 'songId1,songId2,...'
+                const songList = songId;
 
-      // 跳转到播放页面，并传递 songId 和 songList 参数
-      this.$router.push({ 
-        name: 'mediaplayer', 
-        params: { 
-          songId: songId, 
-          songList: songList 
-        } 
-      });
+                // 跳转到播放页面，并传递 songId 和 songList 参数
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: songId,
+                        songList: songList
+                    }
+                });
 
-    } catch (error) {
-      console.error('跳转播放页面失败:', error);
-    }
-  },
+            } catch (error) {
+                console.error('跳转播放页面失败:', error);
+            }
+        },
 
 
       // 将毫秒转换为分钟和秒

@@ -28,32 +28,35 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(song, index) in collectedSongs" :key="index">
-              <td>
-                <el-tooltip content="播放歌曲" placement="bottom">
-                  <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
-                       @mouseover="song.playHover = true"
-                       @mouseleave="song.playHover = false"
-                       @click.stop="togglePlayIcon(song.songId)"
-                       class="play-icon"
-                       alt="播放歌曲" />
-                </el-tooltip>
-                {{ index + 1 }}. {{ song.songName }}
-              </td>
-              <td>{{ song.artistName }}</td>
-              <td>{{ song.albumName }}</td>
-              <td>{{ formatDuration(song.duration) }}</td>
-              <td>
-                <el-tooltip content="取消收藏" placement="bottom">
-                  <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
-                       @mouseover="song.likeHover = true"
-                       @mouseleave="song.likeHover = false"
-                       @click="toggleLikeIcon(song)"
-                       class="like-icon"
-                       alt="取消收藏" />
-                </el-tooltip>
-              </td>
-            </tr>
+              <tr v-for="(song, index) in collectedSongs" :key="index">
+                  <td>
+                      <el-tooltip content="播放歌曲" placement="bottom">
+                          <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                               @mouseover="song.playHover = true"
+                               @mouseleave="song.playHover = false"
+                               @click.stop="togglePlayIcon(song.songId)"
+                               class="play-icon"
+                               alt="播放歌曲" />
+                      </el-tooltip>
+                      <span class="index">{{ index + 1 }}.</span>
+                      <a @click.prevent="gotoPlay(song.songId)" class="song-link">{{ song.songName }}</a>
+                      <!--{{ index + 1 }}. {{ song.songName }}-->
+
+                  </td>
+                  <td>{{ song.artistName }}</td>
+                  <td>{{ song.albumName }}</td>
+                  <td>{{ formatDuration(song.duration) }}</td>
+                  <td>
+                      <el-tooltip content="取消收藏" placement="bottom">
+                          <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                               @mouseover="song.likeHover = true"
+                               @mouseleave="song.likeHover = false"
+                               @click="toggleLikeIcon(song)"
+                               class="like-icon"
+                               alt="取消收藏" />
+                      </el-tooltip>
+                  </td>
+              </tr>
           </tbody>
         </table>
       </div>
@@ -91,6 +94,14 @@
       };
     },
     methods: {
+<<<<<<< Updated upstream
+=======
+        togglePlayIcon(song) {
+            this.$store.commit('addSongToList', song);
+            // 更新当前播放的歌曲 ID
+            this.$store.commit('setId', song);
+        },
+>>>>>>> Stashed changes
         // 页面跳转
     navigateTo(page) {
       if (page === 'CollectedSong') {
@@ -164,7 +175,26 @@
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      },
+        },
+        gotoPlay(song) {
+            this.$store.commit('addSongToList', song);
+
+            // 更新当前播放的歌曲 ID
+            this.$store.commit('setId', song);
+            try {
+                // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                const songList = song;
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: song, // 当前播放的歌曲 ID
+                        songList: songList  // 歌曲列表的所有 songId
+                    }
+                });
+            } catch (error) {
+                console.error('跳转到播放页面失败:', error);
+            }
+        },
     },
     mounted() {
       this.userId = '001'; // localStorage.getItem('userId');
@@ -212,7 +242,7 @@
   .collected-songs-list {
     margin-top: 20px;
     padding-right: 5px;
-    max-height: 400px;
+    max-height: 550px;
     overflow-y: auto;
   }
   
@@ -250,10 +280,13 @@
   
   .play-icon {
     width: 34px;
+    margin-top:5px;
+    margin-right:10px;
   }
   
   .like-icon {
     width: 34px;
+    margin-top:8px;
   }
   .song-column {
     width: 40%;
@@ -274,5 +307,23 @@
   .action-column {
     width: 10%;
   }
+      .index {
+          margin-top: -10px; /* 调整数字的垂直位置 */
+          display: inline-block; /* 保持与歌曲名在同一行 */
+      }
+
+      .song-link {
+          color: #284da0c1;
+          text-decoration: none;
+          cursor: pointer;
+          margin-left: 5px; /* 适当给歌曲名与编号之间留点空间 */
+          display: inline-block; /* 保持歌曲名与编号在同一行 */
+      }
+
+          .song-link:hover {
+              text-decoration: underline;
+              background-color: transparent;
+          }
+
   </style>
   

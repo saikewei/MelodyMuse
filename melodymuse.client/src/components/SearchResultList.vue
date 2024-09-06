@@ -192,8 +192,23 @@
                 const remainingSeconds = seconds % 60;
                 return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
             },
+<<<<<<< Updated upstream
             followArtist(artist) {
                 console.log('关注歌手:', artist.artistName);
+=======
+            async followArtist(artist) {
+                try {
+                    // 调用关注API
+                    await api.apiClient.post(`/api/artist/follow`, {
+                        userId: '001',
+                        artistId: artist.artistId
+                    });
+                    this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
+                } catch (error) {
+                    ElMessage.error('关注失败:' + error);
+                }
+                console.log(artist);
+>>>>>>> Stashed changes
             },
             addSong(song) {
                 console.log('添加歌曲:', song.songName);
@@ -203,6 +218,7 @@
 
                 // 更新当前播放的歌曲 ID
                 this.$store.commit('setId', song.songId);
+<<<<<<< Updated upstream
             },
             gotoPlay(song) {
                 this.$store.commit('addSongToList', song);
@@ -223,6 +239,19 @@
                     console.error('跳转到播放页面失败:', error);
                 }
             },
+=======
+            },
+            async checkIsFollowed(artistId) {
+                try {
+                    const response = await api.apiClient.get(`/api/artist/FollowStatus/${artistId}`);
+                    this.artistFollowStatus[artistId] = true;
+                    console.log(response.status);
+                } catch (error) {
+                    console.error('获取关注状态失败:', error);
+                    this.artistFollowStatus[artistId] = false;
+                }
+            },
+>>>>>>> Stashed changes
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
             },
@@ -234,6 +263,27 @@
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
             },
+<<<<<<< Updated upstream
+=======
+            gotoPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+            },
+>>>>>>> Stashed changes
             // 跳转到艺术家详情
             goToArtistPage(artistId) {
                 this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });

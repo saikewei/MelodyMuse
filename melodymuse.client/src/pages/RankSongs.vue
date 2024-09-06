@@ -14,6 +14,7 @@
         <span>热歌榜</span><strong>Top50</strong>
       </h1>
 
+<<<<<<< Updated upstream
       <button @click="goToPlayPage" class="play-all-button">
       ▷播放全部
       </button>
@@ -43,6 +44,36 @@
           </tbody>
         </table>
       </div>
+=======
+            <div v-if="currentTab === 'ranksongs'" class="ranking-table-container">
+                <button v-if="songs.length > 0" @click="goToPlayPage" class="play-all-button">
+                    ▷播放全部
+                </button>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>歌名</th>
+                            <th>歌手</th>
+                            <th>时长</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(song, index) in songs" :key="song.songId">
+                            <td :class="{'top-three': index < 3}">{{ index + 1 }}</td>
+                            <td>
+                                <a @click="goToPlay(song.songId)" class="song-link">
+                                    {{ song.songName }}
+                                </a>
+                            </td>
+                            <td>{{ song.artistName }}</td>
+                            <td>{{ formatDuration(song.duration) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+>>>>>>> Stashed changes
     </div>
     </div>
   </div>
@@ -53,6 +84,7 @@ import RankingImage from '../assets/logo2.jpg';
 import api from "../api/http.js";
 import TheHeader from "../components/TheHeader.vue";
 
+<<<<<<< Updated upstream
 export default {
   name: "ranksongs",
   components: {
@@ -98,11 +130,88 @@ export default {
                         params: {
                             songId: song, // 当前播放的歌曲 ID
                             songList: songList  // 歌曲列表的所有 songId
+=======
+    export default {
+        name: "RankingPage",
+        components: {
+            TheHeader,
+        },
+        data() {
+            return {
+                RankingImage,
+                currentTab: 'rankartists',
+                artists: [],
+                songs: [],
+            };
+        },
+        computed: {
+            currentImageClass() {
+                return this.currentTab === 'rankartists' ? 'ranking-image1' : 'ranking-image2';
+            },
+            currentTitleSpan() {
+                return this.currentTab === 'rankartists' ?
+                    '歌手榜<span><strong>TOP50</strong></span>' :
+                    '歌曲榜<span><strong>TOP50</strong></span>';
+            }
+        },
+        methods: {
+            selectTab(tab) {
+                this.currentTab = tab;
+                if (tab === 'rankartists') {
+                    this.fetchArtists();
+                } else if (tab === 'ranksongs') {
+                    this.fetchSongs();
+                }
+            },
+            fetchArtists() {
+                api.apiClient.get('/api/rank/ranking')
+                    .then(response => {
+                        this.artists = response.data;
+                    })
+                    .catch(error => {
+                        console.error('获取音乐人信息失败:', error);
+                    });
+            },
+            fetchSongs() {
+                api.apiClient.get('/api/rank/top-songs')
+                    .then(response => {
+                        this.songs = response.data;
+                    })
+                    .catch(error => {
+                        console.error('获取歌曲信息失败:', error);
+                    });
+            },
+            formatDuration(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+            },
+            // 跳转到播放页面
+            goToPlayPage() {
+                if (this.songs.length > 0) {
+                    // 获取歌曲列表的第一首歌的 ID
+                    const firstSongId = this.songs[0].songId;
+
+                    // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+                    const songList = this.songs.map(s => s.songId);
+                    this.$store.commit('setListOfSongs', songList);
+
+                    // 更新当前播放的歌曲 ID
+                    this.$store.commit('setId', firstSongId);
+
+                    // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: firstSongId, // 第一个歌曲的 ID
+                            songList: firstSongId   // 所有歌曲 ID 组成的字符串
+>>>>>>> Stashed changes
                         }
                     });
                 } catch (error) {
                     console.error('跳转到播放页面失败:', error);
                 }
+<<<<<<< Updated upstream
     },
     // 跳转到播放页面
     goToPlayPage() {
@@ -123,6 +232,31 @@ export default {
         params: {
           songId: firstSongId, // 第一个歌曲的 ID
             songList: firstSongId   // 所有歌曲 ID 组成的字符串
+=======
+            },
+            goToPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+            },
+        },
+        mounted() {
+            this.fetchArtists();
+>>>>>>> Stashed changes
         }
       });
     } else {

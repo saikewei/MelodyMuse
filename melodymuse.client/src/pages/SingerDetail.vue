@@ -1,99 +1,100 @@
 <template>
-  <div>
+    <div>
         <TheHeader />
-  <div class="page-container">
-    <div class="profile">
-      <div class="header">
-        <img class="profile-picture" :src="profilePicture" alt="Profile Picture" />
-        <div class="profile-info">
-          <h1>{{ artist.artistName }}</h1>
-          <p style="color:darkgray">简介：{{ artist.artistIntro }},
-          {{ artist.artistGenre }},
-            出生于 {{ formattedBirthday }}。 <br />
-          </p>
-          <div class="stats">
-            <span>单曲 {{ singleCount }}</span>
-            <span>专辑 {{ albumCount }}</span>
-          </div>
-          <button class="play-button" @click="playFirstSong">▷播放歌手热门歌曲</button> 
-          <button 
-            class="follow-button" 
-            :class="{ following: isFollowing }" 
-            @click="toggleFollow">
-            {{ isFollowing ? '已关注' : '+ 关注' }} {{ followersCount }}
-          </button>
-        </div>
-      </div>
-  
-      <div class="songs">
-        <h2 style=" margin-top: 10px;margin-bottom: 5px; margin-left: 10px;color:#284da0c1;" > 所有歌曲</h2>
-        <div class="songs-table">
-          <table>
-            <thead>
-              <tr>
-                <th>歌曲</th>
-                <th>专辑</th>
-                <th>时长</th>
-                <!-- <th colspan="2">操作</th>-->
-                
-                <th>收藏</th>
-                <th>加入歌单</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(song, index) in songs" :key="index" @click="playSong(song.songId)">
-            
-                <td>
-                  <!-- 添加播放按钮 -->
-                  <el-tooltip content="播放歌曲" placement="bottom">
-                      <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
-                           @mouseover="song.playHover = true"
-                           @mouseleave="song.playHover = false"
-                           @click="togglePlayIcon(song)" 
-                           class="play-icon"
-                           alt="播放歌曲" />
-                    </el-tooltip>
-                  {{ index + 1 }}. {{ song.songName }}</td>
-                 <!-- togglePlayIcon(song)换成playSong(song.songId) -->
+        <div class="page-container">
+            <div class="profile">
+                <div class="header">
+                    <img class="profile-picture" :src="profilePicture" alt="Profile Picture" />
+                    <div class="profile-info">
+                        <h1>{{ artist.artistName }}</h1>
+                        <p style="color:darkgray">
+                            简介：{{ artist.artistIntro }},
+                            {{ artist.artistGenre }},
+                            出生于 {{ formattedBirthday }}。 <br />
+                        </p>
+                        <div class="stats">
+                            <span>单曲 {{ singleCount }}</span>
+                            <span>专辑 {{ albumCount }}</span>
+                        </div>
+                        <button class="play-button" @click="playFirstSong">▷播放歌手热门歌曲</button>
+                        <button class="follow-button"
+                                :class="{ following: isFollowing }"
+                                @click="toggleFollow">
+                            {{ isFollowing ? '已关注' : '+ 关注' }} {{ followersCount }}
+                        </button>
+                    </div>
+                </div>
 
-                <td>{{ song.albumName }}</td>
-                <td>{{ formatDuration(song.duration) }}</td>
-              
-                  <!-- 添加收藏按钮 -->
-                  <td>
-                    <el-tooltip content="收藏歌曲" placement="bottom">
-                      <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
-                           @mouseover="song.likeHover = true"
-                           @mouseleave="song.likeHover = false"
-                           @click="toggleLikeIcon(song)"
-                           class="like-icon"
-                           alt="收藏歌曲" />
-                    </el-tooltip>
-                  </td>
+                <div class="songs">
+                    <h2 style=" margin-top: 10px;margin-bottom: 5px; margin-left: 10px;color:#284da0c1;"> 所有歌曲</h2>
+                    <div class="songs-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>歌曲</th>
+                                    <th>专辑</th>
+                                    <th>时长</th>
+                                    <!-- <th colspan="2">操作</th>-->
 
-                    <td>
-                    <el-tooltip content="添加到歌单" placement="bottom">
-                      <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
-                           @mouseover="song.addHover = true"
-                           @mouseleave="song.addHover = false"
-                           @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"  
-                           class="add-icon"
-                          alt="添加到歌单" />
-                    </el-tooltip>
-                    </td>
- <!-- 引用弹窗组件 -->
- <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
-      <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
-    </el-dialog>  
-              </tr>
-            </tbody>
-          </table>
+                                    <th>收藏</th>
+                                    <th>加入歌单</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(song, index) in songs" :key="index" @click="playSong(song.songId)">
+
+                                    <td>
+                                        <!-- 添加播放按钮 -->
+                                        <el-tooltip content="播放歌曲" placement="bottom">
+                                            <img :src="song.playing ? playClickedIcon : song.playHover ? playHoverIcon : playIcon"
+                                                 @mouseover="song.playHover = true"
+                                                 @mouseleave="song.playHover = false"
+                                                 @click="togglePlayIcon(song)"
+                                                 class="play-icon"
+                                                 alt="播放歌曲" />
+                                        </el-tooltip>
+                                        {{ index + 1 }}. {{ song.songName }}
+                                    </td>
+                                    <!-- togglePlayIcon(song)换成playSong(song.songId) -->
+
+                                    <td>{{ song.albumName }}</td>
+                                    <td>{{ formatDuration(song.duration) }}</td>
+
+                                    <!-- 添加收藏按钮 -->
+                                    <td>
+                                        <el-tooltip content="收藏歌曲" placement="bottom">
+                                            <img :src="song.liked ? likeClickedIcon : song.likeHover ? likeHoverIcon : likeIcon"
+                                                 @mouseover="song.likeHover = true"
+                                                 @mouseleave="song.likeHover = false"
+                                                 @click="toggleLikeIcon(song)"
+                                                 class="like-icon"
+                                                 alt="收藏歌曲" />
+                                        </el-tooltip>
+                                    </td>
+
+                                    <td>
+                                        <el-tooltip content="添加到歌单" placement="bottom">
+                                            <img :src="song.added ? addClickedIcon : song.addHover ? addHoverIcon : addIcon"
+                                                 @mouseover="song.addHover = true"
+                                                 @mouseleave="song.addHover = false"
+                                                 @click="() => { console.log('Icon clicked:', song); toggleAddIcon(song); }"
+                                                 class="add-icon"
+                                                 alt="添加到歌单" />
+                                        </el-tooltip>
+                                    </td>
+                                    <!-- 引用弹窗组件 -->
+                                    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+                                        <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
+                                    </el-dialog>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  </div>
-  </template>
+</template>
   
   <script>
   import profilePicture from '../assets/logo2.jpg';
@@ -206,12 +207,13 @@
       }
     },
 
-              //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
-              playFirstSong() {
-                  if (this.songs.length > 0) {
-                      // 获取歌手歌曲列表的第一首歌曲的 ID
-                      const firstSongId = this.songs[0].songId;
+        //点击播放热门歌曲，系统选择歌单的第一首歌，然后通过songId切换到播放页面
+        playFirstSong() {
+            if (this.songs.length > 0) {
+                // 获取歌手歌曲列表的第一首歌曲的 ID
+                const firstSongId = this.songs[0].songId;
 
+<<<<<<< Updated upstream
                       // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
                       const songList = this.songs.map(s => s.songId);
 
@@ -232,6 +234,28 @@
                       console.error('歌曲列表为空，无法播放第一首歌曲');
                   }
               },
+=======
+                // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
+                const songList = this.songs.map(s => s.songId);
+
+                this.$store.commit('setListOfSongs', songList);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', firstSongId);
+
+                // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: firstSongId, // 第一个歌曲的 ID
+                        songList: firstSongId   // 所有歌曲 ID 组成的字符串
+                    }
+                });
+            } else {
+                console.error('歌曲列表为空，无法播放第一首歌曲');
+            }
+        },
+>>>>>>> Stashed changes
 
     /*  //用户点击歌单任意歌曲，通过songId切换到播放页面
       playSong(songId) {
@@ -299,7 +323,11 @@
     }
   },*/
 
+<<<<<<< Updated upstream
               // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+=======
+        // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
+>>>>>>> Stashed changes
         togglePlayIcon(song) {
             console.log('歌曲ID', song.songId);
             this.$store.commit('addSongToList', song.songId);
@@ -319,6 +347,7 @@
             } catch (error) {
                 console.error('跳转到播放页面失败:', error);
             }
+<<<<<<< Updated upstream
             /*try {
                 // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
                 const songList = this.songs.map(s => s.songId).join(',');
@@ -332,6 +361,8 @@
             } catch (error) {
                 console.error('跳转到播放页面失败:', error);
             }*/
+=======
+>>>>>>> Stashed changes
         },
 
 
