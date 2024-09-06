@@ -192,24 +192,22 @@
                 const remainingSeconds = seconds % 60;
                 return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
             },
-<<<<<<< Updated upstream
             followArtist(artist) {
                 console.log('关注歌手:', artist.artistName);
-=======
-            async followArtist(artist) {
-                try {
-                    // 调用关注API
-                    await api.apiClient.post(`/api/artist/follow`, {
-                        userId: '001',
-                        artistId: artist.artistId
-                    });
-                    this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
-                } catch (error) {
-                    ElMessage.error('关注失败:' + error);
-                }
-                console.log(artist);
->>>>>>> Stashed changes
             },
+            async followArtist(artist) {
+                    try {
+                        // 调用关注API
+                        await api.apiClient.post(`/api/artist/follow`, {
+                            userId: '001',
+                            artistId: artist.artistId
+                        });
+                        this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
+                    } catch (error) {
+                        ElMessage.error('关注失败:' + error);
+                    }
+                    console.log(artist);
+                },
             addSong(song) {
                 console.log('添加歌曲:', song.songName);
             },
@@ -218,7 +216,6 @@
 
                 // 更新当前播放的歌曲 ID
                 this.$store.commit('setId', song.songId);
-<<<<<<< Updated upstream
             },
             gotoPlay(song) {
                 this.$store.commit('addSongToList', song);
@@ -238,8 +235,6 @@
                 } catch (error) {
                     console.error('跳转到播放页面失败:', error);
                 }
-            },
-=======
             },
             async checkIsFollowed(artistId) {
                 try {
@@ -251,7 +246,6 @@
                     this.artistFollowStatus[artistId] = false;
                 }
             },
->>>>>>> Stashed changes
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
             },
@@ -263,8 +257,6 @@
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
             },
-<<<<<<< Updated upstream
-=======
             gotoPlay(song) {
                 this.$store.commit('addSongToList', song);
 
@@ -284,7 +276,6 @@
                     console.error('跳转到播放页面失败:', error);
                 }
             },
->>>>>>> Stashed changes
             // 跳转到艺术家详情
             goToArtistPage(artistId) {
                 this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
