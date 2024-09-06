@@ -62,7 +62,7 @@ namespace MelodyMuse.Server.Services
                     return false; // 用户不存在
                 }
                 // 更新用户密码
-                user.Password = Password;
+                user.Password = caculateSha256Hash(Password);
 
                 // 保存更改
                 await _accountRepository.UpdateUserAsync(user);
