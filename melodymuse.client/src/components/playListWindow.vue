@@ -7,8 +7,13 @@
                 <li v-if="songInfoLists.length === 0">暂无歌曲</li>
                 <!-- 循环显示歌曲列表 -->
                 <li v-else v-for="(item, index) in songInfoLists" :key="index"
-                    :class="{'is-play': id === item.id}" @click="toplay(item, index)">
-                    {{ item.songName }} <!-- 显示歌曲名称 -->
+                    :class="{'is-play': id === item.id}">
+                    <span @click="toplay(item, index)">{{ item.songName }}</span>
+                    <!-- 删除图标 -->
+                    <img :src="deleteIcon"
+                         @click.stop="deleteSong(index)"
+                         class="delete-icon"
+                         alt="删除" />
                 </li>
             </ul>
         </div>
@@ -18,9 +23,15 @@
 <script>
     import { mapGetters } from 'vuex';
     import api from '../api/http.js';
+    import deleteIcon from '../assets/pics/delete.png'; // 引入删除图标
 
     export default {
         name: 'the-aside',
+        data() {
+            return {
+                deleteIcon // 添加到 data 中
+            };
+        },
         computed: {
             ...mapGetters([
                 'listOfSongs',  // 当前歌曲ID列表
@@ -99,6 +110,12 @@
                 // 将获取到的歌曲信息存入 Vuex 状态管理
                 this.$store.commit('setSongInfoLists', songInfoLists);
             },
+            deleteSong(index) {
+                const updatedList = [...this.listOfSongs];
+                updatedList.splice(index, 1);
+                this.$store.commit('setListOfSongs', updatedList);
+                this.getInfo();
+            },
         }
     }
 </script>
@@ -127,7 +144,8 @@
 
         /* 单个歌曲项的样式 */
         .menus li {
-            padding: 10px;
+            position: relative; /* 使删除按钮可以绝对定位 */
+            padding: 10px 40px 10px 10px; /* 右侧留出空间给删除按钮 */
             cursor: pointer;
             background-color: rgba(255, 255, 255, 0.1); /* 使背景稍微透明 */
             margin-bottom: 5px; /* 每个歌曲项之间留出空间 */
@@ -145,4 +163,21 @@
             .menus li:hover {
                 background-color: rgba(255, 255, 255, 0.2);
             }
+
+    /* 删除图标的样式 */
+    .delete-icon {
+        position: absolute; /* 绝对定位 */
+        right: 10px; /* 靠右对齐 */
+        top: 50%; /* 垂直居中 */
+        transform: translateY(-50%); /* 调整居中效果 */
+        width: 20px; /* 根据需要调整图标的大小 */
+        height: 20px;
+        cursor: pointer;
+        transition: opacity 0.3s;
+    }
+
+        .delete-icon:hover {
+            opacity: 0.7; /* 鼠标悬停时减少不透明度 */
+        }
+
 </style>
