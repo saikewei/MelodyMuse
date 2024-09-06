@@ -232,6 +232,7 @@ const song = {
                 // 更新当前播放列表的索引
                 state.listIndex = state.listOfSongs.length - 1;
                 window.sessionStorage.setItem('listIndex', JSON.stringify(state.listIndex));
+                console.log('播放列表', state.listOfSongs);
             }
         },
         setComposerId: (state, composerId) => {

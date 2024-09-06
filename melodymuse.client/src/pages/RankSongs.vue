@@ -33,9 +33,9 @@
             <tr v-for="(song, index) in songs" :key="song.songId">
               <td :class="{'top-three': index < 3}">{{ index + 1 }}</td>
               <td>
-                <router-link :to="{ name: 'mediaplayer', params: { songId: song.songId, songList: song.songId.toString() } }" class="song-link">
-                  {{ song.songName }}
-                </router-link>
+                  <a @click="goToPlay(song.songId)" class="song-link">
+                      {{ song.songName }}
+                  </a>
               </td>
               <td>{{ song.artistName }}</td>
               <td>{{ formatDuration(song.duration) }}</td>
@@ -84,6 +84,25 @@ export default {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
       return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+      },
+            goToPlay(song){
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
     },
     // 跳转到播放页面
     goToPlayPage() {
@@ -92,14 +111,18 @@ export default {
       const firstSongId = this.songs[0].songId;
 
       // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
-      const songList = this.songs.map(s => s.songId).join(',');
+        const songList = this.songs.map(s => s.songId);
+        this.$store.commit('setListOfSongs', songList);
+
+        // 更新当前播放的歌曲 ID
+        this.$store.commit('setId', firstSongId);
 
       // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
       this.$router.push({
         name: 'mediaplayer',
         params: {
           songId: firstSongId, // 第一个歌曲的 ID
-          songList: songList   // 所有歌曲 ID 组成的字符串
+            songList: firstSongId   // 所有歌曲 ID 组成的字符串
         }
       });
     } else {

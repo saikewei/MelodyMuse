@@ -4,7 +4,7 @@
             <h2 class="title">— 播放列表 —</h2>
             <ul class="menus">
                 <!-- 如果 songInfoLists 为空，显示加载提示 -->
-                <li v-if="songInfoLists.length === 0">加载中...</li>
+                <li v-if="songInfoLists.length === 0">暂无歌曲</li>
                 <!-- 循环显示歌曲列表 -->
                 <li v-else v-for="(item, index) in songInfoLists" :key="index"
                     :class="{'is-play': id === item.id}" @click="toplay(item, index)">
@@ -75,10 +75,11 @@
             async getInfo() {
                 let songInfoLists = [];
 
-                console.log('当前 listOfSongs: ', JSON.stringify(this.listOfSongs.slice()));
+                //console.log('当前 listOfSongs: ', JSON.stringify(this.listOfSongs.slice()));
 
                 // 获取歌曲ID列表
-                let songList = this.listOfSongs.slice();
+                let songList = this.listOfSongs;
+                console.log('当前 listOfSongs: ', songList);
 
                 // 遍历歌曲ID列表并获取每首歌的信息
                 for (let i = 0; i < songList.length; i++) {

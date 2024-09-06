@@ -213,14 +213,19 @@
                       const firstSongId = this.songs[0].songId;
 
                       // 构建完整的歌曲 ID 列表字符串，作为路径参数传递
-                      const songList = this.songs.map(s => s.songId).join(',');
+                      const songList = this.songs.map(s => s.songId);
+
+                      this.$store.commit('setListOfSongs', songList);
+
+                      // 更新当前播放的歌曲 ID
+                      this.$store.commit('setId', firstSongId);
 
                       // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
                       this.$router.push({
                           name: 'mediaplayer',
                           params: {
                               songId: firstSongId, // 第一个歌曲的 ID
-                              songList: songList   // 所有歌曲 ID 组成的字符串
+                              songList: firstSongId   // 所有歌曲 ID 组成的字符串
                           }
                       });
                   } else {
@@ -295,21 +300,39 @@
   },*/
 
               // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-              togglePlayIcon(song) {
-                  try {
-                      // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
-                      const songList = this.songs.map(s => s.songId).join(',');
-                      this.$router.push({
-                          name: 'mediaplayer',
-                          params: {
-                              songId: song.songId, // 当前播放的歌曲 ID
-                              songList: songList   // 歌曲列表的所有 songId
-                          }
-                      });
-                  } catch (error) {
-                      console.error('跳转到播放页面失败:', error);
-                  }
-              },
+        togglePlayIcon(song) {
+            console.log('歌曲ID', song.songId);
+            this.$store.commit('addSongToList', song.songId);
+
+            // 更新当前播放的歌曲 ID
+            this.$store.commit('setId', song.songId);
+            try {
+                // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                const songList = song.songId;
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: song.songId, // 当前播放的歌曲 ID
+                        songList: songList  // 歌曲列表的所有 songId
+                    }
+                });
+            } catch (error) {
+                console.error('跳转到播放页面失败:', error);
+            }
+            /*try {
+                // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                const songList = this.songs.map(s => s.songId).join(',');
+                this.$router.push({
+                    name: 'mediaplayer',
+                    params: {
+                        songId: song.songId, // 当前播放的歌曲 ID
+                        songList: songList   // 歌曲列表的所有 songId
+                    }
+                });
+            } catch (error) {
+                console.error('跳转到播放页面失败:', error);
+            }*/
+        },
 
 
               //实现关注和取消关注
