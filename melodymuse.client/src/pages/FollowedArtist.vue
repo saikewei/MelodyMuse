@@ -34,7 +34,7 @@ export default {
     // 获取已关注的歌手信息
     async fetchFollowedSingers() {
       try {
-        const response = await api.apiClient.get(`/api/artist/user/${this.userId}/followed`);
+        const response = await api.apiClient.get(`/api/artist/user/followed`);
         this.followedSingers = response.data;
         console.log('用户信息:', this.followedSingers);
       } catch (error) {
