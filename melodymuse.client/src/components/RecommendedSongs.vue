@@ -201,8 +201,23 @@
                 this.showAllArtist = true;
             },
             togglePlayIcon(song) {
-                console.log(song);
-                this.$router.push({ path: `/mediaplayer/${song.songId}/${song.songId}` })
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
             },
             async toggleLikeIcon(song) {
                 try {

@@ -2,10 +2,8 @@
     <div class="swiper">
         <div class="carousel-container" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
             <div class="carousel-item" v-for="(slide, index) in slides" :key="index">
-                <a :href="slide.link">
-                    <router-link :to="`/mediaplayer/${slide.songId}/${slide.songList}`">
+                <a @click="goToPlay(slide.songId)">
                         <img :src="slide.src" :alt="slide.alt">
-                    </router-link>
                 </a>
             </div>
         </div>
@@ -54,7 +52,26 @@
             },
             stopAutoPlay() {
                 clearInterval(this.autoPlayInterval);
-            }
+            },
+            goToPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+            },
         },
         mounted() {
             this.startAutoPlay();

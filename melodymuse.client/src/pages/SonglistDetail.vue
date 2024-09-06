@@ -158,27 +158,39 @@
           }
         },
 
-        async playFirstSong() {
-          try{
-    const songsResponse = await api.apiClient.get(`/api/songlist/${this.songListId}/songs`);
-    if(songsResponse.status < 400){
-      console.log(songsResponse.data);
-      // 生成 songList 参数，格式为 'songId1,songId2,...'
-      const songList = songsResponse.data.map(s => s.songId).join(',');
+          async playFirstSong() {
+              try {
+                  const songsResponse = await api.apiClient.get(`/api/songlist/${this.songListId}/songs`);
+                  if (songsResponse.status < 400) {
+                      console.log(songsResponse.data);
+                      // 生成 songList 参数，格式为 'songId1,songId2,...'
+                      const songList = songsResponse.data.map(s => s.songId);
+                      this.$store.commit('setListOfSongs', songList);
+                      // 更新当前播放的歌曲 ID
+                      this.$store.commit('setId', songsResponse.data[0].songId);
 
-      console.log(songList);
+                      // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+                      this.$router.push({
+                          name: 'mediaplayer',
+                          params: {
+                              songId: songsResponse.data[0].songId, // 第一个歌曲的 ID
+                              songList: songsResponse.data[0].songId   // 所有歌曲 ID 组成的字符串
+                          }
+                      });
 
-      // 跳转到播放页面，并传递 songId 和 songList 参数
-      this.$router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
+                      console.log(songList);
 
-    }
-    else{
-      ElMessage.error("无法播放歌单，歌单没有歌曲");
-    }
-  }catch(error){
-    ElMessage.error("无法播放歌单:"+error);
-  }
-    },
+                      // 跳转到播放页面，并传递 songId 和 songList 参数
+                      //this.$router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
+
+                  }
+                  else {
+                      ElMessage.error("无法播放歌单，歌单没有歌曲");
+                  }
+              } catch (error) {
+                  ElMessage.error("无法播放歌单:" + error);
+              }
+          },
         //用户点击歌单任意歌曲，通过songId切换到播放页面
         playSong(songId) {
           useRouter().push(`/mediaplayer/${songId}/${songId}`);
@@ -211,17 +223,26 @@
         },
   
         // 在专辑列表内播放，暂停，跳转音乐的方法（目前暂未实现列表内播放，但前端仍可保留），涉及歌曲URL
-        togglePlayIcon(song) {
-      try {
-        // 获取当前歌曲的 ID
-        const songId = song.songId;
-  
-        this.$router.push(`/mediaplayer/${songId}/${songId}`);
-  
-      } catch (error) {
-        console.error('跳转播放页面失败:', error);
-      }
-    },
+          togglePlayIcon(song) {
+              console.log('歌曲ID', song.songId);
+              this.$store.commit('addSongToList', song.songId);
+
+              // 更新当前播放的歌曲 ID
+              this.$store.commit('setId', song.songId);
+              try {
+                  // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                  const songList = song.songId;
+                  this.$router.push({
+                      name: 'mediaplayer',
+                      params: {
+                          songId: song.songId, // 当前播放的歌曲 ID
+                          songList: songList  // 歌曲列表的所有 songId
+                      }
+                  });
+              } catch (error) {
+                  console.error('跳转到播放页面失败:', error);
+              }
+          },
         
         // 将毫秒转换为分钟和秒
         formatDuration(duration) {
