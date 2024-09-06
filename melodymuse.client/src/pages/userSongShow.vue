@@ -13,7 +13,7 @@
                         <span>单曲 {{ singleCount }}</span>
                         <span>专辑 {{ albumCount }}</span>
                     </div>
-                    <button @click="newSong" class="custom-button upload-button">上传歌曲</button>
+                    <el-button @click="newSong" class="uploadButton">上传歌曲</el-button>
                     <uploadSong :isVisible="uploadWindowVisibility" @cancelEvent="handleCancelEvent" @submitSuccessEvent="handleSubmitSuccess" @submitFailEvent="handleSubmitFail" />
                 </div>
             </div>
@@ -63,7 +63,7 @@
     import TheHeader from '@/components/TheHeader.vue';
     import api from '../api/http.js'
     import uploadSong from '../components/userNewSong.vue'
-    import { ElMessage } from 'element-plus'
+    import { ElButton, ElMessage } from 'element-plus'
     import { ref } from 'vue'
     import router from "../router"
 
@@ -72,7 +72,7 @@
             TheHeader,
             uploadSong,
             profilePicture,
-            ElMessage,
+            ElButton,
             ref,
         },
         data() {
@@ -121,7 +121,8 @@
                     if (this.userInfo.isArtist) {
                         await this.fetchSongs(this.userInfo.artistId);
                     }
-                } catch (error) {
+                }
+                catch (error) {
                     ElMessage({
                         message: "获取用户信息失败，请稍后再试",
                         type: "error"
@@ -150,13 +151,30 @@
             },
 
             playSong(songId) {
-                var songs = ""
-                this.songs.forEach(song => {
-                    songs += song.songId
-                    songs += ","
+                this.$store.commit('addSongToList', songId);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', songId);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = songId;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: songId, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+                /*var songs=""
+                this.songs.forEach(song=>{
+                  songs+=song.songId
+                  songs+=","
                 })
-                songs = songs.slice(0, -1);
-                router.push(`/mediaplayer/${songId}/${songs}`)
+                songs=songs.slice(0,-1);
+                router.push(`/mediaplayer/${songId}/${songs}`)*/
             },
             async deleteSong(songId) {
                 console.log(songId)
@@ -167,13 +185,16 @@
                         type: "success"
                     })
                     location.reload()
-                } catch (error) {
+                }
+                catch (error) {
                     ElMessage({
                         message: "删除失败",
                         type: "error"
                     })
                     console.error("删除歌曲失败:" + error)
                 }
+
+
             },
             showPlayList(songId) {
 
@@ -182,6 +203,7 @@
             newSong() {
                 this.uploadWindowVisibility = true;
             },
+
 
             handleCancelEvent() {
                 this.uploadWindowVisibility = false;
@@ -219,8 +241,9 @@
 </script>
 
 <style scoped>
+
     .page-container {
-        background: radial-gradient(circle, #dce6ff, #dce6ff);
+        background: radial-gradient(circle, #f0f0f5, #d8d8fb); /* 从中心向外的渐变 */
         min-height: 100vh;
         display: flex;
         justify-content: center;
@@ -260,27 +283,22 @@
         margin-top: 10px;
     }
 
-    .upload-button {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        background-color: rgba(64, 108, 194, 0.9);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
+    .play-button, .follow-button {
+        margin-top: 20px;
+        padding: 10px 20px;
         border: none;
         cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
-        .upload-button:hover {
-            background-color: #95ADE0;
-        }
+    .play-button {
+        background-color: #284da0c1;
+        color: white;
+        border-radius: 8px;
+        margin-right: 2px;
+    }
 
-        .upload-button:active {
-            background-color: #385FAB;
-        }
+
+
 
     .songs {
         margin-top: 20px;
@@ -308,23 +326,56 @@
         border-bottom: 1px solid #ddd;
     }
 
-    th {
-        background-color: #f0f0f0;
+    .uploadButton {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        background-color: #0df1c8c1;
     }
 
-    tr:hover {
-        background-color: #f9f9f9;
+    .statss {
+        display: flex;
+        gap: 10px; /* 按钮之间的间距 */
+        margin-top: 10px;
+        flex-wrap: nowrap; /* 防止按钮换行 */
     }
 
-    .play-button, .delete-button, .addToPlayList-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        margin-right: 5px;
+    .play-button {
+        width: 32px; /* 固定宽度 */
+        height: 32px; /* 固定高度 */
+        padding: 0; /* 清除内边距 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent; /* 背景颜色 */
+        border: none; /* 边框 */
+        cursor: pointer; /* 鼠标悬停时的手形指针 */
+        margin-top: 0px;
     }
 
-        .play-button img, .delete-button img, .addToPlayList-button img {
-            width: 24px;
-            height: 24px;
-        }
+    .delete-button,
+    .addToPlayList-button {
+        width: 32px; /* 固定宽度 */
+        height: 32px; /* 固定高度 */
+        padding: 0; /* 清除内边距 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent; /* 背景颜色 */
+        border: none; /* 边框 */
+        cursor: pointer; /* 鼠标悬停时的手形指针 */
+    }
+
+    .play-button img {
+        width: 24px; /* 图片宽度 */
+        height: 24px; /* 图片高度 */
+        vertical-align: middle;
+    }
+
+    .delete-button img,
+    .addToPlayList-button img {
+        width: 24px; /* 图片宽度 */
+        height: 24px; /* 图片高度 */
+        vertical-align: middle;
+    }
 </style>

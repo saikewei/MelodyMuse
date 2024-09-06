@@ -59,7 +59,7 @@
                              width="250">
                 <template #default="scope">
                     <span v-for="(artist, index) in scope.row.artist" :key="index">
-                        <a :href="'/SingerDetail/' + artist.artistId" class="artist-link">{{ artist.artistName}}</a>
+                        <a @click="goToArtistPage(artist.artistId)" class="artist-link">{{ artist.artistName}}</a>
                         <span v-if="index < scope.row.artist.length - 1">, </span>
                     </span>
                 </template>
@@ -325,12 +325,12 @@
 
     .search-summary {
         margin-bottom: 10px;
-        margin-left: 0; 
+        margin-left: 0;
         font-size: 15px;
         color: #666;
-        text-align: left; 
-        position: relative; 
-        left: 0; 
+        text-align: left;
+        position: relative;
+        left: 0;
     }
 
 
@@ -361,6 +361,7 @@
     .artist-link {
         color: #284da0c1;
         text-decoration: none;
+        cursor: pointer;
     }
 
         .artist-link:hover {
@@ -371,6 +372,7 @@
     .song-link {
         color: #284da0c1;
         text-decoration: none;
+        cursor: pointer;
     }
 
         .song-link:hover {
