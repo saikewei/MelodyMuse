@@ -3,7 +3,7 @@ import router from "../router"; // 导入你的 Vue Router 实例
 
 // 创建一个 axios 实例
 const apiClient = axios.create({
-  baseURL: "https://localhost:7223",//调试
+  baseURL: "https://localhost:7223", //调试
   //baseURL: "http://api.tongji.store", // 线上
   // baseURL: "http://localhost:5000", // 本地
   timeout: 10000,
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     //那这里是不是就不能强行带token了，可以设置参数
-    const { auth = true } = config.query || config.data || {}
+    const { auth = true } = config.query || config.data || {};
     if (auth) {
       const token = localStorage.getItem("token"); // 假设你的 token 存储在 localStorage 中
       if (!token) {
@@ -25,7 +25,7 @@ apiClient.interceptors.request.use(
 
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {

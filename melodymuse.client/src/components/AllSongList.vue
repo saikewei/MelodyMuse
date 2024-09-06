@@ -128,8 +128,20 @@
                 try {
                     const songsResponse = await api.apiClient.get(`/api/songlist/${playlist.songlistId}/songs`);
                     if (songsResponse.status < 400) {
-                        const songList = songsResponse.data.map(s => s.songId).join(',');
-                        this.$router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
+                        const songList = songsResponse.data.map(s => s.songId);
+                        this.$store.commit('setListOfSongs', songList);
+                        // 更新当前播放的歌曲 ID
+                        this.$store.commit('setId', songsResponse.data[0].songId);
+
+                        // 使用 Vue Router 导航到 mediaplayer 页面，并传递歌曲 ID 和歌曲列表
+                        this.$router.push({
+                            name: 'mediaplayer',
+                            params: {
+                                songId: songsResponse.data[0].songId, // 第一个歌曲的 ID
+                                songList: songsResponse.data[0].songId   // 所有歌曲 ID 组成的字符串
+                            }
+                        });
+                        //this.$router.push(`/mediaplayer/${songsResponse.data[0].songId}/${songList}`);
                     } else {
                         ElMessage.error("无法播放歌单，歌单没有歌曲");
                     }

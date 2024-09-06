@@ -5,10 +5,10 @@
                 <li v-for="result in results" :key="result.id" class="result-item">
                     <!-- 根据类型显示不同的结果，并添加链接 -->
                     <span v-if="result.type === 'artist'" class="artist-name">
-                        <a :href="'/artist/' + result.artistId" class="artist-link">{{ result.artistName }}</a>
+                        <a @click="goToArtistPage(result.artistId)" class="artist-link">{{ result.artistName }}</a>
                     </span>
                     <span v-if="result.type === 'song'" class="song-name">
-                        <a :href="'/song/' + result.songId" class="song-link">{{ result.songName }}</a>
+                        <a @click.prevent="gotoPlay(result.songId)" class="song-link">{{ result.songName }}</a>
                     </span>
 
                     <!-- 根据类型显示不同的介绍或信息 -->
@@ -30,6 +30,31 @@
                 type: Array,
                 required: true
             }
+        },
+        methods: {
+            gotoPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+            },
+            // 跳转到艺术家详情
+            goToArtistPage(artistId) {
+                this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
+            },
         }
     }
 </script>

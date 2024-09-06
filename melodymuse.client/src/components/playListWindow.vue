@@ -1,151 +1,183 @@
 <template>
-    <transition name="fade">
-      <div v-if="isVisible" ref="windowRef" class="floating-window" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
-        <div class="window-content">
-          <button @click="hide" class="close-icon">关闭</button>
-          <h3 class="title">{{ title }}</h3>
-          <!-- <p>{{ content }}</p> -->
-          <slot></slot>
+    <transition name="slide-fade">
+        <div class="the-aside">
+            <h2 class="title">— 播放列表 —</h2>
+            <ul class="menus">
+                <!-- 如果 songInfoLists 为空，显示加载提示 -->
+                <li v-if="songInfoLists.length === 0">暂无歌曲</li>
+                <!-- 循环显示歌曲列表 -->
+                <li v-else v-for="(item, index) in songInfoLists" :key="index"
+                    :class="{'is-play': id === item.id}">
+                    <span @click="toplay(item, index)">{{ item.songName }}</span>
+                    <!-- 删除图标 -->
+                    <img :src="deleteIcon"
+                         @click.stop="deleteSong(index)"
+                         class="delete-icon"
+                         alt="删除" />
+                </li>
+            </ul>
         </div>
-      </div>
     </transition>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted, onUnmounted } from 'vue';
-  
-  const props = defineProps({
-    title: {
-      type: String,
-      default: 'Floating Window'
-    },
-    content: {
-      type: String,
-      default: 'This is the content of the floating window.'
+</template>
+
+<script>
+    import { mapGetters } from 'vuex';
+    import api from '../api/http.js';
+    import deleteIcon from '../assets/pics/delete.png'; // 引入删除图标
+
+    export default {
+        name: 'the-aside',
+        data() {
+            return {
+                deleteIcon // 添加到 data 中
+            };
+        },
+        computed: {
+            ...mapGetters([
+                'listOfSongs',  // 当前歌曲ID列表
+                'id',           // 当前播放的歌曲ID
+                'songInfoLists' // 歌曲详细信息列表
+            ])
+        },
+        mounted() {
+            // 初始化时获取歌曲信息
+            this.getInfo();
+        },
+        watch: {
+            // 监听 listOfSongs 变化，重新获取歌曲信息
+            listOfSongs: {
+                handler(newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        this.getInfo();  // 当 listOfSongs 变化时刷新歌曲信息
+                    }
+                },
+                immediate: true // 确保组件挂载时立即执行 handler
+            },
+            songInfoLists: {
+                handler(newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        this.getInfo();  // 当 listOfSongs 变化时刷新歌曲信息
+                    }
+                },
+                immediate: true // 确保组件挂载时立即执行 handler
+            }
+        },
+
+        methods: {
+            // 播放
+            toplay(item, index) {
+                // 更新当前播放的歌曲ID
+                this.$store.commit('setId', item.id);
+                // 更新当前播放的歌曲索引
+                this.$store.commit('setListIndex', index);
+                // 其他播放相关逻辑
+            },
+            // 异步获取歌曲信息
+            async fetchSongInfo(songId) {
+                try {
+                    const response = await api.apiClient.get(`/api/player/${songId}`);
+                    return response.data;  // 假设返回的 JSON 中包含 `songName` 和其他信息
+                } catch (error) {
+                    console.error('Error fetching song info:', error);
+                    return null;  // 如果有错误，返回 null
+                }
+            },
+            // 获取歌曲信息列表
+            async getInfo() {
+                let songInfoLists = [];
+
+                //console.log('当前 listOfSongs: ', JSON.stringify(this.listOfSongs.slice()));
+
+                // 获取歌曲ID列表
+                let songList = this.listOfSongs;
+                console.log('当前 listOfSongs: ', songList);
+
+                // 遍历歌曲ID列表并获取每首歌的信息
+                for (let i = 0; i < songList.length; i++) {
+                    let songId = songList[i];
+                    let songInfo = await this.fetchSongInfo(songId);  // 使用 async/await 获取每首歌的信息
+
+                    if (songInfo) {  // 只有在成功获取信息时才添加到列表中
+                        let usedSongInfo = {
+                            id: songId,  // 添加 ID 以便识别当前播放的歌曲
+                            songName: songInfo.songName || '未知歌曲',
+                            duration: songInfo.songDuration || '未知时长',
+                        };
+                        songInfoLists.push(usedSongInfo);
+                    }
+                }
+
+                // 将获取到的歌曲信息存入 Vuex 状态管理
+                this.$store.commit('setSongInfoLists', songInfoLists);
+            },
+            deleteSong(index) {
+                const updatedList = [...this.listOfSongs];
+                updatedList.splice(index, 1);
+                this.$store.commit('setListOfSongs', updatedList);
+                this.getInfo();
+            },
+        }
     }
-  });
-  
-  const emit = defineEmits(['close']);
-  
-  const isVisible = ref(false);
-  const windowRef = ref(null);
-  
-  // 显示浮窗
-  function show() {
-    if(isVisible.value){
-        isVisible.value = false;
+</script>
+
+<style scoped>
+    /* 播放列表的容器 */
+    .the-aside {
+        position: fixed;
+        right: 100px; /* 控制组件在页面上的位置 */
+        bottom: 80px; /* 控制组件在页面上的位置 */
+        width: 300px; /* 固定宽度 */
+        height: 400px; /* 固定高度 */
+        background-color: rgba(64, 108, 194, 0.9);
+        overflow-y: auto; /* 使内容超出时可以纵向滚动 */
+        color: white; /* 设置文本颜色为白色 */
+        padding: 10px;
+        border-radius: 8px; /* 设置圆角 */
     }
-    else{
-        isVisible.value = true;
+
+    /* 歌曲列表的样式 */
+    .menus {
+        list-style: none; /* 去掉默认的列表样式 */
+        padding: 0;
+        margin: 0;
     }
 
-  }
-  
-  // 隐藏浮窗
-  function hide() {
-    isVisible.value = false;
-    emit('close');
-  }
-  
-  // 鼠标按下时开始拖动
-  function handleMouseDown(event) {
-    if (!windowRef.value) return;
-  
-    windowRef.value.style.position = 'absolute';
-    const initialX = event.clientX;
-    const initialY = event.clientY;
-    const initialLeft = windowRef.value.offsetLeft;
-    const initialTop = windowRef.value.offsetTop;
-  
-    const moveWindow = (event) => {
-      const newX = initialLeft + event.clientX - initialX;
-      const newY = initialTop + event.clientY - initialY;
-      windowRef.value.style.left = `${newX}px`;
-      windowRef.value.style.top = `${newY}px`;
-    };
-  
-    document.addEventListener('mousemove', moveWindow);
-  
-    const finishMove = () => {
-      document.removeEventListener('mousemove', moveWindow);
-      document.removeEventListener('mouseup', finishMove);
-    };
-  
-    document.addEventListener('mouseup', finishMove);
-  }
-  
-  // 鼠标抬起时停止拖动
-  function handleMouseUp() {
-    if (!windowRef.value) return;
-  
-    windowRef.value.style.position = 'fixed';
-  }
-  
-  defineExpose({
-    show,
-    hide
-  });
-  
-  onMounted(() => {
-    // 添加事件监听器
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
-  
-  onUnmounted(() => {
-    // 移除事件监听器
-    document.removeEventListener('mousedown', handleMouseDown);
-    document.removeEventListener('mouseup', handleMouseUp);
-  });
-  </script>
-  
-  <style scoped>
-  .title{
-    position: absolute;
-    font-size: 20px;
-    color: #09cbf7c1;
-    font-weight: bolder;
-    top: 20px;
-    right:100px;
+        /* 单个歌曲项的样式 */
+        .menus li {
+            position: relative; /* 使删除按钮可以绝对定位 */
+            padding: 10px 40px 10px 10px; /* 右侧留出空间给删除按钮 */
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.1); /* 使背景稍微透明 */
+            margin-bottom: 5px; /* 每个歌曲项之间留出空间 */
+            border-radius: 4px;
+            transition: background-color 0.3s; /* 添加过渡效果 */
+        }
 
-  }
+            /* 当前播放歌曲的样式 */
+            .menus li.is-play {
+                background-color: rgba(255, 255, 255, 0.3); /* 当前播放的歌曲背景色更亮 */
+                font-weight: bold;
+            }
 
-  .floating-window {
-    position: fixed;
-    top: 0;
-    left: 50;
-    width: 300px;
-    height: 450px;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .window-content {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.3s;
-  }
-  
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
+            /* 鼠标悬停歌曲项时的效果 */
+            .menus li:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
 
-  .close-icon{
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 10px;
-    color: #284da0c1;
-  }
-  </style>
+    /* 删除图标的样式 */
+    .delete-icon {
+        position: absolute; /* 绝对定位 */
+        right: 10px; /* 靠右对齐 */
+        top: 50%; /* 垂直居中 */
+        transform: translateY(-50%); /* 调整居中效果 */
+        width: 20px; /* 根据需要调整图标的大小 */
+        height: 20px;
+        cursor: pointer;
+        transition: opacity 0.3s;
+    }
+
+        .delete-icon:hover {
+            opacity: 0.7; /* 鼠标悬停时减少不透明度 */
+        }
+
+</style>
