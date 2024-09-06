@@ -21,12 +21,21 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5173") // 前端应用的URL
+            builder.WithOrigins("http://orcl.tongji.store") // 前端应用的URL
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials(); // 如果你需要发送带有凭据的请求，如Cookies等
         });
 });
+
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAnyOrigin",
+//        builder => builder.AllowAnyOrigin()
+//                          .AllowAnyHeader()
+//                          .AllowAnyMethod());
+//});
 
 
 // Register services
@@ -134,21 +143,20 @@ builder.Services.AddScoped<IStatisticService, StatisticService>();
 
 var app = builder.Build();
 
-// Enable CORS
-app.UseCors("AllowSpecificOrigin");
 
+//app.UseCors("AllowAnyOrigin");  
+app.UseCors("AllowSpecificOrigin");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Enable CORS before authentication and authorization middlewares
-app.UseCors("AllowSpecificOrigin");
+
+
 
 // Enable JWT authentication
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 使用 CORS 中间件
-app.UseCors("AllowSpecificOrigin");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -157,10 +165,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowSpecificOrigin");
 
-app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
+
+//app.UseHttpsRedirection();
+
 app.UseAuthorization();
 
 
