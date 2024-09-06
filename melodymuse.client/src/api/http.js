@@ -3,7 +3,8 @@ import router from "../router"; // 导入你的 Vue Router 实例
 
 // 创建一个 axios 实例
 const apiClient = axios.create({
-  baseURL: "http://api.tongji.store", // 线上
+  baseURL: "https://localhost:7223",//调试
+  //baseURL: "http://api.tongji.store", // 线上
   // baseURL: "http://localhost:5000", // 本地
   timeout: 10000,
 });
