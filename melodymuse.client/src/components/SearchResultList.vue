@@ -17,7 +17,7 @@
                              label="歌手"
                              width="500">
                 <template #default="scope">
-                    <a :href="'/SingerDetail/' + scope.row.artistId" class="artist-link">{{ scope.row.artistName }}</a>
+                    <a @click="goToArtistPage(scope.row.artistId)" class="artist-link">{{ scope.row.artistName }}</a>
                 </template>
             </el-table-column>
             <el-table-column v-if="category === 'artist'"
@@ -50,7 +50,7 @@
                              class="play-icon"
                              alt="播放歌曲" />
                     </el-tooltip>
-                    <span class="song-name">{{ scope.row.songName }}</span>
+                    <a @click.prevent="gotoPlay(scope.row.songId)" class="song-link">{{ scope.row.songName }}</a>
                 </template>
             </el-table-column>
 
@@ -214,47 +214,37 @@
                 return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
             },
             async followArtist(artist) {
-            try {
-                // 调用关注API
-                await api.apiClient.post(`/api/artist/follow`, {
-                              userId: '001',
-                              artistId: artist.artistId
-                          });
-                this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
-            } catch (error) {
-                ElMessage.error('关注失败:'+error);
-            }
-            console.log(artist);
-        },
+                try {
+                    // 调用关注API
+                    await api.apiClient.post(`/api/artist/follow`, {
+                        userId: '001',
+                        artistId: artist.artistId
+                    });
+                    this.artistFollowStatus[artist.artistId] = true; // 更新关注状态
+                } catch (error) {
+                    ElMessage.error('关注失败:' + error);
+                }
+                console.log(artist);
+            },
             addSong(song) {
                 console.log('添加歌曲:', song.songName);
             },
             togglePlayIcon(song) {
-                song.playing = !song.playing;
-                try {
-                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
-                    const songList = song.songId;
-                    this.$router.push({
-                        name: 'mediaplayer',
-                        params: {
-                            songId: song.songId, // 当前播放的歌曲 ID
-                            songList: songList  // 歌曲列表的所有 songId
-                        }
-                    });
-                } catch (error) {
-                    console.error('跳转到播放页面失败:', error);
-                }
+                this.$store.commit('addSongToList', song.songId);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song.songId);
             },
             async checkIsFollowed(artistId) {
-            try {
-                const response = await api.apiClient.get(`/api/artist/FollowStatus/${artistId}`);
-                this.artistFollowStatus[artistId] = true;
-                console.log(response.status);
-            } catch (error) {
-                console.error('获取关注状态失败:', error);
-                this.artistFollowStatus[artistId] = false;
-            }
-        },
+                try {
+                    const response = await api.apiClient.get(`/api/artist/FollowStatus/${artistId}`);
+                    this.artistFollowStatus[artistId] = true;
+                    console.log(response.status);
+                } catch (error) {
+                    console.error('获取关注状态失败:', error);
+                    this.artistFollowStatus[artistId] = false;
+                }
+            },
             toggleLikeIcon(song) {
                 song.liked = !song.liked;
             },
@@ -265,7 +255,30 @@
             },
             handleDialogClose(isVisible) {
                 this.dialogAddVisible = isVisible;
-            }
+            },
+            gotoPlay(song) {
+                this.$store.commit('addSongToList', song);
+
+                // 更新当前播放的歌曲 ID
+                this.$store.commit('setId', song);
+                try {
+                    // 使用 Vue Router 导航到播放页面，传递歌曲 ID 和相关的歌曲列表
+                    const songList = song;
+                    this.$router.push({
+                        name: 'mediaplayer',
+                        params: {
+                            songId: song, // 当前播放的歌曲 ID
+                            songList: songList  // 歌曲列表的所有 songId
+                        }
+                    });
+                } catch (error) {
+                    console.error('跳转到播放页面失败:', error);
+                }
+            },
+            // 跳转到艺术家详情
+            goToArtistPage(artistId) {
+                this.$router.push({ name: "SingerDetail", params: { artistId: artistId } });
+            },
         },
     }
 </script>
