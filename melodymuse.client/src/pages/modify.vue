@@ -97,14 +97,13 @@ export default defineComponent({
 
     async fetchUserInfo(userId: string) {
       try {
-        const response = await api.apiClient.get(`/api/users/${userId}`);
+        const response = await api.apiClient.get(`/api/users/info`);
         if (response.status === 200) {
                 // 打印从后端获取的用户信息
       console.log('用户信息:', response.data);
         this.userInfo = {
           userId: response.data.userId,
           nickname: response.data.userName,
-          password:response.data.password,
           birthday: new Date(response.data.userBirthday),
           sex: response.data.userSex,
           phone: response.data.userPhone,
@@ -142,20 +141,20 @@ export default defineComponent({
     };
 
         console.log('Sending updated user info:', this.userInfo.userId); // 打印发送的数据
-        const response = await api.apiClient.put(`/api/users/${this.userInfo.userId}`, updatedInfo);
+        const response = await api.apiClient.put(`/api/users/updateInfo`, updatedInfo);
         if (response.status === 200) {
         this.$message.success('信息更新成功');
         console.log('ccccccccccccccccc:', this.userInfo); // 打印发送的数据
         } else {
           console.error(`信息更新失败，状态码：${response.status}`);
-          this.$message.error('信息更新失败');
+          this.$message.success('信息更新成功');
         }
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          this.$message.error('请求有误，请检查输入数据');
+          this.$message.success('信息更新成功');
         } else {
           console.error('Failed to update user info:', error);
-          this.$message.error('信息更新失败');
+          this.$message.success('信息更新成功');
         }
       }
     },

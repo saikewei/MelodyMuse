@@ -48,7 +48,7 @@ namespace MelodyMuse.Server.Services
         }
 
         // 更新用户资料
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(UserModel user)
         {
             // 调用 IUserRepository 中的方法更新用户资料
             await _usersRepository.UpdateUserAsync(user);

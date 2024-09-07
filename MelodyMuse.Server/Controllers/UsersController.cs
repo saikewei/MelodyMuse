@@ -169,9 +169,27 @@ namespace MelodyMuse.Server.Controllers
 
         // 更新用户资料
         [Authorize]
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateUser(string userId, [FromBody] User updateUser)
+        [HttpPut("updateInfo")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserModel updateUser)
         {
+            string userId;
+            try
+            {
+                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
+
+                userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("token错误！" + ex);
+                return Unauthorized();
+            }
+
             if (userId != updateUser.UserId)
             {
                 return BadRequest(new { msg = "用户ID不匹配" });

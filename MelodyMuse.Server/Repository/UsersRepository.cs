@@ -46,14 +46,13 @@ namespace MelodyMuse.Server.Repository
         }
 
         // 更新用户资料
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(UserModel user)
         {
             var existingUser = await _context.Users.FindAsync(user.UserId);
 
             if (existingUser != null)
             {
                 existingUser.UserName = user.UserName;
-                existingUser.Password = user.Password;
                 existingUser.UserEmail = user.UserEmail;
                 existingUser.UserPhone = user.UserPhone;
                 existingUser.UserSex = user.UserSex;
