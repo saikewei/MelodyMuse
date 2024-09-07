@@ -43,6 +43,7 @@ namespace MelodyMuse.Server.Controllers
                     msg = "登录成功！",
                     Token = JWT
                 };
+                Console.WriteLine(UserInfo.Username+"登录");
                 return Ok(seccessResponse);
             }
 

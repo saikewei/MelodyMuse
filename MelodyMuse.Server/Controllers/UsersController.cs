@@ -108,6 +108,7 @@ namespace MelodyMuse.Server.Controllers
                     // 不存在时的处理逻辑
                     return NotFound(new { msg = "用户不存在" });
                 }
+                Console.WriteLine(user.UserName + user.UserPhone);
                 return Ok(user);
             }
             catch (Exception ex)

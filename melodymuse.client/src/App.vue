@@ -18,7 +18,7 @@
             playBar
         },
         computed: {
-            // ͨ��·�ɼ���Ƿ���Ҫչʾ playBar
+            // ͨ��·�ɼ���Ƿ���Ҫչʾ playBar`
             showPlayBar() {
                 return !['Login', 'Register', 'ForgottenPassword'].includes(this.$route.name); // ��·�ɲ��ǵ�¼ҳʱչʾ PlayBar
             }
