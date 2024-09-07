@@ -148,14 +148,14 @@ export default defineComponent({
         console.log('ccccccccccccccccc:', this.userInfo); // 打印发送的数据
         } else {
           console.error(`信息更新失败，状态码：${response.status}`);
-          this.$message.success('信息更新成功');
+          this.$message.error('信息更新失败');
         }
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          this.$message.success('信息更新成功');
+          this.$message.error('请求有误，请检查输入数据');
         } else {
           console.error('Failed to update user info:', error);
-          this.$message.success('信息更新成功');
+          this.$message.error('信息更新失败');
         }
       }
     },
