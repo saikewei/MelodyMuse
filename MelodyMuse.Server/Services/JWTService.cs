@@ -22,10 +22,12 @@ namespace MelodyMuse.Server.Services
             //将传入的 secretKey 字符串转换为字节数组，作为 HMACSHA256 签名算法的密钥。
             var key = Encoding.ASCII.GetBytes(secretKey);
             //新建标记描述符，存放header payload secret
+            Console.WriteLine(generateTokenModel.Username + "  "+ generateTokenModel.UserID+"  "+ generateTokenModel.UserPhone);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+
                     new Claim(ClaimTypes.Name, generateTokenModel.Username),
                     new Claim(ClaimTypes.NameIdentifier,generateTokenModel.UserID),
                     new Claim(ClaimTypes.MobilePhone,generateTokenModel.UserPhone),
@@ -39,7 +41,10 @@ namespace MelodyMuse.Server.Services
             //生成JWT   JWT是一种特殊的token
             var token = tokenHandler.CreateToken(tokenDescriptor);
             //将JWT转换为字符串返回
-            return tokenHandler.WriteToken(token);
+            Console.WriteLine(token);
+            var JWToken = tokenHandler.WriteToken(token);
+            Console.WriteLine("JWToken" + JWToken);
+            return JWToken;
 
         }
     }

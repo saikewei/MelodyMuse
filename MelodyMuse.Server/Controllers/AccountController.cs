@@ -37,13 +37,15 @@ namespace MelodyMuse.Server.Controllers
             if (UserInfo != null)
             {
                 //根据用户信息生成JWT
+                Console.WriteLine("用户信息为:"+loginModel.PhoneNumber+"  "+loginModel.Password);
                 var JWT = JWTGenerator.GenerateToken(UserInfo, JWTConfigure.serect_key);
+                Console.WriteLine(UserInfo.Username + "登录,token为" + JWT);
                 var seccessResponse = new
                 {
                     msg = "登录成功！",
                     Token = JWT
                 };
-                Console.WriteLine(UserInfo.Username+"登录");
+               
                 return Ok(seccessResponse);
             }
 

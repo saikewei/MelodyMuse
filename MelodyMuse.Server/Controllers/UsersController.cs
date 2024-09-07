@@ -128,16 +128,19 @@ namespace MelodyMuse.Server.Controllers
         public async Task<IActionResult> GetUserByToken()
         {
             string userId;
+            Console.Write(111);
             try
             {
                 var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
+                Console.WriteLine("提供的Token:" + token);    
                 if (token == null)
                 {
                     return Unauthorized();
                 }
 
                 userId = TokenParser.Token2Id(token, JWTConfigure.serect_key);
+                Console.WriteLine("解析出的ID:" + userId);
+
             }
             catch (Exception ex)
             {
@@ -155,6 +158,7 @@ namespace MelodyMuse.Server.Controllers
                     // 不存在时的处理逻辑
                     return NotFound(new { msg = "用户不存在" });
                 }
+                Console.WriteLine("解析出的用户信息:" + user.UserName);
                 return Ok(user);
             }
             catch (Exception ex)

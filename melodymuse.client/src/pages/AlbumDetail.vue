@@ -194,7 +194,9 @@
           await this.fetchAlbumCover();//获取专辑封面
           await this.fetchArtistName();//获取歌手名字
         } catch (error) {
-          console.error('获取专辑信息失败:', error);
+          
+        
+        .error('获取专辑信息失败:', error);
         }
       },
 
