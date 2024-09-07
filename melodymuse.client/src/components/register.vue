@@ -65,7 +65,7 @@
         methods: {
             async checkPhoneExists() {
                 try {
-                    const response = await api.apiClientWithoutToken.post(`/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phonenumber)}`);
+                    const response = await api.apiClient.post(`/api/account/check-phone?phoneNumber=${encodeURIComponent(this.phonenumber)}`, { auth: false });
                     return response.status === 200;
                 } catch (error) {
                     //console.error(error);
@@ -93,9 +93,10 @@
 
                 try {
                     // 此处是发送验证码的API
-                    const response = await api.apiClientWithoutToken.post('/api/sms/sendsms', {
+                    const response = await api.apiClient.post('/api/sms/sendsms', {
                         phoneNumber: this.phonenumber,
-                        event: this.event
+                        event: this.event,
+                        auth:false
                     });
 
                     if (response.status === 200) {
@@ -113,10 +114,11 @@
             },
             async verifyCode() {
                 try {
-                    const response = await api.apiClientWithoutToken.post('/api/sms/verifycode', {
+                    const response = await api.apiClient.post('/api/sms/verifycode', {
                         phoneNumber: this.phonenumber,
                         event: this.event,
-                        verificationCode: this.verificationCode
+                        verificationCode: this.verificationCode,
+                        auth:false
                     });
 
                     return response.status === 200;

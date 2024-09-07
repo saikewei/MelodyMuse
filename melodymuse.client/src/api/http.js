@@ -6,7 +6,7 @@ const apiClient = axios.create({
   baseURL: "https://localhost:7223", //调试
   //baseURL: "http://api.tongji.store", // 线上
   // baseURL: "http://localhost:5000", // 本地
-  timeout: 10000,
+  timeout: 100000,
 });
 
 // 请求拦截器
@@ -17,6 +17,7 @@ apiClient.interceptors.request.use(
     if (auth) {
       const token = localStorage.getItem("token"); // 假设你的 token 存储在 localStorage 中
       if (!token) {
+        console.log(config)
         // 如果没有 token，跳转到登录页面
         alert("请先登录！");
         router.push("/login"); // 替换为你的登录页面路径

@@ -4,7 +4,6 @@ import MyMusic from "../pages/MyMusic.vue";
 import Singer from "../pages/Singer.vue";
 import SongList from "../pages/SongList.vue";
 import Login from "../pages/Login.vue";
-import Register from "../pages/Register.vue";
 import Sign from "../pages/Sign.vue";
 import SearchResultPage from "../pages/SearchResultPage.vue"; // ?????????????????????;
 import UserManage from "../pages/UserManage.vue"; //?????????????????????
@@ -17,7 +16,6 @@ import mediaplayer from "../pages/mediaplayer.vue";
 import userSongShow from "../pages/userSongShow.vue";
 import SingerDetail from "../pages/SingerDetail.vue";
 import FollowedArtist from "../pages/FollowedArtist.vue";
-import ForgottenPassword from "../pages/ForgottenPassword.vue";
 import Test from "@/pages/test.vue";
 import AlbumDetail from "../pages/AlbumDetail.vue";
 import CollectedSong from "../pages/CollectedSong.vue";
@@ -98,7 +96,7 @@ const routes = [
   {
     path: "/register",
     name: "Register",
-    component: Register,
+    component: () => import('@/pages/Register.vue'),
   },
 
   {
@@ -126,7 +124,7 @@ const routes = [
   {
     path: "/ForgottenPassword",
     name: "ForgottenPassword",
-    component: ForgottenPassword,
+    component: () => import('@/pages/ForgottenPassword.vue'),
   },
   {
     path: "/ranksongs",
