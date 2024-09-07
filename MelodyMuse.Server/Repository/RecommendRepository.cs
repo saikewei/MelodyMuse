@@ -81,15 +81,16 @@ namespace MelodyMuse.Server.Repository
                 }
             }
 
+            // 获取播放总数最高的5个艺术家
             var topArtistIds = artistPlayCounts
                 .OrderByDescending(apc => apc.Value)
-                .Take(2)
+                .Take(5)
                 .Select(apc => apc.Key)
                 .ToList();
 
-            // 如果不满两个艺术家，随机补充
+            // 如果不满5个艺术家，随机补充
             var random = new Random();
-            while (topArtistIds.Count < 2)
+            while (topArtistIds.Count < 5)
             {
                 var randomArtistId = random.Next(5, 121).ToString();
                 if (!topArtistIds.Contains(randomArtistId))
@@ -98,15 +99,34 @@ namespace MelodyMuse.Server.Repository
                 }
             }
 
-            // 根据最受欢迎的艺术家ID获取其歌曲
+            // 根据艺术家ID获取歌曲
             var recommendedSongs = songs
                 .Where(song => song.Artists.Any(artist => topArtistIds.Contains(artist.ArtistId)))
                 .ToList();
 
-            // 以下为获取歌曲的歌手
+            // 如果推荐歌曲少于20首，继续从数据库中获取其他歌曲进行补充
+            if (recommendedSongs.Count < 20)
+            {
+                var additionalSongs = await _context.Songs
+                    .Include(s => s.Artists)
+                    .Include(s => s.Albums)
+                    .Where(s => s.Artists.Any(artist => topArtistIds.Contains(artist.ArtistId)))
+                    .Where(s => !recommendedSongs.Select(rs => rs.SongId).Contains(s.SongId))
+                    .Take(20 - recommendedSongs.Count)
+                    .ToListAsync();
+
+                recommendedSongs.AddRange(additionalSongs);
+            }
+
+            // 确保最终结果最多20首歌曲
+            var finalSongs = recommendedSongs
+                .Take(20)
+                .ToList();
+
+            // 创建歌曲模型并返回结果
             var songModelList = new List<SongModel>();
 
-            foreach (var song in recommendedSongs)
+            foreach (var song in finalSongs)
             {
                 var songModelArtists = new SongModel
                 {
@@ -128,6 +148,7 @@ namespace MelodyMuse.Server.Repository
 
             return songModelList;
         }
+
 
         public async Task<List<SongModel>> RecommendSongsById(string userId)
         {
