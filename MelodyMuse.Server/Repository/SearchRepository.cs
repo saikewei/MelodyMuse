@@ -29,9 +29,10 @@ namespace MelodyMuse.Server.Repository
         //查询歌名
         public async Task<List<SongModel>> SearchSongsByName(string query)
         {
+            // 只查询状态为1的歌曲
             var songs = await _context.Songs
-                   .Where(a => a.SongName.Contains(query))
-                   .ToListAsync();
+                .Where(a => a.SongName.Contains(query) && a.Status == 1) // 添加状态过滤条件
+                .ToListAsync();
 
             var songModelList = new List<SongModel>();
 
