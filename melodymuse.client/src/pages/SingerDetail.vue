@@ -83,9 +83,7 @@
                                         </el-tooltip>
                                     </td>
                                     <!-- 引用弹窗组件 -->
-                                    <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
-                                        <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
-                                    </el-dialog>
+                                    
                                 </tr>
                             </tbody>
                         </table>
@@ -93,6 +91,9 @@
                 </div>
             </div>
         </div>
+        <el-dialog v-model="dialogVisible" width="500px" v-if="dialogVisible">
+                                        <AddToSongList :songId="currentSongId" :dialogVisible="dialogVisible" @update:dialogVisible="handleDialogClose" />
+        </el-dialog>
     </div>
 </template>
 
