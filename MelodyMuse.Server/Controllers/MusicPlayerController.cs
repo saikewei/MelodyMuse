@@ -47,7 +47,7 @@ namespace MelodyMuse.Server.Controllers
         {
             var localFilePathMp3 = Path.Combine(_cacheDirectory, $"{artistId}_{songId}.mp3");
             var ftpMp3FilePath = $"/songs/{artistId}/{songId}/{songId}.mp3";
-            
+            Console.WriteLine(localFilePathMp3, ftpMp3FilePath);
             await DownloadAndCacheFileAsync($"{artistId}_{songId}.mp3", localFilePathMp3, ftpMp3FilePath);
 
             var fileStream = new FileStream(localFilePathMp3, FileMode.Open, FileAccess.Read);
@@ -68,7 +68,8 @@ namespace MelodyMuse.Server.Controllers
             // 使用指定 albumId 的封面文件路径
             localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
             ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
-
+            Console.WriteLine("1"+localFilePathJPG);
+            Console.WriteLine("2"+ftpJpgFilePath);
             // 下载并缓存指定 albumId 的封面文件
             await DownloadAndCacheFileAsync($"{albumId}.jpg", localFilePathJPG, ftpJpgFilePath);
 
