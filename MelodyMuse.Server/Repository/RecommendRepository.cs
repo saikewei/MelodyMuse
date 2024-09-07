@@ -119,6 +119,7 @@ namespace MelodyMuse.Server.Repository
                     Artists = song.Artists.Select(a => new Models.Artist
                     {
                         ArtistId = a.ArtistId,
+                        ArtistName = a.ArtistName,
                     }).ToList()
                 };
 
