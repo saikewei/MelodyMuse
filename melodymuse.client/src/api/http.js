@@ -3,8 +3,8 @@ import router from "../router"; // 导入你的 Vue Router 实例
 
 // 创建一个 axios 实例
 const apiClient = axios.create({
-  baseURL: "https://localhost:7223", //调试
-  //baseURL: "http://api.tongji.store", // 线上
+  //baseURL: "https://localhost:7223", //调试
+  baseURL: "http://api.tongji.store", // 线上
   // baseURL: "http://localhost:5000", // 本地
   timeout: 100000,
 });
@@ -16,6 +16,7 @@ apiClient.interceptors.request.use(
     const { auth = true } = config.query || config.data || {};
     if (auth) {
       const token = localStorage.getItem("token"); // 假设你的 token 存储在 localStorage 中
+      console.log(token)
       if (!token) {
         console.log(config)
         // 如果没有 token，跳转到登录页面

@@ -67,6 +67,7 @@ export default {
 
       if (response.status === 200 && response.data.token) {
         ElMessage.success('登录成功');
+        console.log("token:"+response.data.token)
         localStorage.setItem('token', response.data.token);
         console.log(response.data.token)
         this.$router.push('/');

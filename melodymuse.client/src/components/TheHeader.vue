@@ -162,8 +162,9 @@
             async fetchUserInfo()
             {
                 const userInfoResponse = await api.apiClient.get('/api/users/info');
-                this.userName=userInfoResponse.data.userName;
                 console.log(userInfoResponse.data);
+                this.userName=userInfoResponse.data.userName;
+                
             },
             handleSearchTypeChange() {
                 this.performSearch();
