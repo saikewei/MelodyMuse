@@ -213,7 +213,7 @@
                         name: 'mediaplayer',
                         params: {
                             songId: song.songId, // 当前播放的歌曲 ID
-                            songList: songList  // 歌曲列表的所有 songId
+                            songList: songList.Id  // 歌曲列表的所有 songId
                         }
                     });
                 } catch (error) {
