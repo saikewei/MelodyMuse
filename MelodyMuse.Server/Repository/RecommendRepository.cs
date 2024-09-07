@@ -38,7 +38,6 @@ namespace MelodyMuse.Server.Repository
         {
             // 从数据库中获取所有歌曲
             var songs = await _context.Songs
-                .Where(s => s.Status == 1) // 过滤状态为1的歌曲
                 .OrderBy(x => Guid.NewGuid()) // 随机排序
                 .Include(s => s.Albums)
                 .Take(50) // 选择前 count 条记录
@@ -50,24 +49,26 @@ namespace MelodyMuse.Server.Repository
         {
             // 获取用户播放数据
             var userPlayCounts = await GetSongPlayCountById(userId);
-            var songIds = userPlayCounts.Select(pc => pc.SongId).Distinct().ToList();
 
-            // 批量获取艺术家信息
-            var songs = await _context.Songs
-                .Include(s => s.Artists)
-                .Include(s => s.Albums)
-                .Where(s => songIds.Contains(s.SongId))
-                .ToListAsync();
+            // 提取所有歌曲的ID
+            var songIds = userPlayCounts.Select(pc => pc.SongId).Distinct();
 
             var artistPlayCounts = new Dictionary<string, decimal>();
 
-            // 计算每个艺术家的播放总数
-            foreach (var song in songs)
+            // 根据歌曲ID获取艺术家ID
+            foreach (var songId in songIds)
             {
-                decimal playCount = userPlayCounts.First(pc => pc.SongId == song.SongId).Count.GetValueOrDefault();
-                if (playCount > 0)
+                // 获取每首歌的艺术家
+                var artists = await _context.Songs
+                            .Where(s => s.SongId == songId)
+                            .SelectMany(s => s.Artists)
+                            .ToListAsync();
+                decimal playCount = userPlayCounts.First(pc => pc.SongId == songId).Count.GetValueOrDefault();
+
+                // 对每个艺术家进行处理
+                foreach (var artist in artists)
                 {
-                    foreach (var artist in song.Artists)
+                    if (playCount > 0)
                     {
                         if (artistPlayCounts.ContainsKey(artist.ArtistId))
                         {
@@ -80,7 +81,6 @@ namespace MelodyMuse.Server.Repository
                     }
                 }
             }
-
             var topArtistIds = artistPlayCounts
                 .OrderByDescending(apc => apc.Value)
                 .Take(2)
@@ -99,35 +99,61 @@ namespace MelodyMuse.Server.Repository
             }
 
             // 根据最受欢迎的艺术家ID获取其歌曲
-            var recommendedSongs = songs
-                .Where(song => song.Artists.Any(artist => topArtistIds.Contains(artist.ArtistId)))
-                .ToList();
+            var recommendedSongs = new List<Song>();
+            foreach (var artistId in topArtistIds)
+            {
+                var songsByArtist = await _context.Songs
+                    .Include(s => s.Albums)
+                         .Where(song => song.Artists.Any(artist => artist.ArtistId == artistId))
+                           .ToListAsync();
 
-            // 以下为获取歌曲的歌手
+                if (songsByArtist != null && songsByArtist.Any())
+                {
+                    recommendedSongs.AddRange(songsByArtist);
+                }
+            }
+            //以下为获取歌曲的歌手
             var songModelList = new List<SongModel>();
 
             foreach (var song in recommendedSongs)
             {
+                // 获取每首歌的艺术家
+                var artists = await _context.Songs
+                            .Where(s => s.SongId == song.SongId)
+                            .SelectMany(s => s.Artists)
+                            .ToListAsync();
+                string? albumId = song.Albums.FirstOrDefault()?.AlbumId;
+
+                // 创建 SongWithArtists 对象并填充数据
                 var songModelArtists = new SongModel
                 {
                     SongId = song.SongId,
                     SongName = song.SongName,
                     SongGenre = song.SongGenre,
                     Duration = song.Duration,
+                    Lyrics = song.Lyrics,
+                    SongDate = song.SongDate,
+                    ComposerId = song.ComposerId,
                     Status = song.Status,
-                    AlbumId = song.Albums.FirstOrDefault()?.AlbumId,
-                    Artists = song.Artists.Select(a => new Models.Artist
+                    AlbumId = albumId,
+                    Artists = artists?.Select(a => new Models.Artist
                     {
                         ArtistId = a.ArtistId,
-                    }).ToList()
+                        ArtistName = a.ArtistName,
+                        ArtistBirthday = a.ArtistBirthday,
+                        ArtistIntro = a.ArtistIntro,
+                        ArtistGenre = a.ArtistGenre,
+                        ArtistFansNum = a.ArtistFansNum
+                    }).ToList() // 如果 artists 为 null，结果也将为 null
                 };
 
+                // 将结果添加到列表中
                 songModelList.Add(songModelArtists);
             }
 
             return songModelList;
-        }
 
+        }
         public async Task<List<SongModel>> RecommendSongsById(string userId)
         {
             // 获取用户播放数据
