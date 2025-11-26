@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MelodyMuse.Server.models;
-using MelodyMuse.Server.Services.Interfaces;
 using FluentFTP;
-using Microsoft.AspNetCore.Authorization;
-using MelodyMuse.Server.Services;
 using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.Controllers.Facades;
+using MelodyMuse.Server.models;
+using MelodyMuse.Server.Services;
+using MelodyMuse.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 
@@ -21,19 +22,21 @@ namespace MelodyMuse.Server.Controllers
         private readonly string _cacheDirectory;
         // 设置缓存目录的最大大小限制 (例如: 500MB)
         private readonly long _cacheSizeLimit = 500 * 1024 * 1024; // 500 MB
+        private readonly UserContextFacade _userContext;
 
         //private readonly string _ftpServer = "101.126.23.58";
         //private readonly string _ftpUsername = "ftpuser";
         //private readonly string _ftpPassword = "tongjiORCL2024";
 
 
-        public MusicPlayerController(IMusicPlayerService musicService, IOptions<FtpSettings> ftpSettings)
+        public MusicPlayerController(IMusicPlayerService musicService, IOptions<FtpSettings> ftpSettings, UserContextFacade userContext)
         {
 
             _musicService = musicService;
             _ftpSettings = ftpSettings.Value;
             // 使用相对路径设置缓存目录
             _cacheDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MusicCache");
+            _userContext = userContext;
 
             // 确保缓存目录存在
             if (!Directory.Exists(_cacheDirectory))
@@ -141,47 +144,44 @@ namespace MelodyMuse.Server.Controllers
         [Authorize]
         public async Task<IActionResult> GetMusicInfo(string songId)
         {
+            // 1. 【应用外观模式】一行代码获取 UserId
+            // 不再需要 Request.Headers... Split... Parse... 判空...
+            // 如果 Token 无效，Facade 内部会抛出异常，由全局过滤器或中间件捕获返回 401
+            string userId;
             try
             {
-
-                // 从请求头中获取 JWT 令牌//
-                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                //如果没有令牌，返回未授权错误码401//
-                if (token == null)
-                {
-                    return Unauthorized();
-                }
-
-                // 解析 JWT 令牌 得到存储的信息ParsedToken:id,name,phone
-                var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
-                //下面是输出测试查看是否正确//
-                Console.WriteLine(parsedToken.UserID + " " + parsedToken.Username + " " + parsedToken.UserPhone);
-                var userId = parsedToken.UserID;
-                var songMetadata = await _musicService.GetSongBySongId(songId);
-                var artistId = songMetadata.ComposerId;
-                var albumId = songMetadata.AlbumId;
-                if (albumId == null)
-                    albumId = "Default";
-
-                if (songMetadata == null)
-                {
-                    // 歌曲ID不存在时的处理逻辑
-                    return NotFound("歌曲ID不存在");
-                }
-                await _musicService.IncreaseSongPlaysBySongIdandUserId(songId, userId);
-                songMetadata.SongUrl = $"api/player/mp3?songId={songId}&artistId={artistId}"; // 更新URL指向文件流方法
-                songMetadata.LyricUrl = $"api/player/txt?songId={songId}&artistId={artistId}"; // 更新URL指向文件流方法
-                songMetadata.CoverUrl = $"api/player/jpg?albumId={albumId}"; // 更新URL指向文件流方法
-                return Ok(songMetadata);
+                userId = _userContext.GetCurrentUserId();
             }
-            catch (Exception ex)
+            catch (UnauthorizedAccessException)
             {
-                var errorResponse = new
-                {
-                    msg = "歌曲查询错误：" + ex.Message
-                };
-                return NotFound(errorResponse);
+                return Unauthorized();
             }
+
+            // 2. 调用 Service 获取数据
+            // 注意：我们移除了外层的 try-catch，因为 Service 现在承诺不抛空引用异常
+            var songMetadata = await _musicService.GetSongBySongId(songId);
+
+            // 3. 【应用空对象模式】
+            // 不再判断 songMetadata == null，而是检查业务属性 IsNull
+            if (songMetadata.IsNull)
+            {
+                // 此时可以放心地返回 404，附带安全的空对象数据给前端（可选）
+                return NotFound(new { msg = "歌曲ID不存在", data = songMetadata });
+            }
+
+            // 4. 业务逻辑：增加播放量
+            await _musicService.IncreaseSongPlaysBySongIdandUserId(songId, userId);
+
+            // 5. 业务逻辑：拼接 URL
+            // 此时 songMetadata 里的字段绝对是安全的（Service 里的 Null Object 逻辑保证了 AlbumId 不为 null）
+            var artistId = songMetadata.ComposerId;
+            var albumId = songMetadata.AlbumId; // Service 已经保证了如果为空返回 "Default" 或空串
+
+            songMetadata.SongUrl = $"api/player/mp3?songId={songId}&artistId={artistId}";
+            songMetadata.LyricUrl = $"api/player/txt?songId={songId}&artistId={artistId}";
+            songMetadata.CoverUrl = $"api/player/jpg?albumId={albumId}";
+
+            return Ok(songMetadata);
         }
     }
 }

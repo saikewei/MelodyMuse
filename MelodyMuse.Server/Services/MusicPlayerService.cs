@@ -1,4 +1,4 @@
-﻿using MelodyMuse.Server.Models;
+using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Repository.Interfaces;
 using MelodyMuse.Server.Services.Interfaces;
@@ -25,45 +25,44 @@ namespace MelodyMuse.Server.Services
         // 根据歌曲ID获取歌曲元数据
         public async Task<SongMetaDataModel> GetSongBySongId(string songId)
         {
-            // 从仓库层获取歌曲信息
+            // 1. 获取歌曲信息
             var song = await _musicplayerrepository.GetSongBySongId(songId);
+
+            // 【应用空对象模式】
+            // 如果查不到歌曲，不再抛异常炸毁程序，而是返回一个安全的 Null 对象。
+            // 调用者检查 IsNull 即可知道结果。
             if (song == null)
             {
-                throw new ArgumentNullException($"Song with ID {songId} not found.");
+                return SongMetaDataModel.Null;
             }
 
-            // 从仓库层获取歌手信息
+            // 2. 获取歌手信息
             var singers = await _musicplayerrepository.GetSingersBySongId(songId);
-            if (singers == null || !singers.Any())
-            {
-                throw new ArgumentNullException($"Singers for song with ID {songId} not found.");
-            }
 
-            // 提取歌手名称列表
-            var singerNames = singers.Select(o => o.ArtistName).Where(name => name != null).ToList();
+            // 【应用空对象思想 - 局部处理】
+            // 如果歌手列表为空，不报错，而是给一个包含“未知歌手”的默认列表。
+            // 这样保证 SingerNames 永远不为 null，前端直接遍历不会崩。
+            var singerNames = (singers == null || !singers.Any())
+                ? new List<string> { "未知歌手" }
+                : singers.Select(o => o.ArtistName ?? "匿名").ToList();
 
-            // 获取歌曲所属专辑ID
+            // 3. 获取专辑信息 (处理可能的 null)
             var albumId = await _musicplayerrepository.GetAlbumIdBySongId(songId);
-            /*if (albumId == null)
-            {
-                throw new ArgumentNullException($"Album for song with ID {songId} not found.");
-            }*/
 
-            // 创建并填充SongMetaDataModel对象
+            // 4. 构建返回对象
             var responseModel = new SongMetaDataModel
             {
                 SongId = song.SongId,
-                SongName = song.SongName,
+                SongName = song.SongName ?? "无标题", // 防止数据库脏数据
                 SingerNames = singerNames,
                 SongGenre = song.SongGenre,
                 SongDate = song.SongDate,
                 SongDuration = song.Duration,
                 ComposerId = song.ComposerId,
-                ComposerName = song.Composer?.ArtistName,
-                AlbumId = albumId
+                ComposerName = song.Composer?.ArtistName ?? "未知作曲家", // 防止空引用
+                AlbumId = albumId ?? string.Empty // 确保不为 null
             };
 
-            // 返回填充好的SongMetaDataModel对象
             return responseModel;
         }
 
