@@ -1,13 +1,14 @@
 /*
 与管理员管理用户有关的api注册与数据接收
 */
-using Microsoft.AspNetCore.Mvc;
-using MelodyMuse.Server.Services.Interfaces;
-using MelodyMuse.Server.Models;
-using MelodyMuse.Server.models;
-using Microsoft.AspNetCore.Authorization;
 using MelodyMuse.Server.Configure;
+using MelodyMuse.Server.Controllers.Facades;
+using MelodyMuse.Server.models;
+using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Services;
+using MelodyMuse.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 //命名空间:Controllers
 namespace MelodyMuse.Server.Controllers
@@ -22,11 +23,13 @@ namespace MelodyMuse.Server.Controllers
     {
         //维护一个到下层服务的接口
         private readonly IUsersService _usersService;
+        private readonly UserContextFacade _userContext;
 
         //构造函数:初始化(传入相应的服务)接口
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, UserContextFacade userContext)
         {
             _usersService = usersService;
+            _userContext = userContext;
         }
 
         //获取当前用户
@@ -36,26 +39,7 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
-                // 从请求头中获取 JWT 令牌
-                var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-                // 如果没有令牌，返回未授权错误码401
-                if (token == null)
-                {
-                    return Unauthorized(new { msg = "未提供令牌" });
-                }
-
-                // 解析 JWT 令牌，得到存储的信息
-                var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
-
-                // 检查解析结果是否为空
-                if (parsedToken == null)
-                {
-                    return Unauthorized(new { msg = "令牌无效" });
-                }
-
-                // 输出测试查看是否正确
-                Console.WriteLine(parsedToken.UserID + " " + parsedToken.Username + " " + parsedToken.UserPhone);
+                var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
                 // 这里你可以返回解析出来的用户信息或其他相关数据
                 return Ok(new
@@ -241,28 +225,7 @@ namespace MelodyMuse.Server.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
-            // 从请求头中获取 JWT 令牌
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            // 如果没有令牌，返回未授权错误码401
-            if (token == null)
-            {
-                return Unauthorized(new { msg = "未提供令牌" });
-            }
-
-            // 解析 JWT 令牌，得到存储的信息
-            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
-
-            // 检查解析结果是否为空
-            if (parsedToken == null)
-            {
-                return Unauthorized(new { msg = "令牌无效" });
-            }
-
-            if (dto == null || string.IsNullOrEmpty(dto.SongId))
-            {
-                return BadRequest("请求数据为空");
-            }
+            var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
             try
             {
@@ -286,28 +249,7 @@ namespace MelodyMuse.Server.Controllers
          [HttpDelete("remove")]
         public async Task<IActionResult> RemoveUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
-            // 从请求头中获取 JWT 令牌
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            // 如果没有令牌，返回未授权错误码401
-            if (token == null)
-            {
-                return Unauthorized(new { msg = "未提供令牌" });
-            }
-
-            // 解析 JWT 令牌，得到存储的信息
-            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
-
-            // 检查解析结果是否为空
-            if (parsedToken == null)
-            {
-                return Unauthorized(new { msg = "令牌无效" });
-            }
-
-            if (dto == null ||  string.IsNullOrEmpty(dto.SongId))
-            {
-                return BadRequest("请求数据为空");
-            }
+            var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
             try
             {
@@ -374,7 +316,7 @@ namespace MelodyMuse.Server.Controllers
             }
         }
         [Authorize]
-         [HttpGet("user/{userId}/albums")]
+        [HttpGet("user/{userId}/albums")]
         public async Task<ActionResult<List<Album>>> GetUserCollectedAlbums(string userId)
         {
             var albums = await _usersService.GetUserCollectedAlbumsAsync(userId);
@@ -387,26 +329,10 @@ namespace MelodyMuse.Server.Controllers
             return Ok(albums);
         }
         [Authorize]
-         [HttpGet("collectsong")]
-public async Task<ActionResult<List<UserCollectedSongDto>>> GetCollectedSongsByUserId()
+        [HttpGet("collectsong")]
+        public async Task<ActionResult<List<UserCollectedSongDto>>> GetCollectedSongsByUserId()
         {
-            // 从请求头中获取 JWT 令牌
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            // 如果没有令牌，返回未授权错误码401
-            if (token == null)
-            {
-                return Unauthorized(new { msg = "未提供令牌" });
-            }
-
-            // 解析 JWT 令牌，得到存储的信息
-            var parsedToken = TokenParser.ParseToken(token, JWTConfigure.serect_key);
-
-            // 检查解析结果是否为空
-            if (parsedToken == null)
-            {
-                return Unauthorized(new { msg = "令牌无效" });
-            }
+            var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
             var songs = await _usersService.GetCollectedSongsByUserId(parsedToken.UserID);
             if (songs == null || songs.Count == 0)

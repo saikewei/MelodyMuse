@@ -117,6 +117,10 @@ builder.Services.AddScoped<IMusicPlayerRepository>(provider => new MusicPlayerRe
 builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<ISearchRepository>(provider => new SearchRepository());
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<MelodyMuse.Server.Controllers.Facades.UserContextFacade>();
+
 // Configure JWT authentication
 var key = Encoding.ASCII.GetBytes(JWTConfigure.serect_key);
 builder.Services.AddAuthentication(x =>
