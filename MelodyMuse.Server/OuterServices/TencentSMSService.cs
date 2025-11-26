@@ -1,12 +1,11 @@
-﻿/*
+/*
     实现发送短信
  */
 
 
+using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.OuterServices.Interfaces;
-using MelodyMuse.Server.Configure;
-
 using System;
 using System.Threading.Tasks;
 using TencentCloud.Common;
@@ -15,71 +14,70 @@ using TencentCloud.Cvm.V20170312.Models;
 using TencentCloud.Ms.V20180408;
 using TencentCloud.Sms.V20190711;
 using TencentCloud.Sms.V20190711.Models;
+using static MelodyMuse.Server.OuterServices.Interfaces.ISmsSender;
 
 namespace MelodyMuse.Server.OuterServices
 {
-    public class TencentSMSService:ITencentSMSService
+    /// 腾讯云短信适配器
+    /// 作用：将通用的 ISmsSender 请求转换为腾讯云 SDK 特定的 SendSmsRequest
+    public class TencentSmsAdapter : ISmsSender
     {
-
-        public TencentSMSService()
+        public TencentSmsAdapter()
         {
         }
 
-
-        public async Task<bool> SendSMSAsync(SendToTencentModel sendToTencentModel)
+        public async Task<bool> SendAsync(GenericSmsMessage message)
         {
-
             try
             {
-                // 为了保护密钥安全，建议将密钥设置在环境变量中或者配置文件中。
-                // 硬编码密钥到代码中有可能随代码泄露而暴露，有安全隐患，并不推荐。
-                // 这里采用的是从环境变量读取的方式，需要在环境变量中先设置这两个值。
+                // 1. 初始化凭证
                 Credential cred = new Credential
                 {
                     SecretId = TencentSMSServiceConfigure.SecretId,
                     SecretKey = TencentSMSServiceConfigure.SecretKey,
                 };
 
+                // 2. 初始化客户端 (地域设为广州，可根据配置调整)
                 SmsClient client = new SmsClient(cred, "ap-guangzhou");
 
+                // 3. 组装腾讯云特定的 Request 对象 (适配过程)
                 SendSmsRequest req = new SendSmsRequest
                 {
-                    SmsSdkAppid = TencentSMSServiceConfigure.SDKAppID,  // 短信SdkAppid
-                    Sign = TencentSMSServiceConfigure.SignName,  // 短信签名
-                    TemplateID = TencentSMSServiceConfigure.TemplateID,  // 短信模板ID
-                    PhoneNumberSet = new string[] { "86"+sendToTencentModel.PhoneNumber },  // 接收短信的手机号
-                    
-                    TemplateParamSet = new string[] { sendToTencentModel.VerificationCode,
-                        sendToTencentModel.Event,
-                        sendToTencentModel.VerificationCodeValidityTime.ToString() }  // 模板参数
-                    
-                    /*TemplateParamSet = new string[] { sendToTencentModel.VerificationCode,
-                        sendToTencentModel.VerificationCodeValidityTime.ToString() }  // 模板参数*/
+                    SmsSdkAppid = TencentSMSServiceConfigure.SDKAppID,
+                    Sign = TencentSMSServiceConfigure.SignName,
+                    TemplateID = TencentSMSServiceConfigure.TemplateID,
+
+                    // 适配：处理手机号格式 (添加 +86)
+                    PhoneNumberSet = new string[] { "+86" + message.PhoneNumber },
+
+                    // 适配：直接映射参数数组
+                    TemplateParamSet = message.TemplateParams
                 };
 
+                // 4. 调用 SDK
                 SendSmsResponse resp = client.SendSmsSync(req);
-                //Console.WriteLine(AbstractModel.ToJsonString(resp));
 
-
-                // 判断短信是否发送成功
-                //可以一组好几个手机号
+                // 5. 处理响应结果并转换为通用的 bool
                 if (resp.SendStatusSet != null && resp.SendStatusSet.All(status => status.Code == "Ok"))
                 {
                     return true;
                 }
                 else
                 {
-                    //所以Status不止一个
-                    foreach (var status in resp.SendStatusSet)
+                    // 记录错误详情
+                    if (resp.SendStatusSet != null)
                     {
-                        Console.WriteLine($"PhoneNumber: {status.PhoneNumber}, Code: {status.Code}, Message: {status.Message}");
+                        foreach (var status in resp.SendStatusSet)
+                        {
+                            Console.WriteLine($"[TencentSMS Error] Phone: {status.PhoneNumber}, Code: {status.Code}, Msg: {status.Message}");
+                        }
                     }
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine("发生异常"+e);
+                Console.WriteLine("[TencentSMS Exception] " + ex.ToString());
                 return false;
             }
         }
