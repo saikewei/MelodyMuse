@@ -1,4 +1,4 @@
-﻿using MelodyMuse.Server.models;
+using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,42 @@ using System.Collections.Generic;
 
 namespace MelodyMuse.Server.Repository
 {
+    // 1. 策略接口
+    public interface IUserIdGenerationStrategy
+    {
+        string GenerateId();
+    }
+
+    // 2. 具体策略：哈希策略 (你现在的逻辑)
+    public class HashTimeIdStrategy : IUserIdGenerationStrategy
+    {
+        public string GenerateId()
+        {
+            string currentTimeString = DateTime.UtcNow.ToString("o");
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentTimeString));
+
+                // 将哈希值转换为16进制字符串
+                StringBuilder hashStringBuilder = new StringBuilder();
+                foreach (byte b in hashBytes)
+                {
+                    hashStringBuilder.Append(b.ToString("x2"));
+                }
+
+                string hashString = hashStringBuilder.ToString();
+
+                return hashStringBuilder.ToString().Substring(0, 10);
+            }
+        }
+    }
+
+    // 3. 具体策略：GUID 策略 (备用)
+    public class GuidIdStrategy : IUserIdGenerationStrategy
+    {
+        public string GenerateId() => Guid.NewGuid().ToString("N").Substring(0, 10);
+    }
+
     public class AccountRepository : IAccountRepository
     {
         private readonly ModelContext _context;
@@ -73,29 +109,8 @@ namespace MelodyMuse.Server.Repository
                 throw new Exception("用户名已被注册");
             }
 
-
-            string nextUserId;
-            // 获取当前时间的字符串表示
-            string currentTimeString = DateTime.UtcNow.ToString("o"); // 使用ISO 8601格式
-
-            // 计算哈希值
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(currentTimeString));
-
-                // 将哈希值转换为16进制字符串
-                StringBuilder hashStringBuilder = new StringBuilder();
-                foreach (byte b in hashBytes)
-                {
-                    hashStringBuilder.Append(b.ToString("x2"));
-                }
-
-                string hashString = hashStringBuilder.ToString();
-
-                // 截取前10位作为用户ID
-                nextUserId = hashString.Substring(0, 10);
-            }
-               
+            IUserIdGenerationStrategy idStrategy = new HashTimeIdStrategy();
+            string nextUserId = idStrategy.GenerateId();
 
             // 创建新用户对象
             var user = new User
