@@ -1,9 +1,10 @@
-﻿using FluentFTP;
+using FluentFTP;
 using MelodyMuse.Server.Configure;
 using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository;
 using MelodyMuse.Server.Repository.Interfaces;
+using MelodyMuse.Server.Services.Factories;
 using MelodyMuse.Server.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -56,63 +57,47 @@ namespace MelodyMuse.Server.Services
             
             var artists = new List<Artist>();
             var token = new CancellationToken();
-            //using (var ftp = new AsyncFtpClient(_ftpServer, _ftpUsername, _ftpPassword))
             using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
-
                 await ftp.Connect(token);
 
                 foreach (var artistId in songUploadDto.ArtistIds)
                 {
-                    //获取相关歌手信息
                     var artist = await _artistRepository.GetArtistByIdAsync(artistId);
                     if (artist != null)
                     {
-                        artists.Add(artist);
-
-                        // 创建歌曲在FTP上的存储路径：/songs/{artistId}/{songId}/
+                        // 路径逻辑
                         var artistFolderPath = $"/songs/{artistId}";
                         var songFolderPath = $"{artistFolderPath}/{songId}";
 
+                        // 目录创建逻辑（可以提取到辅助方法，但暂且保留）
                         if (!await ftp.DirectoryExists(artistFolderPath, token))
-                        {
                             await ftp.CreateDirectory(artistFolderPath, token);
-                        }
-
                         if (!await ftp.DirectoryExists(songFolderPath, token))
-                        {
                             await ftp.CreateDirectory(songFolderPath, token);
-                        }
 
-                        // 上传歌曲文件到FTP服务器的songId文件夹中
+                        // === 【应用工厂方法优化】 ===
+
+                        // 1. 上传歌曲 (Audio)
+                        var audioHandler = UploadHandlerFactory.CreateHandler(UploadType.Audio);
                         var fileName = $"{songId}{Path.GetExtension(songUploadDto.SongFile.FileName)}";
-                        var ftpFilePath = $"{songFolderPath}/{fileName}";
+                        var audioPath = $"{songFolderPath}/{fileName}";
 
-                        using (var memoryStream = new MemoryStream())
+                        await audioHandler.UploadAsync(ftp, audioPath, songUploadDto.SongFile, token);
+
+                        // 2. 上传歌词 (Lyrics)
+                        if (!string.IsNullOrEmpty(songUploadDto.Lyrics))
                         {
-                            await songUploadDto.SongFile.CopyToAsync(memoryStream);
-                            memoryStream.Seek(0, SeekOrigin.Begin);
-                            await ftp.UploadStream(memoryStream, ftpFilePath, token: token);
-                        }
+                            var lyricsHandler = UploadHandlerFactory.CreateHandler(UploadType.Lyrics);
+                            var lyricsPath = $"{songFolderPath}/{songId}.txt";
 
-                        // 生成歌词文件的路径和内容
-                        var lyricsFileName = $"{songId}.txt";
-                        var lyricsFilePath = $"{songFolderPath}/{lyricsFileName}";
-
-                        using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(songUploadDto.Lyrics)))
-                        {
-                            await ftp.UploadStream(memoryStream, lyricsFilePath, token: token);
+                            await lyricsHandler.UploadAsync(ftp, lyricsPath, songUploadDto.Lyrics, token);
                         }
                     }
                 }
-
                 await ftp.Disconnect(token);
             }
-
-
-
-
 
             // 创建歌曲实体对象
             var song = new Song
