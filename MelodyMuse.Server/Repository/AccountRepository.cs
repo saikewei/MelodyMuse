@@ -17,7 +17,7 @@ namespace MelodyMuse.Server.Repository
         string GenerateId();
     }
 
-    // 2. 具体策略：哈希策略 (你现在的逻辑)
+    // 2. 具体策略：哈希策略 (现在的逻辑)
     public class HashTimeIdStrategy : IUserIdGenerationStrategy
     {
         public string GenerateId()
@@ -62,7 +62,8 @@ namespace MelodyMuse.Server.Repository
             {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == loginModel.PhoneNumber && u.Password == loginModel.Password);
 
-                if (user == null) {
+                if (user == null)
+                {
                     return null;
                 }
 
@@ -132,7 +133,7 @@ namespace MelodyMuse.Server.Repository
 
             return true;
         }
-      // 新方法：检查手机号是否已注册
+        // 新方法：检查手机号是否已注册
         public async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.UserPhone == phoneNumber);
