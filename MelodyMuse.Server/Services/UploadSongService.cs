@@ -35,67 +35,54 @@ namespace MelodyMuse.Server.Services
             _musicplayerRepository = musicplayerRepository;
             _ftpSettings = ftpSettings.Value; // 从配置中读取 FTP 设置
         }
-        
+
         public async Task<bool> UploadSongAsync(SongUploadModel songUploadDto)
         {
             // 获取专辑信息
             var album = await _albumRepository.GetAlbumByIdAsync(songUploadDto.AlbumId);
             if (album == null)
             {
-                return false; // 如果专辑不存在，返回错误
+                return false; // 如果专辑不存在,返回错误
             }
 
             // 检查是否存在相同的歌曲
             var existingSong = await _songRepository.GetSongByNameAndAlbumAsync(songUploadDto.SongName, songUploadDto.AlbumId);
             if (existingSong != null)
             {
-                return false; // 如果存在相同的歌曲，返回错误
+                return false; // 如果存在相同的歌曲,返回错误
             }
 
             //生成歌曲ID
             var songId = Guid.NewGuid().ToString().Substring(0, 10);
-            
+
             var artists = new List<Artist>();
             var token = new CancellationToken();
+
+            // FTP 上传逻辑
             using (var ftp = new AsyncFtpClient(_ftpSettings.Server, _ftpSettings.Username, _ftpSettings.Password))
             {
                 ftp.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
                 await ftp.Connect(token);
+
+                var audioHandler = UploadHandlerFactory.CreateHandler(UploadType.Audio);
+                var lyricsHandler = UploadHandlerFactory.CreateHandler(UploadType.Lyrics);
 
                 foreach (var artistId in songUploadDto.ArtistIds)
                 {
                     var artist = await _artistRepository.GetArtistByIdAsync(artistId);
                     if (artist != null)
                     {
-                        // 路径逻辑
-                        var artistFolderPath = $"/songs/{artistId}";
-                        var songFolderPath = $"{artistFolderPath}/{songId}";
+                        artists.Add(artist);
 
-                        // 目录创建逻辑（可以提取到辅助方法，但暂且保留）
-                        if (!await ftp.DirectoryExists(artistFolderPath, token))
-                            await ftp.CreateDirectory(artistFolderPath, token);
-                        if (!await ftp.DirectoryExists(songFolderPath, token))
-                            await ftp.CreateDirectory(songFolderPath, token);
+                        // 构建歌曲文件夹路径
+                        var songFolderPath = $"/songs/{artistId}/{songId}";
 
-                        // === 【应用工厂方法优化】 ===
-
-                        // 1. 上传歌曲 (Audio)
-                        var audioHandler = UploadHandlerFactory.CreateHandler(UploadType.Audio);
-                        var fileName = $"{songId}{Path.GetExtension(songUploadDto.SongFile.FileName)}";
-                        var audioPath = $"{songFolderPath}/{fileName}";
-
-                        await audioHandler.UploadAsync(ftp, audioPath, songUploadDto.SongFile, token);
-
-                        // 2. 上传歌词 (Lyrics)
-                        if (!string.IsNullOrEmpty(songUploadDto.Lyrics))
-                        {
-                            var lyricsHandler = UploadHandlerFactory.CreateHandler(UploadType.Lyrics);
-                            var lyricsPath = $"{songFolderPath}/{songId}.txt";
-
-                            await lyricsHandler.UploadAsync(ftp, lyricsPath, songUploadDto.Lyrics, token);
-                        }
+                        // 使用 handler 上传音频和歌词（handler 内部处理目录创建）
+                        await audioHandler.UploadWithDirectoryAsync(ftp, songFolderPath, songId, songUploadDto.SongFile, token);
+                        await lyricsHandler.UploadWithDirectoryAsync(ftp, songFolderPath, songId, songUploadDto.Lyrics, token);
                     }
                 }
+
                 await ftp.Disconnect(token);
             }
 
@@ -123,7 +110,7 @@ namespace MelodyMuse.Server.Services
             var songMakeupAlbumCreated = await _songRepository.songMakeupAlbumAsync(song.SongId, album.AlbumId);
             if (!songMakeupAlbumCreated)
             {
-                return false; // 如果关系保存失败，返回错误
+                return false; // 如果关系保存失败,返回错误
             }
 
             // 更新ArtistSingSong关系
@@ -132,11 +119,10 @@ namespace MelodyMuse.Server.Services
                 var artistSingSongCreated = await _artistRepository.artistSingSongAsync(song.SongId, artist.ArtistId);
                 if (!artistSingSongCreated)
                 {
-                    return false; // 如果关系保存失败，返回错误
+                    return false; // 如果关系保存失败,返回错误
                 }
             }
 
-            
             return true;
         }
         public async Task<bool> CreateSongAsync(SongCreateModel song)
@@ -149,7 +135,7 @@ namespace MelodyMuse.Server.Services
                 SongGenre = song.SongGenre,
                 ComposerId = song.ArtistId,
                 Status = 1,//表示已发布
-                Lyrics =null,
+                Lyrics = null,
                 SongDate = null,
             };
 
@@ -174,7 +160,7 @@ namespace MelodyMuse.Server.Services
         public async Task<bool> UserUploadSongAsync(SongUploadByUserModel songUploadByUserModel, string userId)
         {
             // 检查Artists表中是否存在用户信息
-            if (!await _artistRepository.IsUserInArtistAsync("user"+userId))
+            if (!await _artistRepository.IsUserInArtistAsync("user" + userId))
             {
                 var userInfo = await _userRepository.GetUserById(userId);
                 if (userInfo != null)
@@ -202,8 +188,8 @@ namespace MelodyMuse.Server.Services
 
                 await ftp.Connect(token);
                 //获取相关歌手信息
-                var artist = await _artistRepository.GetArtistByIdAsync("user"+userId);
-                
+                var artist = await _artistRepository.GetArtistByIdAsync("user" + userId);
+
                 if (artist != null)
                 {
 
@@ -257,7 +243,7 @@ namespace MelodyMuse.Server.Services
                 SongGenre = songUploadByUserModel.SongGenre,
                 Lyrics = songUploadByUserModel.Lyrics,
                 SongDate = DateTime.Now,
-                ComposerId = "user"+userId,
+                ComposerId = "user" + userId,
                 Status = 0, // 表示未发布，需要管理员审核
             };
 
@@ -280,7 +266,7 @@ namespace MelodyMuse.Server.Services
                 UserId = userId,
                 UploadDate = DateTime.Now
             };
-            
+
             if (!await _userRepository.UserUpload(upload))
             {
                 return false;
@@ -288,39 +274,39 @@ namespace MelodyMuse.Server.Services
 
             return true;
         }
-        public async Task<bool> UserDeleteSongAsync(string userId,string songId)
+        public async Task<bool> UserDeleteSongAsync(string userId, string songId)
         {
-            
+
             //检查是否存在这首歌
             var existingSong = await _songRepository.GetSongByIdAsync(songId);
             if (existingSong == null)
             {
-                throw new Exception("Song not found"); 
+                throw new Exception("Song not found");
             }
 
             //删除Upload里的记录
-            if(! await _userRepository.DeleteUploadRecord(userId, songId))
+            if (!await _userRepository.DeleteUploadRecord(userId, songId))
             {
-                
+
                 throw new Exception("删除Upload记录失败");
             }
 
             //删除User_Collect_Song表里的记录
             if (!await _userRepository.DeleteCollectSongRecord(songId))
             {
-                
+
                 throw new Exception("删除User_Collect_Song记录失败");
             }
 
             //删除Artist_Sing_Song表里的记录
-            if (!await _artistRepository.DeleteartistSingSongAsync(songId,"user"+ userId))
+            if (!await _artistRepository.DeleteartistSingSongAsync(songId, "user" + userId))
             {
                 throw new Exception("删除Song_Makeup_SongList记录失败");
             }
 
-            
+
             //删除Song_Makeup_SongList里的记录
-            if(!await _songRepository.DeleteMakeupSongListRecord(songId))
+            if (!await _songRepository.DeleteMakeupSongListRecord(songId))
             {
                 throw new Exception("删除Song_Makeup_SongList记录失败");
             }
@@ -330,9 +316,9 @@ namespace MelodyMuse.Server.Services
             {
                 throw new Exception("删除Song_Play_Count记录失败");
             }
-            
+
             //删除Song里的记录
-            if(!await _songRepository.DeleteSongRecord(songId))
+            if (!await _songRepository.DeleteSongRecord(songId))
             {
                 throw new Exception("删除Song记录失败");
             }
