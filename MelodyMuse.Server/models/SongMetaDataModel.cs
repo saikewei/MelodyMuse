@@ -44,6 +44,7 @@ namespace MelodyMuse.Server.Models
         public virtual bool IsNull => false;
     }
 
+    // Refactored with null object Pattern
     public class NullSongMetaDataModel : SongMetaDataModel
     {
         public NullSongMetaDataModel()

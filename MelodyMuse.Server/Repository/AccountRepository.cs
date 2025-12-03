@@ -1,4 +1,4 @@
-using MelodyMuse.Server.models;
+﻿using MelodyMuse.Server.models;
 using MelodyMuse.Server.Models;
 using MelodyMuse.Server.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 namespace MelodyMuse.Server.Repository
 {
+    // Refactored with strategy Pattern
     // 1. 策略接口
     public interface IUserIdGenerationStrategy
     {
@@ -110,6 +111,7 @@ namespace MelodyMuse.Server.Repository
                 throw new Exception("用户名已被注册");
             }
 
+            // Refactored with strategy Pattern
             IUserIdGenerationStrategy idStrategy = new HashTimeIdStrategy();
             string nextUserId = idStrategy.GenerateId();
 

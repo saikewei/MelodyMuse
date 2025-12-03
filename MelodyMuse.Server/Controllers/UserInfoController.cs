@@ -34,6 +34,7 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
+                // Refactored with facade Pattern
                 var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
                 //构建实例
@@ -48,16 +49,16 @@ namespace MelodyMuse.Server.Controllers
                 {
                     return Ok(new
                     {
-                       UserID=user.UserId,
-                       UserName=user.UserName,
-                       UserEmail=user.UserEmail,
-                       UserPhone=user.UserPhone,
-                       UserSex=user.UserSex,
-                       UserAge=user.UserAge,
-                       UserBirthday=user.UserBirthday,
-                       UserStatus=user.UserStatus,
-                       IsArtist=true,
-                       ArtistId = "user" + user.UserId
+                        UserID = user.UserId,
+                        UserName = user.UserName,
+                        UserEmail = user.UserEmail,
+                        UserPhone = user.UserPhone,
+                        UserSex = user.UserSex,
+                        UserAge = user.UserAge,
+                        UserBirthday = user.UserBirthday,
+                        UserStatus = user.UserStatus,
+                        IsArtist = true,
+                        ArtistId = "user" + user.UserId
                     });
                 }
                 else
@@ -76,7 +77,7 @@ namespace MelodyMuse.Server.Controllers
                     });
                 }
 
-               
+
             }
             catch (Exception ex)
             {

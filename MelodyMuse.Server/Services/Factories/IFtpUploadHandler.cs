@@ -1,5 +1,6 @@
 using FluentFTP;
 
+// Refactored with factory Pattern
 namespace MelodyMuse.Server.Services.Factories
 {
     public interface IFtpUploadHandler

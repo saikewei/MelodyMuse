@@ -54,7 +54,7 @@ namespace MelodyMuse.Server.Controllers
             await DownloadAndCacheFileAsync($"{artistId}_{songId}.mp3", localFilePathMp3, ftpMp3FilePath);
 
             var fileStream = new FileStream(localFilePathMp3, FileMode.Open, FileAccess.Read);
-            
+
             var response = new FileStreamResult(fileStream, "audio/mpeg");
             response.EnableRangeProcessing = true;
 
@@ -71,8 +71,8 @@ namespace MelodyMuse.Server.Controllers
             // 使用指定 albumId 的封面文件路径
             localFilePathJPG = Path.Combine(_cacheDirectory, $"{albumId}.jpg");
             ftpJpgFilePath = $"/albumCover/{albumId}/{albumId}.jpg";
-            Console.WriteLine("1"+localFilePathJPG);
-            Console.WriteLine("2"+ftpJpgFilePath);
+            Console.WriteLine("1" + localFilePathJPG);
+            Console.WriteLine("2" + ftpJpgFilePath);
             // 下载并缓存指定 albumId 的封面文件
             await DownloadAndCacheFileAsync($"{albumId}.jpg", localFilePathJPG, ftpJpgFilePath);
 
@@ -144,6 +144,7 @@ namespace MelodyMuse.Server.Controllers
         [Authorize]
         public async Task<IActionResult> GetMusicInfo(string songId)
         {
+            // Refactored with null object Pattern
             // 1. 【应用外观模式】一行代码获取 UserId
             // 不再需要 Request.Headers... Split... Parse... 判空...
             // 如果 Token 无效，Facade 内部会抛出异常，由全局过滤器或中间件捕获返回 401

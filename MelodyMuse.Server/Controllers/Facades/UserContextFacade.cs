@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace MelodyMuse.Server.Controllers.Facades
 {
+    // Refactored with facade Pattern
     /// <summary>
     /// 【外观模式】
     /// 封装身份认证上下文的获取逻辑。

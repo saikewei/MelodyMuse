@@ -39,6 +39,7 @@ namespace MelodyMuse.Server.Controllers
         {
             try
             {
+                // Refactored with facade Pattern
                 var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
                 // 这里你可以返回解析出来的用户信息或其他相关数据
@@ -116,7 +117,7 @@ namespace MelodyMuse.Server.Controllers
             try
             {
                 var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                Console.WriteLine("提供的Token:" + token);    
+                Console.WriteLine("提供的Token:" + token);
                 if (token == null)
                 {
                     return Unauthorized();
@@ -246,9 +247,10 @@ namespace MelodyMuse.Server.Controllers
             }
         }
         [Authorize]
-         [HttpDelete("remove")]
+        [HttpDelete("remove")]
         public async Task<IActionResult> RemoveUserCollectSong([FromBody] AddUserCollectSongDto dto)
         {
+            // Refactored with facade Pattern
             var parsedToken = _userContext.GetCurrentUserTokenInfo();
 
             try

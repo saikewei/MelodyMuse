@@ -1,5 +1,6 @@
 namespace MelodyMuse.Server.OuterServices.Interfaces
 {
+    // Refactored with adaptor Pattern
     /// 通用的短信发送载荷（不包含任何特定厂商的字段）
     public class GenericSmsMessage
     {

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MelodyMuse.Server.Repository
 {
+    // Refactored with chain of responsibility Pattern
     // 定义处理者接口
     public interface IAddSongValidator
     {
@@ -151,6 +152,7 @@ namespace MelodyMuse.Server.Repository
 
         public async Task<int> AddSongToSonglistAsync(string songlistId, string songId, string userId)
         {
+            // Refactored with chain of responsibility Pattern
             // 构建链条 (可以在构造函数中注入)
             var validatorChain = new SonglistOwnershipValidator();
             validatorChain.SetNext(new SongExistenceValidator())

@@ -74,6 +74,7 @@ namespace MelodyMuse.Server.Services
                     {
                         artists.Add(artist);
 
+                        // Refactored with factory Pattern
                         // 构建歌曲文件夹路径
                         var songFolderPath = $"/songs/{artistId}/{songId}";
 

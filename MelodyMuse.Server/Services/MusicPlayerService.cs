@@ -25,6 +25,7 @@ namespace MelodyMuse.Server.Services
         // 根据歌曲ID获取歌曲元数据
         public async Task<SongMetaDataModel> GetSongBySongId(string songId)
         {
+            // Refactored with null object Pattern
             // 1. 获取歌曲信息
             var song = await _musicplayerrepository.GetSongBySongId(songId);
 

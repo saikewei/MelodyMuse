@@ -20,6 +20,7 @@ namespace MelodyMuse.Server.Services
 
         public async Task<bool> SendSMSAsync(SendSMSModel _sendSMSModel)
         {
+            // Refactored with adaptor Pattern
             string _phonenumber = _sendSMSModel.PhoneNumber;
             string _event = _sendSMSModel.Event;
             int _minutes = SMSConfigure.VerificationCodeValidity;
